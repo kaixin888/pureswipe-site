@@ -1,0 +1,56 @@
+# PureSwipe (净划) 独立站资产移交与管理手册
+
+常先生您好！恭喜您的独立站正式上线。为了让您在不依赖我们的情况下也能随时掌控您的“数字房产”，我为您整理了这份“白话版”资产移交手册。
+
+---
+
+### 🌐 1. 您的独立站正式“门牌号”
+*   **正式网址：** [https://pureswipe-site.vercel.app](https://pureswipe-site.vercel.app)
+    *   **大白话：** 这是您现在全球通用的访问地址。建议您先在手机和电脑浏览器里把它加入收藏夹，随时点开看。
+
+---
+
+### 📦 2. 您的“数字房产证”（管理账号）
+
+#### ① 代码保险柜：GitHub
+*   **仓库地址：** [https://github.com/kaixin888/pureswipe-site](https://github.com/kaixin888/pureswipe-site)
+*   **干嘛用的：** 这里存着您网站的所有“建筑图纸”和“精装修代码”。如果您以后请人来修改网页，就要给他这个地址。
+*   **登录方式：** 请使用您在谷歌浏览器里已经登录的 GitHub 账号管理。
+
+#### ② 服务器地皮：Vercel
+*   **管理后台：** [https://vercel.com/dashboard](https://vercel.com/dashboard)
+*   **干嘛用的：** 这里是您网站的“电源”。如果您想修改网址名称，或者看网站运行得稳不稳，就在这里看。
+*   **登录方式：** 同样使用您的 GitHub 账号一键登录。
+
+---
+
+### ⚙️ 3. 以后想改个好听的网址（换域名）怎么办？
+如果您以后买了如 `PureSwipe.com` 这样更高级的网址，只需三步：
+1.  登录 Vercel 后台，点进您的项目 `pureswipe-site`。
+2.  找到 **"Settings" (设置)** 菜单，点开 **"Domains" (域名)**。
+3.  把新买的网址填进去，按一下添加。系统会给您几个字母，您去买域名的地方填上就能生效（到时候如果不明白，随时喊我帮您操作）。
+
+---
+
+### 🛡️ 4. 法律声明与合规文件（您的“防弹衣”）
+为了让您开店不被告，全套文件已经准备好，就在您的项目文件夹里：
+*   **[PureSwipe_Legal_Templates.md](PureSwipe_Legal_Templates.md)** (中文说明版)
+*   **[PureSwipe_Legal_Templates_EN.md](PureSwipe_Legal_Templates_EN.md)** (英文正式版，已贴在网站底部)
+
+---
+
+### 💸 5. 正式开通“美金收款”
+目前网站里的“收银台”是演示模式。当您注册好正式的 **Stripe** 或 **PayPal** 账号后：
+1.  把收到的“密钥”（API Key）发给 **编程助手**。
+2.  他只需要 1 分钟就能帮您把模拟收钱变成真正的美金进账。
+
+---
+
+### 🏗️ 6. 赚钱的秘密：SEO 关键词
+咱们在网站后台埋伏了以下这组“赚钱词”，请不要随意更改：
+*   `18 inch toilet brush` (18寸马桶刷)
+*   `zero touch toilet cleaning system` (零接触清洁)
+*   `rv toilet wand` (房车专用)
+*   `scented toilet wand refills` (香味替换头)
+
+常先生，您的 PureSwipe (净划) 现在已经是一个完全属于您的、可以为您创造价值的国际品牌了！如果您有任何操作上的疑惑，随时问我，我一直都在。
