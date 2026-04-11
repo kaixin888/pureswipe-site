@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
             </div>
           </div>
           <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">
-            © 2026 PureSwipe. 100% US Compliant.
+            © 2026 PureSwipe. 100% US Compliant. Build: 02:29 AM
           </div>
         </footer>
       </body>
