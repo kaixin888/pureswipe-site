@@ -1,3 +1,4 @@
+// Build Force: 2026-04-12 22:50:00 (Isolation Final)
 'use client';
 
 import React from 'react';
