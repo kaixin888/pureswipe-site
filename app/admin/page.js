@@ -1,4 +1,4 @@
-// Build Time: 2026-04-12 14:10:00 (v2.1 Admin Upgrade)
+// Build Time: 2026-04-12 14:20:00 (v2.1 Admin Upgrade - Clean Sync)
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
@@ -28,7 +28,7 @@ export default function AdminPanel() {
   const [statusFilter, setStatusFilter] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
 
-  // 模拟商品数据 (明天将实现完整商品管理)
+  // 模拟商品数据
   const [products, setProducts] = useState([
     { id: 'starter', name: 'Starter Kit', price: 19.99, stock: 150, status: 'Active' },
     { id: 'family', name: 'Family Value Pack', price: 34.99, stock: 85, status: 'Active' },
@@ -65,8 +65,6 @@ export default function AdminPanel() {
     const totalOrders = orders.length
     const uniqueCustomers = new Set(orders.map(o => o.email)).size
     const avgOrderValue = totalOrders > 0 ? (totalGMV / totalOrders).toFixed(2) : 0
-    
-    // 模拟访客数据 (实际应对接 Analytics API)
     const mockVisitors = 1250 
     const conversionRate = mockVisitors > 0 ? ((totalOrders / mockVisitors) * 100).toFixed(2) : 0
 
@@ -87,7 +85,6 @@ export default function AdminPanel() {
     })
   }, [orders, searchTerm, statusFilter])
 
-  // 导出 CSV 功能
   const exportToCSV = () => {
     const headers = ['Order ID', 'Customer', 'Email', 'Product', 'Amount', 'Status', 'Tracking', 'Date']
     const rows = filteredOrders.map(o => [
@@ -158,7 +155,6 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-slate-50 pt-24 px-6 pb-20 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
           <div className="flex items-center gap-6">
             <div className="w-16 h-16 bg-slate-950 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl">
@@ -179,7 +175,6 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
         <div className="flex gap-4 mb-12 border-b border-slate-200 pb-4 overflow-x-auto no-scrollbar">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: Activity },
@@ -198,10 +193,8 @@ export default function AdminPanel() {
           ))}
         </div>
 
-        {/* Dashboard Content */}
         {activeTab === 'dashboard' && (
           <div className="animate-in fade-in duration-500">
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp size={80} /></div>
@@ -237,7 +230,6 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Trends Chart (Simple SVG) */}
             <div className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm mb-12">
               <div className="flex justify-between items-center mb-12">
                 <div>
@@ -266,10 +258,8 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Orders Module */}
         {activeTab === 'orders' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            {/* Filters */}
             <div className="flex flex-col lg:flex-row gap-6 mb-12 items-center justify-between">
               <div className="flex flex-1 w-full gap-4">
                 <div className="flex-1 relative">
@@ -303,7 +293,6 @@ export default function AdminPanel() {
               </button>
             </div>
 
-            {/* Orders Table */}
             <div className="bg-white rounded-[4rem] shadow-sm border border-slate-100 overflow-hidden mb-12">
               <div className="overflow-x-auto">
                 <table className="w-full text-left min-w-[1000px]">
@@ -369,7 +358,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Product Module (Placeholder for Tomorrow) */}
         {activeTab === 'products' && (
           <div className="animate-in fade-in duration-500">
             <div className="flex justify-between items-center mb-12">
@@ -410,7 +398,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Customer Module (Placeholder for Tomorrow) */}
         {activeTab === 'users' && (
           <div className="bg-white p-32 rounded-[4rem] text-center border border-slate-100 shadow-sm animate-in zoom-in-95 duration-500">
             <Users size={80} className="mx-auto text-slate-100 mb-8" />
@@ -422,7 +409,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Modal for Order Details */}
         {selectedOrder && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-6">
             <div className="bg-white rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
@@ -479,7 +465,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Footer Sync Status */}
         <div className="mt-20 p-12 bg-blue-600 rounded-[4rem] text-white flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl animate-in slide-in-from-bottom duration-700">
           <div className="flex items-center gap-8">
             <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center">

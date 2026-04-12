@@ -1,3 +1,4 @@
+// Build Force: 2026-04-12 11:15:00 (clowand brand sync)
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -23,57 +24,49 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* 顶部导航栏 */}
         <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">C</div>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">C</div>
               <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
             </a>
-            
-            <div className="hidden md:flex items-center gap-10 text-xs font-black uppercase tracking-widest text-gray-400">
+            <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-widest text-slate-400">
               <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
               <a href="#bundles" className="hover:text-blue-600 transition-colors">Shop</a>
               <a href="#reviews" className="hover:text-blue-600 transition-colors">Reviews</a>
             </div>
-
-            <button className="bg-black text-white text-xs font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all">
+            <button className="bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl">
               Buy Now
             </button>
           </div>
         </nav>
-
         {children}
-
-        {/* 底部信息 (包含美国合规页链接) */}
         <footer className="bg-slate-950 py-24 text-white">
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-12 text-center md:text-left">
             <div className="col-span-1 md:col-span-2">
               <a href="/" className="inline-block group">
                 <h2 className="text-3xl font-black mb-6 italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors">clowand</h2>
               </a>
-              <p className="text-slate-400 max-w-sm mb-8 font-medium italic">Elevating American bathroom hygiene with smarter, cleaner, and better tools.</p>
+              <p className="text-slate-400 max-w-sm mb-8 font-medium italic text-xs">Elevating American bathroom hygiene with smarter, cleaner, and better tools.</p>
             </div>
-            
             <div>
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Shop</h3>
-              <ul className="space-y-4 text-sm text-slate-400 font-bold uppercase tracking-widest">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Shop</h3>
+              <ul className="space-y-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                 <li><a href="#bundles" className="hover:text-white transition-colors">Starter Kit</a></li>
                 <li><a href="#bundles" className="hover:text-white transition-colors">Value Pack</a></li>
               </ul>
             </div>
-
             <div>
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Legal Compliance</h3>
-              <ul className="space-y-4 text-sm text-slate-400 font-bold uppercase tracking-widest">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Legal Compliance</h3>
+              <ul className="space-y-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                 <li><a href="/privacy" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Privacy Policy</a></li>
                 <li><a href="/refund" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Refund Policy</a></li>
                 <li><a href="/terms" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Terms of Service</a></li>
               </ul>
             </div>
           </div>
-          <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">
-            © 2026 clowand. 100% US Compliant.
+          <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[8px] font-black uppercase tracking-[0.4em]">
+            © 2026 clowand. 100% US Compliant. Build: 02:35 AM
           </div>
         </footer>
       </body>
