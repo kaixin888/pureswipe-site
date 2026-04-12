@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { 
-  Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, 
-  CreditCard, Truck, Globe, X, Search, MapPin, Star, 
-  ChevronDown, ArrowRight, Shield, RefreshCw, Sparkles, 
-  Hand, Timer, Trash2, Heart
+  Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
+  Truck, Globe, X, Search, MapPin, Star, AlertCircle, ThumbsUp, 
+  ChevronDown, Trash2, Recycle, Droplet, Sparkles, Ruler, Shield, RefreshCw
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 const supabase = createClient(
   'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -20,7 +18,7 @@ const TRANSLATIONS = {
     heroTitle: "Clean Smarter, Not Harder.",
     heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism.",
     shopBundles: "Shop Bundles",
-    freeShipping: "Free Shipping Across USA • 30-Day Money Back Guarantee • Secure Checkout",
+    freeShipping: "Free Shipping Across USA",
     features: "Features",
     bundles: "Choose Your Bundle",
     saveUpTo: "Save Up to 40% with bulk packs",
@@ -36,11 +34,7 @@ const TRANSLATIONS = {
     success: "Success!",
     trackTitle: "Track Order",
     trackInput: "Enter Order ID",
-    trackBtn: "Track",
-    processStep1: "Click to Load",
-    processStep2: "Scrub & Clean",
-    processStep3: "One-Click Release",
-    processStep4: "Flush or Trash"
+    trackBtn: "Track"
   }
 }
 
@@ -58,7 +52,7 @@ const BUNDLES = [
     name: 'Family Value Pack',
     price: 34.99,
     description: 'BEST VALUE & RESULTS',
-    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '48x Mixed Scents Refills'],
+    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '36x Mixed Scents Refills'],
     tag: 'Best Seller',
     popular: true
   },
@@ -67,35 +61,116 @@ const BUNDLES = [
     name: 'Eco Refill Box',
     price: 24.99,
     description: 'Stock up & Save',
-    items: ['64x Extra-Strength Refills', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
+    items: ['48x Extra-Strength Refills', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
     tag: 'Eco Friendly'
   }
 ]
 
-// Trust Bar Component
-const TrustBar = ({ text }) => (
-  <div className="bg-slate-950 text-white py-3 overflow-hidden whitespace-nowrap border-b border-white/5 relative z-50">
-    <div className="flex animate-marquee gap-12 items-center">
-      {[...Array(10)].map((_, i) => (
-        <span key={i} className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-4 italic shrink-0">
-          <ShieldCheck size={12} className="text-blue-500" /> {text}
-        </span>
-      ))}
-    </div>
-  </div>
-)
+const FAQ = [
+  { q: "How does free shipping work?", a: "We offer free standard shipping (3-5 business days) on all bundles across the continental USA. Tracking is provided via email once your order ships." },
+  { q: "What is your return policy?", a: "We offer a 30-day risk-free trial. If you don't love Clowand, return it within 30 days for a full refund—no questions asked." },
+  { q: "Are the refill pads environmentally friendly?", a: "Yes! Our refills are made from biodegradable materials and the packaging is 100% recyclable. Clean your home without the guilt." },
+  { q: "Will the pads work on my toilet?", a: "Clowand is designed to reach deep under the rim and into the trap, making it effective for 99% of toilet designs including low-flow models." },
+  { q: "How many uses do I get per pad?", a: "Each pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
+]
 
-// Bento Grid Feature Item
-const BentoItem = ({ title, desc, icon: Icon, className, color = "blue" }) => (
-  <div className={`p-10 rounded-[3rem] border border-slate-100 shadow-sm group hover:shadow-xl transition-all duration-700 relative overflow-hidden ${className}`}>
-    <div className={`w-16 h-16 bg-${color}-50 text-${color}-600 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
-      <Icon size={32} strokeWidth={2.5} />
+function TrustBar() {
+  return (
+    <div className="bg-brand-primary text-white py-2 overflow-hidden whitespace-nowrap">
+      <div className="flex animate-marquee gap-8 items-center text-[10px] font-black uppercase tracking-widest italic">
+        {[1,2,3,4,5].map(i => (
+          <span key={i} className="flex items-center gap-6">
+            <Truck size={14} /> Free USA Shipping
+            <ShieldCheck size={14} /> Secure Checkout
+            <RefreshCw size={14} /> 30-Day Money Back Guarantee
+            <Recycle size={14} /> Eco-Friendly
+            <Star size={14} fill="white" /> 50,000+ Happy Homes
+          </span>
+        ))}
+      </div>
     </div>
-    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-4 leading-none">{title}</h3>
-    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed italic">{desc}</p>
-    <div className={`absolute -bottom-10 -right-10 w-32 h-32 bg-${color}-50/50 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000 opacity-0 group-hover:opacity-100`}></div>
-  </div>
-)
+  )
+}
+
+function BentoGrid() {
+  return (
+    <section className="py-24 max-w-7xl mx-auto px-6">
+      <div className="text-center mb-16">
+        <h2 className="text-5xl font-black uppercase tracking-tighter italic mb-4">Engineered for Hygiene</h2>
+        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Three features that make clowand the smarter choice.</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-auto md:h-[600px]">
+        <div className="md:col-span-2 bg-brand-mint p-12 rounded-[3rem] flex flex-col justify-end group overflow-hidden relative border-2 border-transparent hover:border-brand-primary transition-all">
+          <div className="absolute top-12 left-12 p-4 bg-white rounded-full text-brand-primary shadow-sm"><Ruler size={32} /></div>
+          <h3 className="text-4xl font-black italic uppercase leading-none mb-4">18-Inch Reach</h3>
+          <p className="text-sm font-bold text-brand-primary/80 uppercase tracking-tight max-w-sm">Industry-leading length keeps you at a safe distance from germs and splashes. Reach deep under the rim without effort.</p>
+        </div>
+        <div className="md:col-span-2 md:row-span-2 bg-slate-950 p-12 rounded-[3rem] flex flex-col justify-between text-white border-2 border-transparent hover:border-brand-orange transition-all group overflow-hidden">
+          <div className="flex justify-between items-start">
+            <div className="p-4 bg-white/10 rounded-full"><Sparkles size={32} /></div>
+            <span className="text-[10px] font-black uppercase tracking-widest py-2 px-6 border border-white/20 rounded-full">New Tech</span>
+          </div>
+          <div>
+            <h3 className="text-5xl font-black italic uppercase leading-none mb-6">3-Layer Scrubbing</h3>
+            <p className="text-sm font-bold text-white/60 uppercase tracking-tight mb-8">Triple action pads that scrub, lift, and protect. One pad is enough for the entire session.</p>
+            <div className="space-y-4">
+              {['Scrubbing Layer', 'Disinfecting core', 'Polishing shield'].map(l => (
+                <div key={l} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest"><CheckCircle size={14} className="text-brand-orange" /> {l}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="md:col-span-2 bg-slate-100 p-12 rounded-[3rem] flex flex-col justify-end border-2 border-transparent hover:border-brand-primary transition-all">
+          <div className="p-4 bg-white rounded-full text-brand-primary shadow-sm w-fit mb-8"><Zap size={32} /></div>
+          <h3 className="text-4xl font-black italic uppercase leading-none mb-4">Zero-Touch</h3>
+          <p className="text-sm font-bold text-slate-500 uppercase tracking-tight max-w-sm">No more touching dirty pads. One click to attach, one click to release. Hygiene redefined.</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Comparison() {
+  return (
+    <section className="py-24 bg-brand-mint/30">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-5xl font-black uppercase tracking-tighter italic mb-8">Why Make the Switch?</h2>
+            <p className="text-slate-600 font-bold uppercase tracking-tight text-sm mb-12 max-w-lg">Traditional toilet brushes harbor bacteria and require messy maintenance. There is a better way.</p>
+            <div className="space-y-6">
+              <div className="p-8 bg-red-50 rounded-[2.5rem] border border-red-100">
+                <h4 className="text-red-600 text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2"><X size={16} /> Traditional Brushes</h4>
+                <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest text-red-900/60">
+                  <li>Trap bacteria in bristles after each use</li>
+                  <li>Splash dirty water when cleaning</li>
+                  <li>Require storage that keeps them moist</li>
+                  <li>Need frequent deep cleaning or replacement</li>
+                </ul>
+              </div>
+              <div className="p-8 bg-brand-primary text-white rounded-[2.5rem]">
+                <h4 className="text-brand-mint text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2"><CheckCircle size={16} /> clowand Solution</h4>
+                <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest text-brand-mint/70">
+                  <li>Single-use pads eliminate germ transfer</li>
+                  <li>18" reach keeps you at safe distance</li>
+                  <li>Ventilated caddy keeps wand dry</li>
+                  <li>Zero-touch disposal, no mess</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-950 rounded-[4rem] aspect-square flex items-center justify-center p-12 relative overflow-hidden group">
+             <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/50 to-transparent"></div>
+             <div className="relative text-center">
+               <div className="w-24 h-24 bg-brand-orange rounded-full flex items-center justify-center mx-auto mb-8 shadow-3xl group-hover:scale-110 transition-all cursor-pointer"><Play fill="white" size={40} className="ml-2" /></div>
+               <p className="text-xs font-black uppercase tracking-[0.3em] text-white">Watch How it Works</p>
+             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function Home() {
   const [lang, setLang] = useState('en')
@@ -104,9 +179,24 @@ export default function Home() {
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
   const [paypalLoaded, setPaypalLoaded] = useState(false)
-  const [expandedFAQ, setExpandedFAQ] = useState(null)
+  const [activeFaq, setActiveFaq] = useState(null)
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
+
+  useEffect(() => {
+    // 简单的访客计数逻辑 (Session Based)
+    const trackVisitor = async () => {
+      const sessionKey = 'clowand_visitor_active'
+      if (!sessionStorage.getItem(sessionKey)) {
+        await supabase.from('site_stats').insert([{ 
+          type: 'visitor', 
+          session_id: Math.random().toString(36).substring(7)
+        }])
+        sessionStorage.setItem(sessionKey, 'true')
+      }
+    }
+    trackVisitor()
+  }, [])
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -138,14 +228,16 @@ export default function Home() {
             setPaymentStatus('processing')
             const order = await actions.order.capture()
             
-            // 提取详细收货地址 (用于物流导出)
+            // 提取详细收货地址与联系电话 (用于物流导出)
             const shipping = order.purchase_units[0].shipping
             const address = shipping.address
+            const phone = order.payer.phone?.phone_number?.national_number || ''
             
             await supabase.from('orders').insert([{
               order_id: `CW-${order.id.slice(-6)}`,
               customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
               email: order.payer.email_address,
+              phone: phone,
               amount: selectedBundle.price,
               product_name: selectedBundle.name,
               status: 'Paid',
@@ -174,386 +266,287 @@ export default function Home() {
       .eq('order_id', trackId)
       .single()
     if (data) setTrackResult(data)
-    else alert('Order ID not found. Please check your confirmation email.')
+    else alert('Order not found')
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-950 selection:bg-blue-100 pt-20 overflow-x-hidden font-sans">
-      <TrustBar text={t.freeShipping} />
-
-      {/* Hero Section */}
-      <section id="hero" className="max-w-7xl mx-auto px-6 pt-32 pb-40 text-center relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-50/50 rounded-full blur-[120px] -z-10 animate-pulse"></div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="inline-block px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-12 italic">
-            The #1 Choice for US Bathrooms
-          </span>
-          <h1 className="text-8xl md:text-[11rem] font-black uppercase tracking-tighter leading-[0.8] italic mb-12 text-slate-900">
-            {t.heroTitle.split(',')[0]}<br/>
-            <span className="text-blue-600 drop-shadow-2xl">{t.heroTitle.split(',')[1]}</span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-slate-400 font-bold uppercase tracking-[0.2em] text-sm mb-16 italic leading-relaxed">
-            {t.heroSub}
-          </p>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <button 
-              onClick={() => document.getElementById('bundles').scrollIntoView({ behavior: 'smooth' })} 
-              className="group px-16 py-8 bg-slate-950 text-white rounded-[2.5rem] text-xs font-black uppercase tracking-widest shadow-3xl hover:bg-blue-600 transition-all flex items-center gap-4 active:scale-95"
-            >
-              {t.shopBundles} <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
-            </button>
-            <div className="flex items-center gap-4 text-slate-400">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center overflow-hidden">
-                    <img src={`https://i.pravatar.cc/40?u=${i}`} alt="user" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-widest italic">50k+ Happy Homes</span>
-            </div>
+    <main className="min-h-screen bg-white text-slate-950 selection:bg-brand-mint font-sans">
+      <TrustBar />
+      
+      {/* Navbar */}
+      <nav className="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-6">
+        <div className="bg-white/70 backdrop-blur-2xl border border-white/20 rounded-full p-2 flex justify-between items-center shadow-2xl">
+          <div className="flex items-center gap-4 px-6">
+            <div className="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center text-white"><Sparkles size={20} /></div>
+            <span className="font-black italic uppercase tracking-tighter text-2xl">clowand</span>
           </div>
-        </motion.div>
-      </section>
-
-      {/* Bento Grid Features */}
-      <section id="features" className="py-40 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[250px]">
-          <BentoItem 
-            className="md:col-span-8 md:row-span-2 flex flex-col justify-end bg-slate-950 text-white border-none"
-            title="18\" Safety Handle"
-            desc="Industry-leading length keeps you 2x further from the 'grime zone' than standard brushes. Ergonomically designed for no-bend cleaning."
-            icon={Hand}
-          />
-          <BentoItem 
-            className="md:col-span-4 md:row-span-1"
-            title="Zero Touch"
-            desc="One-click attach and release. Never touch a dirty brush again."
-            icon={Zap}
-            color="emerald"
-          />
-          <BentoItem 
-            className="md:col-span-4 md:row-span-2 flex flex-col justify-center"
-            title="Triple Action"
-            desc="Our multi-layer pads scrub, disinfect, and protect in one pass. Infused with fresh ocean scents."
-            icon={Sparkles}
-            color="blue"
-          />
-          <BentoItem 
-            className="md:col-span-4 md:row-span-1"
-            title="US Certified"
-            desc="Eco-friendly pads, 100% septic safe and US home compliant."
-            icon={ShieldCheck}
-            color="orange"
-          />
-          <BentoItem 
-            className="md:col-span-4 md:row-span-1 flex items-center gap-6"
-            title="Ventilated"
-            desc="Quick-dry caddy."
-            icon={Droplets}
-          />
+          <div className="hidden md:flex gap-10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+             <a href="#features" className="hover:text-brand-primary transition-all">Features</a>
+             <a href="#bundles" className="hover:text-brand-primary transition-all">Bundles</a>
+             <a href="#reviews" className="hover:text-brand-primary transition-all">Reviews</a>
+          </div>
+          <button 
+            onClick={() => document.getElementById('bundles').scrollIntoView({ behavior: 'smooth' })}
+            className="px-8 py-4 bg-brand-orange text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-orange/20 hover:scale-105 transition-all"
+          >
+            Shop Now
+          </button>
         </div>
-      </section>
+      </nav>
 
-      {/* Comparison Section (Stop Touching the Grime) */}
-      <section className="py-40 bg-slate-50 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="relative">
-              <div className="absolute -top-20 -left-20 w-64 h-64 bg-red-100 rounded-full blur-[100px] opacity-30"></div>
-              <h2 className="text-6xl font-black uppercase tracking-tighter italic mb-12 text-slate-900 leading-[0.9]">
-                Stop Touching <br/><span className="text-red-600">The Grime.</span>
-              </h2>
-              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-sm mb-16 italic max-w-lg">
-                Traditional brushes breed bacteria in dripping containers. Clowand's 100% disposable system ensures a fresh clean every time without the germ-fest.
-              </p>
-              <ul className="space-y-8">
-                {[
-                  { label: "Old Way", desc: "Dripping water, dirty bristles, bad smell.", bad: true },
-                  { label: "Clowand Way", desc: "Fresh pads, long handle, zero-germ.", bad: false }
-                ].map((item, i) => (
-                  <li key={i} className={`p-8 rounded-[2.5rem] border ${item.bad ? 'border-red-50/50 bg-white/50' : 'border-blue-100 bg-white shadow-xl'}`}>
-                    <div className="flex items-center gap-6">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.bad ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}>
-                        {item.bad ? <Trash2 size={24} /> : <Heart size={24} />}
-                      </div>
-                      <div>
-                        <h4 className={`text-xs font-black uppercase tracking-widest italic mb-1 ${item.bad ? 'text-red-500' : 'text-blue-600'}`}>{item.label}</h4>
-                        <p className="text-lg font-black italic tracking-tighter text-slate-900 uppercase">{item.desc}</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="relative aspect-square bg-slate-200 rounded-[5rem] overflow-hidden group">
-               <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/20 to-transparent"></div>
-               <div className="absolute inset-0 flex items-center justify-center">
-                 <Play size={100} className="text-white drop-shadow-2xl opacity-50 group-hover:scale-125 transition-transform cursor-pointer" />
-               </div>
-               <img src="https://sc01.alicdn.com/kf/Hdfd892a42b1d4b8ba87ea17a9c9d41c9q.png" alt="Usage" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" />
+      {/* Hero */}
+      <section className="pt-48 pb-32 max-w-7xl mx-auto px-6 text-center relative">
+        <div className="absolute top-40 left-1/2 -translate-x-1/2 -z-10 w-[800px] h-[800px] bg-brand-mint/50 rounded-full blur-[120px]"></div>
+        <div className="inline-flex items-center gap-3 px-6 py-2 bg-brand-mint rounded-full text-brand-primary text-[10px] font-black uppercase tracking-widest italic mb-12 shadow-sm">
+          <Shield size={14} /> Certified Hygiene System
+        </div>
+        <h1 className="text-7xl md:text-[11rem] font-black uppercase tracking-tighter leading-[0.85] italic mb-12">
+          {t.heroTitle.split(',')[0]}<br/>
+          <span className="text-brand-orange drop-shadow-sm">{t.heroTitle.split(',')[1]}</span>
+        </h1>
+        <p className="max-w-2xl mx-auto text-slate-400 font-bold uppercase tracking-[0.2em] text-sm mb-16 italic">
+          {t.heroSub}
+        </p>
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-24">
+           <button onClick={() => document.getElementById('bundles').scrollIntoView({ behavior: 'smooth' })} className="px-20 py-8 bg-brand-primary text-white rounded-full text-xs font-black uppercase tracking-widest shadow-3xl shadow-brand-primary/30 hover:scale-105 transition-all">
+            {t.shopBundles}
+          </button>
+          <div className="flex -space-x-4">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden">
+                <img src={`https://i.pravatar.cc/100?u=user${i}`} alt="User" />
+              </div>
+            ))}
+            <div className="pl-6 text-left">
+              <div className="flex gap-1 text-yellow-400 mb-1"><Star fill="currentColor" size={12} /> <Star fill="currentColor" size={12} /> <Star fill="currentColor" size={12} /> <Star fill="currentColor" size={12} /> <Star fill="currentColor" size={12} /></div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Trusted by 50,000+ Homes</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Step Guide */}
-      <section className="py-40 bg-white">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-             { step: "01", label: t.processStep1, icon: Plus },
-             { step: "02", label: t.processStep2, icon: Sparkles },
-             { step: "03", label: t.processStep3, icon: Zap },
-             { step: "04", label: t.processStep4, icon: Trash2 }
-          ].map((item, i) => (
-            <div key={i} className="text-center group">
-              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
-                <item.icon size={32} />
-              </div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300 mb-2 italic">Step {item.step}</h4>
-              <p className="text-xl font-black italic tracking-tighter uppercase text-slate-900">{item.label}</p>
-            </div>
-          ))}
-        </div>
+      {/* Trust Marks */}
+      <section className="py-20 border-y border-slate-100 flex justify-center items-center gap-12 md:gap-32 grayscale opacity-40">
+        <div className="font-black italic text-3xl opacity-50">FORBES</div>
+        <div className="font-black italic text-3xl opacity-50">WIRED</div>
+        <div className="font-black italic text-3xl opacity-50">CNN</div>
+        <div className="font-black italic text-3xl opacity-50">GQ</div>
       </section>
 
-      {/* Bundle Selection */}
-      <section id="bundles" className="py-40 max-w-7xl mx-auto px-6 relative">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/30 rounded-full blur-[100px] -z-10"></div>
-        <div className="text-center mb-32">
-          <h2 className="text-7xl font-black uppercase tracking-tighter italic mb-8 drop-shadow-sm">{t.bundles}</h2>
-          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 italic px-8 py-3 bg-blue-50/50 inline-block rounded-full">{t.saveUpTo}</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {BUNDLES.map(bundle => (
-            <div key={bundle.id} className={`p-16 rounded-[5rem] border-4 transition-all duration-700 relative group overflow-hidden ${bundle.popular ? 'border-blue-600 bg-slate-950 text-white shadow-3xl scale-105 z-10' : 'border-slate-50 hover:border-blue-100 bg-white shadow-sm'}`}>
-              {bundle.popular && (
-                <div className="absolute top-10 right-10 px-6 py-2 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-full italic animate-bounce">
-                  Best Seller
+      <BentoGrid />
+      <Comparison />
+
+      {/* Steps */}
+      <section className="py-32 max-w-7xl mx-auto px-6 text-center">
+         <h2 className="text-5xl font-black uppercase tracking-tighter italic mb-16">Simple as 1-2-3-4</h2>
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            {[
+              { t: 'Attach Refill', d: 'Slide a fresh pad onto the wand', i: Package },
+              { t: 'Clean Toilet', d: 'Scrub all surfaces effortlessly', i: Droplets },
+              { t: 'Press to Dispose', d: 'Release pad without touching', i: Trash2 },
+              { t: 'Flush or Bin', d: 'Dispose hygienically', i: Recycle }
+            ].map((s, idx) => (
+              <div key={s.t} className="relative group">
+                <div className="w-20 h-20 bg-brand-mint rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-brand-primary group-hover:bg-brand-orange group-hover:text-white transition-all shadow-sm">
+                   <s.i size={32} />
                 </div>
-              )}
-              <h3 className="text-5xl font-black uppercase tracking-tighter italic mb-2 leading-none">{bundle.name}</h3>
-              <p className={`text-[10px] font-black uppercase tracking-widest italic mb-12 ${bundle.popular ? 'text-blue-400' : 'text-slate-400'}`}>{bundle.description}</p>
-              <div className="text-8xl font-black italic tracking-tighter mb-12 leading-none">
-                <span className="text-4xl font-bold align-top mt-2 mr-1 opacity-50">$</span>{bundle.price}
+                <div className="absolute top-0 right-1/4 w-8 h-8 bg-white border-2 border-slate-100 rounded-full flex items-center justify-center font-black italic text-xs shadow-sm">{idx+1}</div>
+                <h4 className="text-xl font-black uppercase italic mb-4">{s.t}</h4>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-relaxed">{s.d}</p>
               </div>
-              <ul className="space-y-6 mb-16">
-                {bundle.items.map(item => (
-                  <li key={item} className="flex items-center gap-4 text-xs font-bold uppercase tracking-tighter">
-                    <CheckCircle size={20} className={bundle.popular ? 'text-blue-400' : 'text-emerald-500'} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button 
-                onClick={() => setSelectedBundle(bundle)}
-                className={`w-full py-8 rounded-[3rem] text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-4 ${bundle.popular ? 'bg-blue-600 text-white shadow-xl hover:bg-blue-700' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
-              >
-                Checkout Now <CreditCard size={18} />
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+         </div>
       </section>
 
-      {/* Enhanced Reviews Section */}
-      <section id="reviews" className="py-40 bg-slate-950 text-white overflow-hidden">
+      {/* Bundles */}
+      <section id="bundles" className="py-40 bg-slate-950 text-white rounded-[5rem] mx-6">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center mb-32">
-             <div>
-               <h2 className="text-7xl font-black uppercase tracking-tighter italic mb-12 leading-[0.9]">Trusted by <br/>American <br/><span className="text-blue-600 underline decoration-blue-100 underline-offset-8">Households.</span></h2>
-               <div className="flex items-center gap-6">
-                 <div className="flex -space-x-4">
-                    {[1,2,3,4,5].map(i => <div key={i} className="w-16 h-16 rounded-full border-4 border-slate-950 overflow-hidden"><img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="user"/></div>)}
-                 </div>
-                 <p className="text-xs font-bold uppercase tracking-widest text-slate-400 italic">"Join 50,000+ happy homes across the USA."</p>
-               </div>
-             </div>
-             <div className="grid grid-cols-1 gap-6">
-                {[
-                  { text: "The 18-inch handle is a back-saver. Best hygienic system I've used.", author: "Sarah M., LA", rating: 5 },
-                  { text: "Zero touch actually works. The pads scrub better than regular brushes.", author: "Michael R., NY", rating: 5 }
-                ].map((rev, i) => (
-                  <div key={i} className="p-10 bg-white/5 border border-white/10 rounded-[3rem] hover:bg-white/10 transition-colors cursor-default group">
-                    <div className="flex gap-2 mb-6 text-blue-500">
-                       {[...Array(rev.rating)].map((_, j) => <Star key={j} fill="currentColor" size={16} />)}
-                    </div>
-                    <p className="text-2xl font-black italic tracking-tighter uppercase mb-6 leading-tight group-hover:text-blue-400 transition-colors">"{rev.text}"</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">— {rev.author}</p>
-                  </div>
-                ))}
-             </div>
+          <div className="text-center mb-32">
+            <h2 className="text-7xl font-black uppercase tracking-tighter italic mb-8">{t.bundles}</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-orange italic underline underline-offset-8 decoration-white/20">{t.saveUpTo}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {BUNDLES.map(bundle => (
+              <div key={bundle.id} className={`p-16 rounded-[4rem] border-4 transition-all duration-500 relative group overflow-hidden ${bundle.popular ? 'border-brand-orange bg-white text-slate-950 shadow-3xl scale-105 z-10' : 'border-white/10 hover:border-white/30'}`}>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-4xl font-black uppercase tracking-tighter italic leading-none">{bundle.name}</h3>
+                  {bundle.popular && <span className="bg-brand-orange text-white text-[8px] font-black uppercase tracking-widest py-2 px-4 rounded-full italic">BEST VALUE</span>}
+                </div>
+                <p className={`text-[10px] font-black uppercase tracking-widest italic mb-12 ${bundle.popular ? 'text-slate-400' : 'text-white/40'}`}>{bundle.description}</p>
+                <div className="text-7xl font-black italic tracking-tighter mb-12 leading-none">
+                  <span className="text-3xl font-bold align-top mt-2 mr-1">$</span>{bundle.price}
+                </div>
+                <ul className="space-y-6 mb-16">
+                  {bundle.items.map(item => (
+                    <li key={item} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-tighter">
+                      <CheckCircle size={18} className={bundle.popular ? 'text-brand-orange' : 'text-brand-mint'} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button 
+                  onClick={() => setSelectedBundle(bundle)}
+                  className={`w-full py-8 rounded-[2.5rem] text-xs font-black uppercase tracking-widest transition-all ${bundle.popular ? 'bg-slate-950 text-white shadow-xl' : 'bg-white text-slate-950'}`}
+                >
+                  Get Started
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Enhanced FAQ Section */}
-      <section className="py-40 max-w-4xl mx-auto px-6">
-        <div className="text-center mb-24">
-           <h2 className="text-6xl font-black uppercase tracking-tighter italic mb-4">Common Questions</h2>
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 italic">Clear Answers for Clear Bathrooms</p>
-        </div>
-        <div className="space-y-4">
-          {[
-            { q: "Are the cleaning pads biodegradable?", a: "Yes! Our triple-action pads are made from reinforced cellulose fibers that are 100% eco-friendly and safe for septic systems." },
-            { q: "Does the handle fit standard caddies?", a: "Each starter kit comes with a ventilated custom-designed caddy that perfectly fits the 18-inch handle for ergonomic storage." },
-            { q: "Is the cleaner solution safe for pets?", a: "Absolutely. The formula infused in the pads is non-toxic to pets and children once diluted in water." }
-          ].map((item, i) => (
-            <div key={i} className="border border-slate-100 rounded-[2rem] overflow-hidden">
-              <button 
-                onClick={() => setExpandedFAQ(expandedFAQ === i ? null : i)}
-                className="w-full flex items-center justify-between p-10 bg-white hover:bg-slate-50 transition-colors"
-              >
-                <span className="text-lg font-black italic uppercase tracking-tighter text-slate-900">{item.q}</span>
-                <ChevronDown className={`text-slate-300 transition-transform duration-500 ${expandedFAQ === i ? 'rotate-180 text-blue-600' : ''}`} />
-              </button>
-              <AnimatePresence>
-                {expandedFAQ === i && (
-                  <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden bg-slate-50"
-                  >
-                    <div className="p-10 text-slate-500 text-sm font-bold uppercase tracking-widest leading-relaxed italic">
-                      {item.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+      {/* Reviews */}
+      <section id="reviews" className="py-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-24">
+             <h2 className="text-7xl font-black uppercase tracking-tighter italic mb-8">Join the Revolution</h2>
+             <div className="flex justify-center items-center gap-4 mb-4">
+                <div className="flex gap-1 text-yellow-400"><Star fill="currentColor" size={24} /> <Star fill="currentColor" size={24} /> <Star fill="currentColor" size={24} /> <Star fill="currentColor" size={24} /> <Star fill="currentColor" size={24} /></div>
+                <span className="text-4xl font-black italic tracking-tighter">5.0</span>
+             </div>
+             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-primary italic">50,000+ Satisfied Customers Nationwide</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: 'Sarah M.', loc: 'Los Angeles', quote: 'The 18-inch handle is a back-saver. Finally, a toilet brush that doesn\'t gross me out!', stars: 5 },
+              { name: 'Michael R.', loc: 'New York', quote: 'Zero touch actually works perfectly. The pads scrub much better than regular bristles.', stars: 5 },
+              { name: 'Jennifer K.', loc: 'Chicago', quote: 'Setup took 30 seconds. This is how cleaning in 2026 should feel. Highly recommend!', stars: 5 }
+            ].map(r => (
+              <div key={r.name} className="bg-brand-mint p-12 rounded-[4rem] border border-brand-primary/5 shadow-sm group hover:scale-[1.02] transition-all">
+                <div className="flex gap-2 mb-8 text-brand-primary">
+                  <Star fill="currentColor" size={14} /> <Star fill="currentColor" size={14} /> <Star fill="currentColor" size={14} /> <Star fill="currentColor" size={14} /> <Star fill="currentColor" size={14} />
+                </div>
+                <p className="text-xl font-bold italic text-slate-900 mb-8 uppercase tracking-tighter leading-tight">"{r.quote}"</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-black italic text-brand-primary text-sm shadow-sm">{r.name[0]}</div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-950">{r.name}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">{r.loc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Tracking Section */}
-      <section className="bg-slate-950 py-40">
-        <div className="max-w-xl mx-auto px-6 text-center text-white">
+      {/* FAQ */}
+      <section className="py-40 bg-brand-mint/20 border-y border-slate-100">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-24">
+            <h2 className="text-6xl font-black uppercase tracking-tighter italic">Common Doubts</h2>
+          </div>
+          <div className="space-y-4">
+            {FAQ.map((item, idx) => (
+              <div key={idx} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm">
+                <button 
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full px-10 py-8 flex justify-between items-center text-left"
+                >
+                  <span className="text-[10px] font-black uppercase tracking-widest italic">{item.q}</span>
+                  <ChevronDown className={`transition-all ${activeFaq === idx ? 'rotate-180' : ''}`} />
+                </button>
+                {activeFaq === idx && (
+                  <div className="px-10 pb-8 text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-loose border-t border-slate-50 pt-6">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tracker */}
+      <section className="py-40">
+        <div className="max-w-xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-12">{t.trackTitle}</h2>
-          <div className="flex gap-4 p-4 bg-white/5 rounded-[3rem] border border-white/10">
+          <div className="flex gap-4 p-4 bg-slate-50 rounded-[3rem] border border-slate-100">
             <input 
               type="text" 
               placeholder={t.trackInput} 
               value={trackId}
               onChange={(e) => setTrackId(e.target.value)}
-              className="flex-1 bg-transparent border-none text-white px-8 font-black focus:ring-0 uppercase tracking-widest text-sm outline-none"
+              className="flex-1 bg-transparent border-none text-slate-950 px-8 font-black focus:ring-0 uppercase tracking-widest text-sm"
             />
-            <button onClick={handleTrack} className="px-10 py-5 bg-white text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 flex items-center gap-3">
-              <Search size={14} /> {t.trackBtn}
+            <button onClick={handleTrack} className="px-10 py-5 bg-brand-primary text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-orange transition-all shadow-xl shadow-brand-primary/20">
+              {t.trackBtn}
             </button>
           </div>
           {trackResult && (
-            <div className="mt-16 p-12 bg-blue-600 rounded-[3rem] text-left shadow-2xl animate-in zoom-in-95 duration-500">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Order Manifest ID: #{trackResult.order_id}</span>
-              <p className="text-3xl font-black italic tracking-tighter text-white uppercase mt-4 flex items-center gap-4">
-                <Truck /> {trackResult.status}
-              </p>
-              {trackResult.tracking_number && (
-                <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-white/70">Carrier ID: {trackResult.tracking_number}</p>
-              )}
+            <div className="mt-16 p-12 bg-white border border-slate-100 rounded-[3rem] text-left shadow-sm">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Order ID: #{trackResult.order_id}</span>
+              <p className="text-2xl font-black italic tracking-tighter text-brand-primary uppercase mt-4">{trackResult.status}</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Checkout Modal */}
-      <AnimatePresence>
-        {selectedBundle && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-2xl p-6">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[5rem] p-16 max-w-2xl w-full shadow-2xl relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 -mr-32 -mt-32 rounded-full -z-10"></div>
-              <button onClick={() => setSelectedBundle(null)} className="absolute top-12 right-12 w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 hover:text-slate-950 active:scale-95 transition-all"><X size={32} /></button>
-              
-              {paymentStatus === 'idle' && (
-                <>
-                  <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 italic mb-4 inline-block">Secure Checkout</span>
-                  <h2 className="text-6xl font-black uppercase tracking-tighter italic mb-12">{t.checkout}</h2>
-                  <div className="bg-slate-50 p-10 rounded-[3rem] space-y-8 mb-12">
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                      <span className="text-slate-400 italic">Selected Pack</span>
-                      <span className="text-slate-900">{selectedBundle.name}</span>
-                    </div>
-                    <div className="flex justify-between items-end">
-                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-2">Total (incl. Free Shipping)</span>
-                       <span className="text-5xl font-black italic tracking-tighter text-blue-600">${selectedBundle.price}</span>
-                    </div>
-                  </div>
-                  <div id="paypal-button-container" className="w-full min-h-[150px]"></div>
-                  <p className="mt-8 text-center text-[8px] font-black uppercase tracking-[0.2em] text-slate-300">
-                    <Shield size={10} className="inline mr-2" /> Encrypted by PayPal Secure API
-                  </p>
-                </>
-              )}
-              
-              {paymentStatus === 'processing' && (
-                <div className="py-32 text-center">
-                  <div className="w-24 h-24 bg-blue-50 border-8 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-10 shadow-2xl"></div>
-                  <h3 className="text-3xl font-black uppercase tracking-tighter italic mb-4">Authenticating...</h3>
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Global Vault Synchronizing</p>
-                </div>
-              )}
-              
-              {paymentStatus === 'success' && (
-                <div className="py-24 text-center">
-                  <div className="w-32 h-32 bg-emerald-50 text-emerald-500 rounded-[3.5rem] flex items-center justify-center mx-auto mb-12 shadow-inner">
-                    <CheckCircle size={72} strokeWidth={3} className="animate-in zoom-in duration-500" />
-                  </div>
-                  <h2 className="text-7xl font-black uppercase tracking-tighter italic mb-6">{t.success}</h2>
-                  <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] italic">Order Confirmed. Welcome to the clowand family.</p>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Global Footer */}
-      <footer className="bg-slate-950 py-32 text-white border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-20 border-b border-white/5 pb-20 mb-20 text-center md:text-left">
-            <div className="col-span-1 md:col-span-2">
-              <h2 className="text-5xl font-black mb-8 italic uppercase tracking-tighter text-blue-600">clowand</h2>
-              <p className="text-slate-500 max-w-sm mb-12 font-bold italic text-xs uppercase tracking-widest leading-relaxed">
-                Elevating American bathroom hygiene with smarter, cleaner, and better tools. From Los Angeles to NYC.
-              </p>
-              <div className="flex justify-center md:justify-start gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer"><Shield size={20}/></div>
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer"><CreditCard size={20}/></div>
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer"><Globe size={20}/></div>
-              </div>
+      {/* Footer */}
+      <footer className="py-24 border-t border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-brand-primary rounded-full flex items-center justify-center text-white shadow-lg"><Sparkles size={24} /></div>
+              <span className="font-black italic uppercase tracking-tighter text-3xl">clowand</span>
             </div>
-            <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-slate-300 italic">Shop Wands</h3>
-              <ul className="space-y-6 text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
-                <li><a href="#bundles" className="hover:text-white transition-colors">Starter Kit</a></li>
-                <li><a href="#bundles" className="hover:text-white transition-colors">Value Pack</a></li>
-                <li><a href="#bundles" className="hover:text-white transition-colors">Refill Box</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-slate-300 italic">Legal & Compliance</h3>
-              <ul className="space-y-6 text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
-                <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="/refund" className="hover:text-white transition-colors">Refund Policy</a></li>
-                <li><a href="/terms" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="/compliance" className="hover:text-white transition-colors underline decoration-blue-500 underline-offset-8">ADA Compliance</a></li>
-              </ul>
-            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Redefining Bathroom Hygiene</p>
           </div>
-          <div className="max-w-7xl mx-auto px-6 text-center text-slate-600 text-[9px] font-black uppercase tracking-[0.5em] italic">
-            © 2026 clowand. All Rights Reserved. US Patent Pending.
+          <div className="flex gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400 italic">
+             <a href="/privacy" className="hover:text-brand-primary">Privacy</a>
+             <a href="/terms" className="hover:text-brand-primary">Terms</a>
+             <a href="/refund" className="hover:text-brand-primary">Refunds</a>
           </div>
+          <p className="text-[8px] font-black uppercase tracking-widest text-slate-300">© 2026 clowand. 100% US Compliant.</p>
+        </div>
       </footer>
 
-      {/* Styles for Marquee */}
+      {/* Modal */}
+      {selectedBundle && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-6">
+          <div className="bg-white rounded-[4rem] p-16 max-w-xl w-full shadow-2xl relative">
+            <button onClick={() => setSelectedBundle(null)} className="absolute top-12 right-12 text-slate-300 hover:text-slate-950 transition-all"><X size={40} /></button>
+            {paymentStatus === 'idle' && (
+              <>
+                <div className="flex items-center gap-4 mb-12">
+                  <div className="w-12 h-12 bg-brand-mint text-brand-primary rounded-full flex items-center justify-center"><CreditCard size={24} /></div>
+                  <h2 className="text-5xl font-black uppercase tracking-tighter italic">{t.checkout}</h2>
+                </div>
+                <div className="space-y-6 mb-12 bg-slate-50 p-10 rounded-[3rem] border border-slate-100">
+                  <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
+                    <span className="text-slate-400 italic">Selected Pack</span>
+                    <span className="text-slate-900">{selectedBundle.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
+                    <span className="text-slate-400 italic">Total Amount</span>
+                    <span className="text-brand-orange font-black">${selectedBundle.price}</span>
+                  </div>
+                </div>
+                <div id="paypal-button-container" className="w-full min-h-[150px]"></div>
+                <p className="mt-8 text-center text-[8px] font-black uppercase tracking-widest text-slate-300">Secure 256-bit SSL Encrypted Payment</p>
+              </>
+            )}
+            {paymentStatus === 'processing' && (
+              <div className="py-32 text-center">
+                <div className="w-24 h-24 border-[12px] border-brand-mint border-t-brand-primary rounded-full animate-spin mx-auto mb-12"></div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic animate-pulse">Confirming Payment with Bank...</p>
+              </div>
+            )}
+            {paymentStatus === 'success' && (
+              <div className="py-24 text-center">
+                <div className="w-32 h-32 bg-emerald-50 text-emerald-500 rounded-[3.5rem] flex items-center justify-center mx-auto mb-12 shadow-inner">
+                  <CheckCircle size={72} strokeWidth={3} />
+                </div>
+                <h2 className="text-6xl font-black uppercase tracking-tighter italic mb-6">Order Success</h2>
+                <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Welcome to the clowand community.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Global CSS for Marquee */}
       <style jsx global>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
@@ -562,11 +555,6 @@ export default function Home() {
         .animate-marquee {
           animation: marquee 30s linear infinite;
         }
-        .shadow-3xl {
-          box-shadow: 0 40px 100px -20px rgba(37, 99, 235, 0.3);
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </main>
   )

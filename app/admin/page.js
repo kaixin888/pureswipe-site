@@ -20,6 +20,7 @@ const supabase = createClient(
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [orders, setOrders] = useState([])
+  const [visitors, setVisitors] = useState(1250)
   const [loading, setLoading] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [password, setPassword] = useState('')
@@ -47,12 +48,19 @@ export default function AdminPanel() {
 
   const fetchOrders = async () => {
     setLoading(true)
-    const { data, error } = await supabase
+    const { data: ordersData } = await supabase
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false })
     
-    if (data) setOrders(data)
+    if (ordersData) setOrders(ordersData)
+
+    const { count } = await supabase
+      .from('site_stats')
+      .select('*', { count: 'exact', head: true })
+      .eq('type', 'visitor')
+    if (count) setVisitors(count)
+
     setLoading(false)
   }
 
@@ -66,11 +74,11 @@ export default function AdminPanel() {
     const totalOrders = orders.length
     const uniqueCustomers = new Set(orders.map(o => o.email)).size
     const avgOrderValue = totalOrders > 0 ? (totalGMV / totalOrders).toFixed(2) : 0
-    const mockVisitors = 1250 
-    const conversionRate = mockVisitors > 0 ? ((totalOrders / mockVisitors) * 100).toFixed(2) : 0
+    const totalVisitors = visitors
+    const conversionRate = totalVisitors > 0 ? ((totalOrders / totalVisitors) * 100).toFixed(2) : 0
 
-    return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, mockVisitors, conversionRate }
-  }, [orders])
+    return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, mockVisitors: totalVisitors, conversionRate }
+  }, [orders, visitors])
 
   // 筛选后的订单列表
   const filteredOrders = useMemo(() => {
