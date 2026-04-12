@@ -82,7 +82,7 @@ function TrustBar() {
           <span key={i} className="flex items-center gap-6">
             <Truck size={14} /> Free USA Shipping
             <ShieldCheck size={14} /> Secure Checkout
-            <RefreshCw size={14} /> 30-Day Money Back Guarantee
+            <RefreshCw size={14} /> 100% Satisfaction Guarantee
             <Recycle size={14} /> Eco-Friendly
             <Star size={14} fill="white" /> 50,000+ Happy Homes
           </span>
