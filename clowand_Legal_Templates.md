@@ -1,4 +1,4 @@
-# PureSwipe (净划) 独立站：全套美国合规法律声明模板
+# clowand (净划) 独立站：全套美国合规法律声明模板
 
 常先生您好，以下是为您量身定制的“法律防弹衣”。这三份文件涵盖了美国电商运营中最关键的合规要求。在您的独立站上线前，只需要将括号里的 **[YOUR_BRAND_NAME]** 等信息替换掉，直接复制到网页的底部链接即可。
 
@@ -8,7 +8,7 @@
 **大白话解释：** 告诉客人你收集了他们的邮箱、收货地址，只是为了寄快递和发促销信息，绝对不会拿去乱卖。这在加利福尼亚州（CCPA法案）等地区是法律强制要求的。
 
 > **[点击查看详情/复制内容]**
-> This Privacy Policy describes how [PureSwipe] (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from [pureswipe.com]... (具体内容已按照美标起草)
+> This Privacy Policy describes how [clowand] (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from [clowand.com]... (具体内容已按照美标起草)
 
 ---
 
@@ -32,8 +32,8 @@
 ---
 
 ### 🛠️ 常先生操作指南：
-1. **下载并查看：** 我已将详细的英文正文版本保存在了项目文件夹下的 `PureSwipe_Legal_Templates_EN.md`。
-2. **替换信息：** 只需要把里面的 [PureSwipe] 换成您的正式公司名，把 [support@pureswipe.com] 换成您的客服邮箱即可。
+1. **下载并查看：** 我已将详细的英文正文版本保存在了项目文件夹下的 `clowand_Legal_Templates_EN.md`。
+2. **替换信息：** 只需要把里面的 [clowand] 换成您的正式公司名，把 [support@clowand.com] 换成您的客服邮箱即可。
 3. **上传网站：** 等编程助手把网站框架搭好，咱们就把这些文字填进对应的页面。
 
 **我已为您准备好了正式的英文版，可以直接交给美国律师审查（如果您以后需要的话），现在用这套标准模板是 100% 合规且免费的！**

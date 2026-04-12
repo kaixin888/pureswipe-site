@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
         <p className="text-gray-400 font-bold mb-10">Last Updated: April 11, 2026</p>
         
         <div className="space-y-8 text-slate-600 leading-relaxed font-medium">
-          <p>This Privacy Policy describes how PureSwipe (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from pureswipe-site.vercel.app (the "Site") or otherwise communicate with us (collectively, the "Services").</p>
+          <p>This Privacy Policy describes how clowand (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from clowand.com (the "Site") or otherwise communicate with us (collectively, the "Services").</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">1. Personal Information We Collect</h2>
           <p>When you visit the Site, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site.</p>
@@ -21,7 +21,7 @@ export default function PrivacyPolicy() {
           <p>If you are a resident of certain jurisdictions (including California or the EU), you have the right to access personal information we hold about you and to ask that your personal information be corrected, updated, or deleted.</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">5. Contact Us</h2>
-          <p>For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at <span className="text-blue-600 font-black italic">support@pureswipe.com</span>.</p>
+          <p>For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at <span className="text-blue-600 font-black italic">support@clowand.com</span>.</p>
         </div>
       </div>
     </main>

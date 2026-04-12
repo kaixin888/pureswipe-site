@@ -1,4 +1,4 @@
-# PureSwipe (净划) - US E-commerce Compliance Templates (English)
+# clowand (净划) - US E-commerce Compliance Templates (English)
 
 Copy and paste the sections below into your website's legal pages after replacing the bracketed information with your own details.
 
@@ -8,7 +8,7 @@ Copy and paste the sections below into your website's legal pages after replacin
 
 **Last Updated: [Date]**
 
-This Privacy Policy describes how PureSwipe (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from pureswipe.com (the "Site") or otherwise communicate with us (collectively, the "Services").
+This Privacy Policy describes how clowand (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from clowand.com (the "Site") or otherwise communicate with us (collectively, the "Services").
 
 **1. PERSONAL INFORMATION WE COLLECT**
 When you visit the Site, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site. 
@@ -23,7 +23,7 @@ We share your Personal Information with third parties to help us use your Person
 If you are a European resident, you have the right to access personal information we hold about you and to ask that your personal information be corrected, updated, or deleted. 
 
 **5. CONTACT US**
-For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at [support@pureswipe.com].
+For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at [support@clowand.com].
 
 ---
 
@@ -54,7 +54,7 @@ We will notify you once we’ve received and inspected your return, and let you 
 
 **Last Updated: [Date]**
 
-This website is operated by PureSwipe. Throughout the site, the terms “we”, “us” and “our” refer to PureSwipe. PureSwipe offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.
+This website is operated by clowand. Throughout the site, the terms “we”, “us” and “our” refer to clowand. clowand offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.
 
 **SECTION 1 - ONLINE STORE TERMS**
 By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.
@@ -76,4 +76,4 @@ These Terms of Service and any separate agreements whereby we provide you Servic
 
 ---
 **Contact Information:**
-Questions about the Terms of Service should be sent to us at [support@pureswipe.com].
+Questions about the Terms of Service should be sent to us at [support@clowand.com].

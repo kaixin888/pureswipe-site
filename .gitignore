@@ -25,7 +25,7 @@ yarn-error.log*
 !package-lock.json
 !next.config.js
 !Supabase_Credentials.md
-!PureSwipe_Handover_Guide.md
+!clowand_Handover_Guide.md
 !*.md
 !public/**/*
 !app/**/*

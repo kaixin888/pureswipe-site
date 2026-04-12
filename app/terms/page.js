@@ -6,7 +6,7 @@ export default function TermsOfService() {
         <p className="text-gray-400 font-bold mb-10">Last Updated: April 11, 2026</p>
         
         <div className="space-y-8 text-slate-600 leading-relaxed font-medium">
-          <p>This website is operated by PureSwipe. Throughout the site, the terms “we”, “us” and “our” refer to PureSwipe. PureSwipe offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.</p>
+          <p>This website is operated by clowand. Throughout the site, the terms “we”, “us” and “our” refer to clowand. clowand offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12 italic leading-none">Section 1 - Online Store Terms</h2>
           <p>By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.</p>
@@ -27,9 +27,11 @@ export default function TermsOfService() {
           <p>These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of Delaware, United States.</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12 italic leading-none">Contact Information</h2>
-          <p>Questions about the Terms of Service should be sent to us at <span className="text-blue-600 font-black italic underline underline-offset-4 decoration-blue-100">support@pureswipe.com</span>.</p>
+          <p>Questions about the Terms of Service should be sent to us at <span className="text-blue-600 font-black italic underline underline-offset-4 decoration-blue-100">support@clowand.com</span>.</p>
         </div>
       </div>
     </main>
   )
+}
+)
 }

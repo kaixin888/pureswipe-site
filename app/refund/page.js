@@ -12,7 +12,7 @@ export default function RefundPolicy() {
           <p>To be eligible for a return, your item must be in the same condition that you received it, unworn or unused, with tags, and in its original packaging. You’ll also need the receipt or proof of purchase.</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12 text-red-600 underline underline-offset-8 decoration-red-100 decoration-4">Non-returnable items</h2>
-          <p className="bg-red-50 p-6 rounded-[2rem] border border-red-100 text-red-900 font-bold">Certain types of items cannot be returned, like perishable goods, custom products, and <span className="underline decoration-red-300">personal care goods (such as hygiene-related items like the PureSwipe wand and refills if opened)</span>. Please get in touch if you have questions or concerns about your specific item.</p>
+          <p className="bg-red-50 p-6 rounded-[2rem] border border-red-100 text-red-900 font-bold">Certain types of items cannot be returned, like perishable goods, custom products, and <span className="underline decoration-red-300">personal care goods (such as hygiene-related items like the clowand wand and refills if opened)</span>. Please get in touch if you have questions or concerns about your specific item.</p>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">Damages and issues</h2>
           <p>Please inspect your order upon reception and contact us immediately if the item is defective, damaged or if you receive the wrong item, so that we can evaluate the issue and make it right.</p>
