@@ -1,41 +1,45 @@
-'use client'
+  return (
+    <div className="min-h-screen bg-slate-50 pt-24 px-6 pb-20 selection:bg-blue-100">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 bg-slate-950 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl">
+              <Shield size={32} />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black uppercase tracking-tighter italic text-slate-900 leading-none mb-2">Clowand Dashboard</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Global Logistics & Revenue Control</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <a href="/" className="px-8 py-4 bg-white border border-slate-200 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-all flex items-center gap-3">
+              <ExternalLink size={14} /> View Site
+            </a>
+            <button onClick={() => setIsLoggedIn(false)} className="px-8 py-4 bg-red-50 text-red-500 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-all flex items-center gap-3">
+              <LogOut size={14} /> Logout
+            </button>
+          </div>
+        </div>
 
-
-import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-import { Shield, Package, DollarSign, Truck, Save, RefreshCw, LogOut, ExternalLink } from 'lucide-react'
-
-
-// 初始化 Supabase 客户端 (云账本)
-const supabase = createClient(
-  'https://olgfqcygqzuevaftmdja.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY'
-)
-
-
-export default function AdminPanel() {
-  const [activeTab, setActiveTab] = useState('orders')
-  const [orders, setOrders] = useState([])
-  const [prices, setPrices] = useState({
-    starter: 19.99,
-    family: 34.99,
-    'eco-refill': 24.99
-  })
-  const [loading, setLoading] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [password, setPassword] = useState('')
-
-
-  // 简单的登录逻辑 (生产环境建议使用 Supabase Auth)
-  const handleLogin = () => {
-    if (password === 'clowand888') {
-      setIsLoggedIn(true)
-    } else {
-      alert('Incorrect Password')
-    }
-  }
-
-
-  // 从 Supabase 获取真实订单数据
-  const fetchOrders = async () => {
-    setLoading(true)
+        {/* 订单列表 */}
+        {activeTab === 'orders' && (
+          <div className="bg-white rounded-[4rem] shadow-sm border border-slate-100 overflow-hidden mb-12">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left min-w-[1000px]">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
+                  <tr>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Order ID</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Customer</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Product</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Revenue</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
