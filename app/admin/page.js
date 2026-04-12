@@ -1,4 +1,4 @@
-// Build Time: 2026-04-12 14:45:00 (v2.1.2 Brand Pureness Fix)
+// Build Time: 2026-04-12 15:00:00 (v2.2 Admin Logistics Upgrade)
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
@@ -7,7 +7,8 @@ import {
   Shield, Package, DollarSign, Truck, Save, RefreshCw, LogOut, 
   ExternalLink, TrendingUp, Users, MousePointer2, Activity, 
   Download, Search, Filter, ChevronRight, Eye, ShoppingCart, 
-  Plus, AlertCircle, CheckCircle2, Clock, X
+  Plus, AlertCircle, CheckCircle2, Clock, X, MapPin, Phone, 
+  Globe
 } from 'lucide-react'
 
 // 初始化 Supabase 客户端
@@ -85,8 +86,13 @@ export default function AdminPanel() {
     })
   }, [orders, searchTerm, statusFilter])
 
+  // 导出 CSV 功能 (物流优化版)
   const exportToCSV = () => {
-    const headers = ['Order ID', 'Customer', 'Email', 'Product', 'Amount', 'Status', 'Tracking', 'Date']
+    const headers = [
+      'Order ID', 'Customer Name', 'Email', 'Product', 'Amount', 
+      'Status', 'Address', 'City', 'State', 'Zip', 'Country', 
+      'Tracking', 'Date'
+    ]
     const rows = filteredOrders.map(o => [
       o.order_id,
       o.customer_name,
@@ -94,6 +100,11 @@ export default function AdminPanel() {
       o.product_name,
       o.amount,
       o.status,
+      `"${o.shipping_address || ''}"`,
+      o.shipping_city || '',
+      o.shipping_state || '',
+      o.shipping_zip || '',
+      o.shipping_country || '',
       o.tracking_number || 'N/A',
       new Date(o.created_at).toLocaleDateString()
     ])
@@ -103,12 +114,12 @@ export default function AdminPanel() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
     link.setAttribute("href", url)
-    link.setAttribute("download", `clowand_orders_${new Date().toISOString().split('T')[0]}.csv`)
+    link.setAttribute("download", `clowand_logistics_${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    alert('Export successful! Check your downloads.')
+    alert('Logistics Export Successful! CSV ready for USPS/FedEx upload.')
   }
 
   const updateTracking = async (id, num) => {
@@ -297,7 +308,7 @@ export default function AdminPanel() {
                 onClick={exportToCSV}
                 className="w-full lg:w-auto px-10 py-5 bg-emerald-50 text-emerald-600 rounded-[2.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-emerald-100 transition-all flex items-center justify-center gap-3"
               >
-                <Download size={16} /> Export CSV
+                <Download size={16} /> Logistics CSV
               </button>
             </div>
 
@@ -394,7 +405,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Modal Fix: Move to the bottom of the stack with higher Z index */}
+        {/* Modal Fix: Expanded with Shipping Info */}
         {selectedOrder && (
           <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/90 backdrop-blur-2xl p-6 overflow-y-auto">
             <div className="bg-white rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl relative my-auto animate-in zoom-in-95 duration-300">
@@ -405,46 +416,56 @@ export default function AdminPanel() {
                 <X size={24} />
               </button>
 
-              <div className="mb-12 text-center md:text-left">
+              <div className="mb-12">
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 italic">Order Manifest</span>
                 <h2 className="text-5xl font-black uppercase tracking-tighter italic text-slate-900 mt-4">Order #{selectedOrder.order_id}</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 <div className="p-8 bg-slate-50 rounded-[2.5rem]">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4">Customer Details</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4 flex items-center gap-2"><Users size={12}/> Customer</p>
                   <p className="text-xl font-black italic text-slate-900">{selectedOrder.customer_name}</p>
                   <p className="text-xs font-bold text-slate-400 mt-1">{selectedOrder.email}</p>
                 </div>
                 <div className="p-8 bg-slate-50 rounded-[2.5rem]">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4">Logistics Status</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4 flex items-center gap-2"><Truck size={12}/> Status</p>
                   <div className="flex items-center gap-3">
                     {selectedOrder.status === 'Shipped' ? <CheckCircle2 className="text-emerald-500" size={24} /> : <Clock className="text-orange-500" size={24} />}
                     <span className="text-xl font-black italic uppercase">{selectedOrder.status}</span>
                   </div>
                   {selectedOrder.tracking_number && (
-                    <p className="text-xs font-bold text-blue-600 mt-2 tracking-widest uppercase">ID: {selectedOrder.tracking_number}</p>
+                    <p className="text-xs font-bold text-blue-600 mt-2 tracking-widest uppercase">Carrier ID: {selectedOrder.tracking_number}</p>
                   )}
                 </div>
               </div>
 
-              <div className="bg-blue-600 p-10 rounded-[3rem] text-white mb-16">
-                <div className="flex justify-between items-center pb-6 border-b border-blue-400/30">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Item Manifest</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Settlement</span>
+              {/* Shipping Address Section (Phase 1 Final Add) */}
+              <div className="p-8 bg-blue-50/50 border border-blue-100 rounded-[2.5rem] mb-12">
+                <p className="text-[9px] font-black uppercase tracking-widest text-blue-600/50 mb-4 flex items-center gap-2"><MapPin size={12}/> Shipping Address (US Logistics)</p>
+                <p className="text-lg font-black italic text-slate-900 uppercase leading-relaxed">
+                  {selectedOrder.shipping_address || 'Address Data Pending'}<br/>
+                  {selectedOrder.shipping_city}, {selectedOrder.shipping_state} {selectedOrder.shipping_zip}<br/>
+                  {selectedOrder.shipping_country}
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-10 rounded-[3rem] text-white mb-16">
+                <div className="flex justify-between items-center pb-6 border-b border-white/10">
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50 italic">Item</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50 italic">Amount Paid</span>
                 </div>
                 <div className="flex justify-between items-center pt-8">
-                  <span className="text-lg font-black italic">{selectedOrder.product_name}</span>
-                  <span className="text-3xl font-black italic">${selectedOrder.amount}</span>
+                  <span className="text-lg font-black italic uppercase tracking-tighter">{selectedOrder.product_name}</span>
+                  <span className="text-3xl font-black italic text-blue-400">${selectedOrder.amount}</span>
                 </div>
               </div>
 
               <div className="flex gap-4">
                 <button 
                   onClick={() => updateTracking(selectedOrder.order_id, selectedOrder.tracking_number)}
-                  className="flex-1 py-6 bg-slate-950 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
+                  className="flex-1 py-6 bg-blue-600 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
                 >
-                  <Truck size={18} /> Update Logistics
+                  <Truck size={18} /> Update Shipping ID
                 </button>
               </div>
             </div>

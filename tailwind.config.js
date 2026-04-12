@@ -12,8 +12,9 @@ module.exports = {
         brand: {
           light: '#F8F9FA',
           dark: '#121212',
-          blue: '#0066FF',
-          accent: '#FF4D4D'
+          mint: '#E8F5F1',
+          primary: '#2D5A4F',
+          orange: '#FF6B35'
         }
       },
       fontFamily: {
