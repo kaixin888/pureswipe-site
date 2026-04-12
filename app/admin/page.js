@@ -215,4 +215,12 @@ export default function AdminPanel() {
           </div>
           <button 
             onClick={fetchOrders}
-            className="px-16 py-6 bg-white text-
+            className="px-16 py-6 bg-white text-blue-600 rounded-full text-xs font-black uppercase tracking-widest shadow-2xl hover:bg-slate-50 active:scale-95 transition-all"
+          >
+            Refresh Global Data
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
