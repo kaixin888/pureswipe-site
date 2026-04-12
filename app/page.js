@@ -124,7 +124,7 @@ export default function Home() {
             setPaymentStatus('processing')
             const order = await actions.order.capture()
             await supabase.from('orders').insert([{
-              order_id: order.id,
+              order_id: `CW-${order.id.slice(-6)}`,
               customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
               email: order.payer.email_address,
               amount: selectedBundle.price,

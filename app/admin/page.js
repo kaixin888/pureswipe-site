@@ -1,4 +1,4 @@
-// Build Time: 2026-04-12 14:35:00 (v2.2 Admin Modal Fix)
+// Build Time: 2026-04-12 14:45:00 (v2.1.2 Brand Pureness Fix)
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
