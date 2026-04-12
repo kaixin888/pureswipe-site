@@ -1,4 +1,4 @@
-// Build Time: 2026-04-12 14:20:00 (v2.1 Admin Upgrade - Clean Sync)
+// Build Time: 2026-04-12 14:35:00 (v2.2 Admin Modal Fix)
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
@@ -7,7 +7,7 @@ import {
   Shield, Package, DollarSign, Truck, Save, RefreshCw, LogOut, 
   ExternalLink, TrendingUp, Users, MousePointer2, Activity, 
   Download, Search, Filter, ChevronRight, Eye, ShoppingCart, 
-  Plus, AlertCircle, CheckCircle2, Clock
+  Plus, AlertCircle, CheckCircle2, Clock, X
 } from 'lucide-react'
 
 // 初始化 Supabase 客户端
@@ -108,6 +108,7 @@ export default function AdminPanel() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    alert('Export successful! Check your downloads.')
   }
 
   const updateTracking = async (id, num) => {
@@ -155,6 +156,7 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-slate-50 pt-24 px-6 pb-20 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
           <div className="flex items-center gap-6">
             <div className="w-16 h-16 bg-slate-950 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl">
@@ -162,7 +164,7 @@ export default function AdminPanel() {
             </div>
             <div>
               <h1 className="text-4xl font-black uppercase tracking-tighter italic text-slate-900 leading-none mb-2">clowand OS</h1>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Merchant Command Center v2.1</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Merchant Command Center v2.2</p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -175,6 +177,7 @@ export default function AdminPanel() {
           </div>
         </div>
 
+        {/* Navigation Tabs */}
         <div className="flex gap-4 mb-12 border-b border-slate-200 pb-4 overflow-x-auto no-scrollbar">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: Activity },
@@ -193,8 +196,10 @@ export default function AdminPanel() {
           ))}
         </div>
 
+        {/* Dashboard Content */}
         {activeTab === 'dashboard' && (
           <div className="animate-in fade-in duration-500">
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp size={80} /></div>
@@ -230,6 +235,7 @@ export default function AdminPanel() {
               </div>
             </div>
 
+            {/* Trends Chart */}
             <div className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm mb-12">
               <div className="flex justify-between items-center mb-12">
                 <div>
@@ -258,8 +264,10 @@ export default function AdminPanel() {
           </div>
         )}
 
+        {/* Orders Module */}
         {activeTab === 'orders' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
+            {/* Filters */}
             <div className="flex flex-col lg:flex-row gap-6 mb-12 items-center justify-between">
               <div className="flex flex-1 w-full gap-4">
                 <div className="flex-1 relative">
@@ -293,6 +301,7 @@ export default function AdminPanel() {
               </button>
             </div>
 
+            {/* Orders Table */}
             <div className="bg-white rounded-[4rem] shadow-sm border border-slate-100 overflow-hidden mb-12">
               <div className="overflow-x-auto">
                 <table className="w-full text-left min-w-[1000px]">
@@ -348,16 +357,11 @@ export default function AdminPanel() {
                   <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">Syncing with Cloud Vault...</p>
                 </div>
               )}
-              {!loading && filteredOrders.length === 0 && (
-                <div className="py-32 text-center">
-                  <Package className="mx-auto text-slate-100 mb-6" size={80} />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">No orders match your filter</p>
-                </div>
-              )}
             </div>
           </div>
         )}
 
+        {/* Product Module */}
         {activeTab === 'products' && (
           <div className="animate-in fade-in duration-500">
             <div className="flex justify-between items-center mb-12">
@@ -383,14 +387,6 @@ export default function AdminPanel() {
                         <span className="text-lg font-black italic">{p.stock} units</span>
                       </div>
                     </div>
-                    {p.stock < 20 && (
-                      <AlertCircle className="text-red-500" size={24} />
-                    )}
-                  </div>
-                  
-                  <div className="mt-10 pt-10 border-t border-slate-50 flex gap-4">
-                    <button className="flex-1 py-4 bg-slate-50 rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-950">Edit Specs</button>
-                    <button className="px-6 py-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-red-500 transition-colors"><ChevronRight size={16} /></button>
                   </div>
                 </div>
               ))}
@@ -398,38 +394,29 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {activeTab === 'users' && (
-          <div className="bg-white p-32 rounded-[4rem] text-center border border-slate-100 shadow-sm animate-in zoom-in-95 duration-500">
-            <Users size={80} className="mx-auto text-slate-100 mb-8" />
-            <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-4">Customer Insights Hub</h2>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic mb-12">Building profiles for your {stats.uniqueCustomers} unique customers...</p>
-            <div className="inline-block px-10 py-5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
-              Syncing Profiles from Supabase Auth
-            </div>
-          </div>
-        )}
-
+        {/* Modal Fix: Move to the bottom of the stack with higher Z index */}
         {selectedOrder && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-6">
-            <div className="bg-white rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 -mr-32 -mt-32 rounded-full -z-10"></div>
-              
-              <button onClick={() => setSelectedOrder(null)} className="absolute top-12 right-12 text-slate-300 hover:text-slate-950 transition-colors">
-                <ChevronRight size={40} className="rotate-180" />
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/90 backdrop-blur-2xl p-6 overflow-y-auto">
+            <div className="bg-white rounded-[4rem] p-16 max-w-2xl w-full shadow-2xl relative my-auto animate-in zoom-in-95 duration-300">
+              <button 
+                onClick={() => setSelectedOrder(null)} 
+                className="absolute top-12 right-12 w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95"
+              >
+                <X size={24} />
               </button>
 
-              <div className="mb-12">
+              <div className="mb-12 text-center md:text-left">
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 italic">Order Manifest</span>
                 <h2 className="text-5xl font-black uppercase tracking-tighter italic text-slate-900 mt-4">Order #{selectedOrder.order_id}</h2>
               </div>
 
-              <div className="grid grid-cols-2 gap-12 mb-16">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+                <div className="p-8 bg-slate-50 rounded-[2.5rem]">
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4">Customer Details</p>
                   <p className="text-xl font-black italic text-slate-900">{selectedOrder.customer_name}</p>
                   <p className="text-xs font-bold text-slate-400 mt-1">{selectedOrder.email}</p>
                 </div>
-                <div>
+                <div className="p-8 bg-slate-50 rounded-[2.5rem]">
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-4">Logistics Status</p>
                   <div className="flex items-center gap-3">
                     {selectedOrder.status === 'Shipped' ? <CheckCircle2 className="text-emerald-500" size={24} /> : <Clock className="text-orange-500" size={24} />}
@@ -441,30 +428,30 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              <div className="bg-slate-50 p-10 rounded-[2.5rem] mb-16">
-                <div className="flex justify-between items-center pb-6 border-b border-white">
-                  <span className="text-[10px] font-black uppercase tracking-widest">Item</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest">Price</span>
+              <div className="bg-blue-600 p-10 rounded-[3rem] text-white mb-16">
+                <div className="flex justify-between items-center pb-6 border-b border-blue-400/30">
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Item Manifest</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Settlement</span>
                 </div>
                 <div className="flex justify-between items-center pt-8">
                   <span className="text-lg font-black italic">{selectedOrder.product_name}</span>
-                  <span className="text-2xl font-black italic">${selectedOrder.amount}</span>
+                  <span className="text-3xl font-black italic">${selectedOrder.amount}</span>
                 </div>
               </div>
 
               <div className="flex gap-4">
                 <button 
                   onClick={() => updateTracking(selectedOrder.order_id, selectedOrder.tracking_number)}
-                  className="flex-1 py-6 bg-slate-950 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-600 transition-all"
+                  className="flex-1 py-6 bg-slate-950 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3"
                 >
-                  Update Tracking
+                  <Truck size={18} /> Update Logistics
                 </button>
-                <button className="px-10 py-6 bg-slate-100 text-slate-400 rounded-[2rem] text-xs font-black uppercase tracking-widest">Print Label</button>
               </div>
             </div>
           </div>
         )}
 
+        {/* Sync Footer */}
         <div className="mt-20 p-12 bg-blue-600 rounded-[4rem] text-white flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl animate-in slide-in-from-bottom duration-700">
           <div className="flex items-center gap-8">
             <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center">
