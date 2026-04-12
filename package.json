@@ -9,14 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@refinedev/antd": "^6.0.3",
+    "@refinedev/core": "^5.0.12",
+    "@refinedev/inferencer": "^7.0.0",
+    "@refinedev/nextjs-router": "^7.0.5",
+    "@refinedev/react-hook-form": "^5.0.4",
+    "@refinedev/react-table": "^6.0.1",
+    "@refinedev/simple-rest": "^6.0.1",
+    "@refinedev/supabase": "^6.0.2",
+    "@supabase/supabase-js": "^2.39.7",
+    "antd": "^5.29.3",
+    "autoprefixer": "10.4.17",
+    "framer-motion": "^11.0.3",
+    "lucide-react": "^0.331.0",
     "next": "14.1.0",
+    "postcss": "8.4.35",
     "react": "^18",
     "react-dom": "^18",
-    "lucide-react": "^0.331.0",
-    "framer-motion": "^11.0.3",
-    "@supabase/supabase-js": "^2.39.7",
-    "autoprefixer": "10.4.17",
-    "postcss": "8.4.35",
     "tailwindcss": "3.4.1"
   }
 }

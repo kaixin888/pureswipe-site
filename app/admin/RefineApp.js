@@ -1,0 +1,88 @@
+'use client';
+
+import React from 'react';
+import { Refine, Authenticated } from '@refinedev/core';
+import { notificationProvider, ThemedLayoutV2, ErrorComponent, AuthPage } from '@refinedev/antd';
+import { dataProvider } from '@refinedev/supabase';
+import routerProvider, {
+  NavigateToResource,
+  UnsavedChangesNotifier,
+  DocumentTitleHandler,
+} from '@refinedev/nextjs-router/app';
+import { createClient } from '@supabase/supabase-js';
+
+import '@refinedev/antd/dist/reset.css';
+
+const supabaseUrl = 'https://olgfqcygqzuevaftmdja.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY';
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+const authProvider = {
+  login: async ({ password }) => {
+    if (password === "clowand888") {
+      localStorage.setItem("clowand_admin_auth", "true");
+      return { success: true, redirectTo: "/admin/orders" };
+    }
+    return { success: false, error: { message: "Invalid Password", name: "InvalidPassword" } };
+  },
+  logout: async () => {
+    localStorage.removeItem("clowand_admin_auth");
+    return { success: true, redirectTo: "/admin" };
+  },
+  check: async () => {
+    const auth = typeof window !== 'undefined' ? localStorage.getItem("clowand_admin_auth") : null;
+    if (auth === "true") return { authenticated: true };
+    return { authenticated: false, redirectTo: "/admin" };
+  },
+  getPermissions: async () => null,
+  getIdentity: async () => ({ id: 1, name: "Clowand Admin" }),
+  onError: async (error) => {
+    if (error.status === 401 || error.status === 403) {
+      return { logout: true };
+    }
+    return { error };
+  },
+};
+
+export default function RefineApp({ children }) {
+  return (
+    <Refine
+      dataProvider={dataProvider(supabaseClient)}
+      routerProvider={routerProvider}
+      authProvider={authProvider}
+      notificationProvider={notificationProvider}
+      resources={[
+        {
+          name: 'orders',
+          list: '/admin/orders',
+          create: '/admin/orders/create',
+          edit: '/admin/orders/edit/:id',
+          show: '/admin/orders/show/:id',
+          meta: {
+            canDelete: true,
+            label: 'Orders'
+          },
+        },
+        {
+            name: 'site_stats',
+            list: '/admin/stats',
+            meta: {
+              label: 'Dashboard',
+            }
+        }
+      ]}
+      options={{
+        syncWithLocation: true,
+        warnWhenUnsavedChanges: true,
+      }}
+    >
+      <Authenticated fallback={<AuthPage type="login" title="Clowand Admin" registerLink={false} forgotPasswordLink={false} />}>
+        <ThemedLayoutV2>
+            {children}
+        </ThemedLayoutV2>
+      </Authenticated>
+      <UnsavedChangesNotifier />
+      <DocumentTitleHandler />
+    </Refine>
+  );
+}
