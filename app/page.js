@@ -68,7 +68,7 @@ const BUNDLES = [
 
 const FAQ = [
   { q: "How does free shipping work?", a: "We offer free standard shipping (3-5 business days) on all bundles across the continental USA. Tracking is provided via email once your order ships." },
-  { q: "What is your return policy?", a: "We offer a 30-day risk-free trial. If you don't love Clowand, return it within 30 days for a full refund—no questions asked." },
+  { q: "What is your return policy?", a: "We offer a 100% Satisfaction Guarantee. If you're not happy with clowand, we'll provide a full refund—no need to ship used products back. Your hygiene and convenience are our priority." },
   { q: "Are the refill pads environmentally friendly?", a: "Yes! Our refills are made from biodegradable materials and the packaging is 100% recyclable. Clean your home without the guilt." },
   { q: "Will the pads work on my toilet?", a: "Clowand is designed to reach deep under the rim and into the trap, making it effective for 99% of toilet designs including low-flow models." },
   { q: "How many uses do I get per pad?", a: "Each pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
