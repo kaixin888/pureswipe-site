@@ -26,7 +26,7 @@ export default function OrderList() {
       'Shipping Address 2': '', 
       'City': item.shipping_city || '',
       'State': item.shipping_state?.substring(0, 2).toUpperCase() || '',
-      'Zip Code': item.shipping_zip || '',
+      'Zip Code': item.shipping_zip ? `="\t${item.shipping_zip}"` : '',
       'Country': 'USA',
       'Phone Number': item.phone || '',
       'Product SKU': item.product_name || '',
