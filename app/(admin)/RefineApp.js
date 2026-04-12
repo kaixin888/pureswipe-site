@@ -95,7 +95,8 @@ export default function RefineApp({ children }) {
         warnWhenUnsavedChanges: true,
       }}
     >
-      <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} />}>
+      <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
+
         <ThemedLayoutV2 Header={Header}>
             {children}
         </ThemedLayoutV2>
