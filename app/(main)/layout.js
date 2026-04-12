@@ -1,8 +1,6 @@
-// Build Force: 2026-04-12 21:10:00 (Main Site Isolation)
+// Build Force: 2026-04-12 23:15:00 (Site Layout Isolation)
+import React from 'react'
 import '../globals.css'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
 
 const SEO_KEYWORDS = "18 inch disposable toilet brush, long handle disposable toilet brush, zero touch toilet cleaning system, scented disposable toilet brush refills, disposable toilet brush for RV, toilet cleaning wand starter kit, hygienic toilet cleaning system, apartment essentials";
 
@@ -22,8 +20,7 @@ export const metadata = {
 
 export default function SiteLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <>
         <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -66,10 +63,10 @@ export default function SiteLayout({ children }) {
             </div>
           </div>
           <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[8px] font-black uppercase tracking-[0.4em]">
-            © 2026 clowand. 100% US Compliant. Build: 02:35 AM
+            © 2026 clowand. 100% US Compliant. Build: 03:05 AM
           </div>
         </footer>
-      </body>
-    </html>
+    </>
   )
 }
+
