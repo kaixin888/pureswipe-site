@@ -116,7 +116,7 @@ export default function Home() {
             return actions.order.create({
               purchase_units: [{
                 amount: { value: selectedBundle.price.toString() },
-                description: `PureSwipe ${selectedBundle.name}`
+                description: `clowand ${selectedBundle.name}`
               }]
             })
           },

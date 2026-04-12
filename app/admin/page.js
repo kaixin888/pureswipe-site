@@ -24,7 +24,7 @@ export default function AdminPanel() {
 
   // 简单的登录逻辑 (生产环境建议使用 Supabase Auth)
   const handleLogin = () => {
-    if (password === 'PureSwipe888') {
+    if (password === 'clowand888') {
       setIsLoggedIn(true)
     } else {
       alert('Incorrect Password')
@@ -94,7 +94,7 @@ export default function AdminPanel() {
               <Shield size={32} />
             </div>
             <div>
-              <h1 className="text-4xl font-black uppercase tracking-tighter italic text-slate-900 leading-none mb-2">PureSwipe Dashboard</h1>
+              <h1 className="text-4xl font-black uppercase tracking-tighter italic text-slate-900 leading-none mb-2">clowand Dashboard</h1>
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">Global Logistics & Revenue Control</p>
             </div>
           </div>
