@@ -144,6 +144,14 @@ export default function AdminPanel() {
     }
   }
 
+  const updateProduct = (id, field) => {
+    const newVal = prompt(`Update ${field}:`)
+    if (newVal !== null) {
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, [field]: field === 'price' ? parseFloat(newVal) : parseInt(newVal) } : p))
+      alert('Product updated successfully!')
+    }
+  }
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
@@ -396,7 +404,10 @@ export default function AdminPanel() {
                     <Package size={28} />
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-2 text-slate-900">{p.name}</h3>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-10 italic">Price: ${p.price}</p>
+                  <div className="flex items-center gap-4 mb-10">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Price: ${p.price}</p>
+                    <button onClick={() => updateProduct(p.id, 'price')} className="p-2 bg-slate-50 rounded-lg hover:bg-slate-950 hover:text-white transition-all"><Edit size={10}/></button>
+                  </div>
                   
                   <div className="flex items-center justify-between">
                     <div>
@@ -406,9 +417,54 @@ export default function AdminPanel() {
                         <span className="text-lg font-black italic">{p.stock} units</span>
                       </div>
                     </div>
+                    <button onClick={() => updateProduct(p.id, 'stock')} className="p-3 bg-slate-50 rounded-xl hover:bg-blue-600 hover:text-white transition-all"><Plus size={14}/></button>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Users Module (Behavior Profiling) */}
+        {activeTab === 'users' && (
+          <div className="animate-in fade-in duration-500">
+            <div className="mb-12">
+              <h2 className="text-4xl font-black uppercase tracking-tighter italic text-slate-900">Customer Profiles</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Behavioral Insights & Purchase History</p>
+            </div>
+            
+            <div className="bg-white rounded-[4rem] border border-slate-100 shadow-sm overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
+                  <tr>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Customer</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Orders</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">LTV</th>
+                    <th className="px-12 py-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {Array.from(new Set(orders.map(o => o.email))).slice(0, 10).map(email => {
+                    const customerOrders = orders.filter(o => o.email === email)
+                    const ltv = customerOrders.reduce((sum, o) => sum + (o.amount || 0), 0)
+                    return (
+                      <tr key={email} className="hover:bg-slate-50/30 transition-all group">
+                        <td className="px-12 py-8">
+                          <p className="text-sm font-black text-slate-900 italic leading-none mb-1">{customerOrders[0].customer_name}</p>
+                          <p className="text-[10px] font-bold text-slate-400 italic lowercase">{email}</p>
+                        </td>
+                        <td className="px-12 py-8 text-sm font-black text-slate-900">{customerOrders.length}</td>
+                        <td className="px-12 py-8 text-lg font-black text-blue-600 italic tracking-tighter">${ltv.toFixed(2)}</td>
+                        <td className="px-12 py-8">
+                          <span className={`px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${ltv > 50 ? 'bg-purple-50 text-purple-600' : 'bg-slate-50 text-slate-400'}`}>
+                            {ltv > 50 ? 'VIP' : 'Regular'}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
