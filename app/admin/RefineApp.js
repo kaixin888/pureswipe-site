@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Refine, Authenticated } from '@refinedev/core';
-import { notificationProvider, ThemedLayoutV2, ErrorComponent, AuthPage } from '@refinedev/antd';
+import { notificationProvider, ThemedLayoutV2, ErrorComponent, AuthPage, ThemedHeaderV2 } from '@refinedev/antd';
 import { dataProvider } from '@refinedev/supabase';
 import routerProvider, {
   NavigateToResource,
@@ -10,12 +10,29 @@ import routerProvider, {
   DocumentTitleHandler,
 } from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
+import { Shield, Package, ShoppingCart, Activity, Users } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
 const supabaseUrl = 'https://olgfqcygqzuevaftmdja.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY';
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+const Header = () => {
+  return (
+    <ThemedHeaderV2
+      sticky
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Shield size={20} style={{ color: '#1677ff' }} />
+          <span style={{ fontWeight: 900, fontSize: '14px', letterSpacing: '-0.5px', textTransform: 'uppercase', fontStyle: 'italic' }}>
+            clowand OS
+          </span>
+        </div>
+      }
+    />
+  );
+};
 
 const authProvider = {
   login: async ({ password }) => {
@@ -60,7 +77,8 @@ export default function RefineApp({ children }) {
           show: '/admin/orders/show/:id',
           meta: {
             canDelete: true,
-            label: 'Orders'
+            label: 'Orders',
+            icon: <ShoppingCart size={16} />
           },
         },
         {
@@ -68,6 +86,7 @@ export default function RefineApp({ children }) {
             list: '/admin/stats',
             meta: {
               label: 'Dashboard',
+              icon: <Activity size={16} />
             }
         }
       ]}
@@ -76,8 +95,8 @@ export default function RefineApp({ children }) {
         warnWhenUnsavedChanges: true,
       }}
     >
-      <Authenticated fallback={<AuthPage type="login" title="Clowand Admin" registerLink={false} forgotPasswordLink={false} />}>
-        <ThemedLayoutV2>
+      <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} />}>
+        <ThemedLayoutV2 Header={Header}>
             {children}
         </ThemedLayoutV2>
       </Authenticated>

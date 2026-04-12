@@ -6,10 +6,14 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 export default function AdminLayout({ children }) {
   return (
-    <AntdRegistry>
-        <RefineApp>
+    <html lang="en">
+      <body>
+        <AntdRegistry>
+          <RefineApp>
             {children}
-        </RefineApp>
-    </AntdRegistry>
+          </RefineApp>
+        </AntdRegistry>
+      </body>
+    </html>
   );
 }
