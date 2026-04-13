@@ -1,13 +1,16 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
+import React from 'react'
+import '../../globals.css'
+import Navbar from '../../components/Navbar'
+import Footer from '../../components/Footer'
+import ChatWidget from '../../components/ChatWidget'
 
-export default function RootLayout({ children }) {
+export default function SiteLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        {children}
-      </body>
-    </html>
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+      <ChatWidget />
+    </>
   )
 }
