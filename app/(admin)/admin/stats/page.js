@@ -81,7 +81,7 @@ export default function Dashboard() {
       </Row>
 
       <Title level={4} style={{ marginTop: '32px' }}>7-Day Sales Performance (Placeholder)</Title>
-      <div style={{ height: '300px', background: '#fafafa', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyCenter: 'center', border: '1px dashed #d9d9d9' }}>
+      <div style={{ height: '300px', background: '#fafafa', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #d9d9d9' }}>
         <p style={{ color: '#8c8c8c' }}>Chart.js Visualization will be implemented tomorrow for Phase 2.</p>
       </div>
     </List>

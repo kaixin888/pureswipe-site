@@ -17,8 +17,11 @@ export default function PrivacyPolicy() {
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">3. Sharing Your Personal Information</h2>
           <p>We share your Personal Information with third parties to help us use your Personal Information, as described above. For example, we use Stripe and PayPal to process payments, and Vercel Analytics to understand how our customers use the Site.</p>
           
-          <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">4. Your Rights</h2>
-          <p>If you are a resident of certain jurisdictions (including California or the EU), you have the right to access personal information we hold about you and to ask that your personal information be corrected, updated, or deleted.</p>
+          <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">4. Your Rights (CCPA/GDPR)</h2>
+          <div className="space-y-4">
+            <p><strong>CCPA:</strong> If you are a California resident, you have the right to request access to your personal information, request deletion of your personal information, and opt-out of the 'sale' of your personal information. We do not sell your personal data.</p>
+            <p><strong>GDPR:</strong> If you are located in the EEA, you have the right to be informed, the right of access, rectification, erasure, and data portability. Please contact us at support@clowand.com to exercise these rights.</p>
+          </div>
           
           <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 mt-12">5. Contact Us</h2>
           <p>For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by e-mail at <span className="text-blue-600 font-black italic">support@clowand.com</span>.</p>

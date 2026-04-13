@@ -1,4 +1,5 @@
 import React from 'react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,6 +10,20 @@ export default function Footer() {
             <h2 className="text-3xl font-black mb-6 italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors">clowand</h2>
           </a>
           <p className="text-slate-400 max-w-sm mb-8 font-medium italic text-xs">Elevating American bathroom hygiene with smarter, cleaner, and better tools.</p>
+          <div className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-500 italic">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <MapPin size={14} className="text-blue-400" />
+              <span>123 Clean St, Boston, MA 02108, USA</span>
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <Phone size={14} className="text-blue-400" />
+              <span>+1 (888) 256-9263 (Mon-Fri, 9am - 5pm EST)</span>
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <Mail size={14} className="text-blue-400" />
+              <span>support@clowand.com</span>
+            </div>
+          </div>
         </div>
         <div>
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Shop</h3>
@@ -27,7 +42,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[8px] font-black uppercase tracking-[0.4em]">
-        © 2026 clowand. 100% US Compliant. Build: 03:20 AM
+        © 2026 clowand. 100% US Compliant. Redefining Bathroom Hygiene.
       </div>
     </footer>
   );
