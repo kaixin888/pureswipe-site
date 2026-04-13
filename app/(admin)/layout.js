@@ -1,13 +1,17 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
+'use client';
 
-export default function RootLayout({ children }) {
+import React, { Suspense } from 'react';
+import RefineApp from './RefineApp';
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+
+export default function AdminLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        {children}
-      </body>
-    </html>
-  )
+    <AntdRegistry>
+      <Suspense fallback={<div style={{ padding: '24px', background: '#0f172a', height: '100vh', color: '#fff' }}>Loading clowand OS...</div>}>
+        <RefineApp>
+          {children}
+        </RefineApp>
+      </Suspense>
+    </AntdRegistry>
+  );
 }
