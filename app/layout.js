@@ -1,16 +1,12 @@
-import React from 'react'
-import '../../globals.css'
-import Navbar from '../../components/Navbar'
-import Footer from '../../components/Footer'
-import ChatWidget from '../../components/ChatWidget'
-
-export default function SiteLayout({ children }) {
+import { Inter } from 'next/font/google'
+import './globals.css'
+const inter = Inter({ subsets: ['latin'] })
+export default function RootLayout({ children }) {
   return (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-      <ChatWidget />
-    </>
+    <html lang="en">
+      <body className={inter.className}>
+        {children}
+      </body>
+    </html>
   )
 }
