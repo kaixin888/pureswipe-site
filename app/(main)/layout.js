@@ -1,16 +1,16 @@
-import React from 'react'
-import '../../globals.css'
-import Navbar from '../../components/Navbar'
-import Footer from '../../components/Footer'
-import ChatWidget from '../../components/ChatWidget'
+'use client';
+import React, { Suspense } from 'react';
+import RefineApp from './RefineApp';
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
-export default function SiteLayout({ children }) {
+export default function AdminLayout({ children }) {
   return (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-      <ChatWidget />
-    </>
-  )
+    <AntdRegistry>
+      <Suspense fallback={<div style={{ padding: '24px', background: '#0f172a', height: '100vh', color: '#fff' }}>Loading clowand OS...</div>}>
+        <RefineApp>
+          {children}
+        </RefineApp>
+      </Suspense>
+    </AntdRegistry>
+  );
 }
