@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { createClient } from '@supabase/supabase-js'
+
 import { 
   Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
   Truck, Globe, X, Search, MapPin, Star, AlertCircle, ThumbsUp, 
@@ -16,7 +17,7 @@ const supabase = createClient(
 const TRANSLATIONS = {
   en: {
     heroTitle: "Clean Smarter, Not Harder.",
-    heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism.",
+    heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism. Hassle-Free No-Return Refund.",
     shopBundles: "Shop Bundles",
     freeShipping: "Free Shipping Across USA",
     features: "Features",
@@ -76,364 +77,299 @@ const FAQ = [
 
 function TrustBar() {
   return (
-    <div className="bg-brand-primary text-white py-2 overflow-hidden whitespace-nowrap">
-      <div className="flex animate-marquee gap-8 items-center px-4 uppercase text-[10px] font-black italic tracking-widest">
-        {[...Array(20)].map((_, i) => (
-          <React.Fragment key={i}>
-            <Truck size={14} /> Free USA Shipping
-            <ShieldCheck size={14} /> Verified Quality
-            <RefreshCw size={14} /> 100% Satisfaction Guarantee
-            <Star size={14} /> 50k+ Happy Customers
-          </React.Fragment>
-        ))}
+    <div className="flex flex-wrap justify-center gap-12 py-10 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+      <div className="flex items-center gap-2"><Shield size={24} /> <span className="font-black italic uppercase tracking-tighter">Certified Hygienic</span></div>
+      <div className="flex items-center gap-2"><Globe size={24} /> <span className="font-black italic uppercase tracking-tighter">Ships USA</span></div>
+      <div className="flex items-center gap-2"><Droplets size={24} /> <span className="font-black italic uppercase tracking-tighter">Zero Splash</span></div>
+      <div className="flex items-center gap-2"><CheckCircle size={24} /> <span className="font-black italic uppercase tracking-tighter">FDA Standard</span></div>
+    </div>
+  )
+}
+
+function ProductModal({ product, onClose, onPurchase }) {
+  const [step, setStep] = useState('details')
+  const [formData, setFormData] = useState({ name: '', email: '', address: '', zip: '' })
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    const orderId = 'CW-' + Math.random().toString(36).substr(2, 9).toUpperCase()
+    
+    const { error } = await supabase
+      .from('orders')
+      .insert([{
+        order_id: orderId,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        shipping_address: formData.address,
+        shipping_zip: formData.zip,
+        product_name: product.name,
+        amount: product.price,
+        status: 'Processing'
+      }])
+
+    if (!error) {
+      setStep('success')
+      onPurchase(orderId)
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-[#0f172a]/95 backdrop-blur-2xl">
+      <div className="relative w-full max-w-2xl bg-white text-slate-950 rounded-[3rem] overflow-hidden shadow-2xl border border-white/20">
+        <button onClick={onClose} className="absolute top-8 right-8 p-3 hover:bg-slate-50 rounded-full transition-all"><X size={24}/></button>
+        
+        <div className="p-12 md:p-16">
+          {step === 'details' && (
+            <div className="space-y-12">
+              <div className="space-y-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-primary italic">{product.tag}</span>
+                <h3 className="text-5xl font-black italic tracking-tighter leading-none uppercase">{product.name}</h3>
+                <p className="text-4xl font-black italic tracking-tighter text-slate-400 leading-none mt-2">${product.price}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y border-slate-50">
+                {product.items.map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest italic text-slate-500">
+                    <CheckCircle className="text-brand-primary" size={16} /> {item}
+                  </div>
+                ))}
+              </div>
+              <button 
+                onClick={() => setStep('shipping')}
+                className="w-full py-8 bg-brand-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-brand-orange transition-all shadow-xl shadow-brand-primary/20"
+              >
+                Proceed to Checkout
+              </button>
+            </div>
+          )}
+
+          {step === 'shipping' && (
+            <div className="space-y-10">
+              <h3 className="text-3xl font-black italic tracking-tighter uppercase">Shipping Details</h3>
+              <div className="space-y-6">
+                <input 
+                  type="text" placeholder="Full Name" 
+                  className="w-full p-8 bg-slate-50 border-none rounded-[2rem] font-black focus:ring-2 focus:ring-brand-primary uppercase tracking-widest text-[10px]"
+                  value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+                <input 
+                  type="email" placeholder="Email Address" 
+                  className="w-full p-8 bg-slate-50 border-none rounded-[2rem] font-black focus:ring-2 focus:ring-brand-primary uppercase tracking-widest text-[10px]"
+                  value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+                <input 
+                  type="text" placeholder="Shipping Address" 
+                  className="w-full p-8 bg-slate-50 border-none rounded-[2rem] font-black focus:ring-2 focus:ring-brand-primary uppercase tracking-widest text-[10px]"
+                  value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}
+                />
+                <input 
+                  type="text" placeholder="ZIP Code (US)" 
+                  className="w-full p-8 bg-slate-50 border-none rounded-[2rem] font-black focus:ring-2 focus:ring-brand-primary uppercase tracking-widest text-[10px]"
+                  value={formData.zip} onChange={(e) => setFormData({...formData, zip: e.target.value})}
+                />
+              </div>
+              <button 
+                onClick={handleSubmit} disabled={loading}
+                className="w-full py-8 bg-brand-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-brand-orange transition-all disabled:opacity-50"
+              >
+                {loading ? 'Processing...' : 'Complete Order'}
+              </button>
+            </div>
+          )}
+
+          {step === 'success' && (
+            <div className="text-center py-20 space-y-8">
+              <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto shadow-xl shadow-green-500/20"><CheckCircle size={48} /></div>
+              <h3 className="text-5xl font-black italic tracking-tighter uppercase">Order Success!</h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Confirmation sent to {formData.email}</p>
+              <button onClick={onClose} className="px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest">Back to Store</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
-export default function Home() {
-  const [lang, setLang] = useState('en')
-  const [selectedBundle, setSelectedBundle] = useState(null)
-  const [paymentStatus, setPaymentStatus] = useState('idle')
-  const [activeFaq, setActiveFaq] = useState(null)
+export default function ClowandPage() {
+  const [lang] = useState('en')
+  const [selectedProduct, setSelectedProduct] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
-
-  const t = TRANSLATIONS[lang] || TRANSLATIONS.en
-
-  useEffect(() => {
-    // 简单的访客计数逻辑 (Session Based)
-    const trackVisitor = async () => {
-      const sessionKey = 'clowand_visitor_active'
-      if (!sessionStorage.getItem(sessionKey)) {
-        await supabase.from('site_stats').insert([{ 
-          type: 'visitor', 
-          session_id: Math.random().toString(36).substring(7)
-        }])
-        sessionStorage.setItem(sessionKey, 'true')
-      }
-    }
-    trackVisitor()
-  }, [])
-
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = `https://www.paypal.com/sdk/js?client-id=AS_UeNNIxUa4S2p8E-H9-p3S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S&currency=USD&disable-funding=credit,card`
-    script.addEventListener('load', () => {
-      if (window.paypal) {
-        window.paypal.Buttons({
-          createOrder: (data, actions) => {
-            return actions.order.create({
-              purchase_units: [{
-                amount: { value: selectedBundle.price.toString() },
-                description: selectedBundle.name
-              }]
-            })
-          },
-          onApprove: async (data, actions) => {
-            setPaymentStatus('processing')
-            const order = await actions.order.capture()
-            
-            // 提取详细收货地址与联系电话 (用于物流导出)
-            const shipping = order.purchase_units[0].shipping
-            const address = shipping.address
-            const phone = order.payer.phone?.phone_number?.national_number || ''
-            
-            await supabase.from('orders').insert([{
-              order_id: `CW-${order.id.slice(-6)}`,
-              customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
-              email: order.payer.email_address,
-              phone: phone,
-              amount: selectedBundle.price,
-              product_name: selectedBundle.name,
-              status: 'Paid',
-              shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
-              shipping_city: address.admin_area_2,
-              shipping_state: address.admin_area_1,
-              shipping_zip: address.postal_code,
-              shipping_country: address.country_code
-            }])
-            
-            setPaymentStatus('success')
-            setTimeout(() => {
-              setSelectedBundle(null)
-              setPaymentStatus('idle')
-            }, 5000)
-          }
-        }).render('#paypal-button-container')
-      }
-    })
-    if (selectedBundle) {
-      document.body.appendChild(script)
-    }
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script)
-      }
-    }
-  }, [selectedBundle])
+  const [activeFaq, setActiveFaq] = useState(null)
+  const t = TRANSLATIONS[lang]
 
   const handleTrack = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('orders')
       .select('*')
-      .eq('order_id', trackId.startsWith('CW-') ? trackId : `CW-${trackId}`)
+      .eq('order_id', trackId.startsWith('#') ? trackId.slice(1) : trackId)
       .single()
-    
-    if (data) setTrackResult(data)
+
+    if (!error && data) setTrackResult(data)
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white text-slate-950 font-sans selection:bg-brand-primary selection:text-white overflow-x-hidden">
       {/* Hero */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-blue-50 rounded-full blur-[160px] opacity-60"></div>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
-          <div className="flex-1 text-center md:text-left">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
-              <Zap size={14} /> 2026 Hygiene Revolution
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <div className="absolute top-0 right-0 w-2/3 h-full bg-slate-50 -skew-x-12 translate-x-1/4 pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center relative z-10">
+          <div className="space-y-12">
+            <div className="inline-flex items-center gap-4 px-6 py-3 bg-brand-primary/5 rounded-full border border-brand-primary/10">
+              <span className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary italic">Now Shipping Across USA</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
-              {t.heroTitle}
+            <h1 className="text-8xl md:text-[9rem] font-black italic tracking-tighter leading-[0.85] uppercase">
+              {t.heroTitle.split(' ').map((word, i) => (
+                <span key={i} className={i % 2 !== 0 ? 'text-brand-primary block ml-8' : 'block'}>{word}</span>
+              ))}
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 font-bold mb-12 max-w-xl italic leading-relaxed">
+            <p className="max-w-lg text-lg font-bold uppercase tracking-widest text-slate-400 leading-relaxed italic">
               {t.heroSub}
             </p>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <button 
-                onClick={() => document.getElementById('bundles').scrollIntoView({ behavior: 'smooth' })}
-                className="px-12 py-6 bg-slate-950 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-2xl shadow-slate-900/20 active:scale-95"
-              >
+            <div className="flex flex-col sm:flex-row gap-8">
+              <a href="#bundles" className="px-12 py-8 bg-slate-950 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-brand-primary transition-all shadow-2xl shadow-slate-950/20 text-center">
                 {t.shopBundles}
-              </button>
-              <div className="flex items-center gap-6 px-4">
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/40?u=${i}`} alt="user" /></div>)}
-                </div>
-                <div>
-                  <div className="flex text-blue-600 gap-1"><Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /></div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1 italic">50k+ Happy Users</p>
-                </div>
+              </a>
+              <div className="flex flex-col justify-center gap-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary italic">Zero-Contact Guard</span>
+                <span className="text-xs font-black italic tracking-tighter uppercase text-slate-400">Professional Grade</span>
               </div>
             </div>
           </div>
-          <div className="flex-1 relative">
-            <div className="aspect-square bg-slate-50 rounded-[5rem] overflow-hidden relative border border-slate-100 shadow-2xl group">
-               <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1000" className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" alt="product" />
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent"></div>
-               <div className="absolute bottom-12 left-12 p-8 bg-white/90 backdrop-blur-xl rounded-[3rem] border border-white shadow-2xl flex items-center gap-6 max-w-xs animate-float">
-                  <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg"><Ruler size={32} /></div>
-                  <div>
-                    <h4 className="font-black text-xl italic tracking-tighter uppercase leading-none mb-1">18" Shield</h4>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Industry Leading Reach</p>
-                  </div>
+          <div className="relative group">
+             <div className="absolute -inset-10 bg-brand-primary/20 blur-[120px] rounded-full group-hover:bg-brand-orange/30 transition-all duration-1000" />
+             <div className="relative bg-white p-4 rounded-[4rem] shadow-2xl border border-slate-50">
+               <img 
+                 src="https://sc02.alicdn.com/kf/S7f766100cc8b4b738198f32145e1284a1.jpg" 
+                 alt="Clowand 18-inch Wand" 
+                 className="rounded-[3rem] w-full h-auto grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000"
+               />
+               <div className="absolute -bottom-10 -left-10 bg-white p-10 rounded-[3rem] shadow-xl border border-slate-50 max-w-[240px]">
+                 <div className="flex items-center gap-4 mb-4">
+                   <div className="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center text-white"><Shield size={20} /></div>
+                   <span className="text-[10px] font-black uppercase tracking-widest italic">Industry First</span>
+                 </div>
+                 <p className="text-sm font-black italic tracking-tighter leading-tight uppercase">Manual Isolation Mechanism v2.0</p>
                </div>
-            </div>
+             </div>
           </div>
         </div>
       </section>
 
-      <TrustBar />
+      <div className="max-w-7xl mx-auto px-6">
+        <TrustBar />
+      </div>
 
       {/* Bento Features */}
-      <section id="features" className="py-40 bg-slate-50/50 relative overflow-hidden">
+      <section className="py-40" id="features">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-32">
-             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">The Tech</span>
-             <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-none">Hygiene 2.0 Engineering</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-            <div className="md:col-span-8 bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm relative group overflow-hidden">
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                  <Droplet size={32} />
-                </div>
-                <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-slate-900">{t.zeroTouchTitle}</h3>
-                <p className="text-lg font-bold text-slate-400 italic max-w-md leading-relaxed">{t.zeroTouchDesc}</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 bg-slate-950 p-16 rounded-[4rem] text-white flex flex-col justify-between overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 blur-[100px] bg-brand-primary" />
+              <div className="space-y-6 relative z-10">
+                <div className="w-16 h-16 bg-brand-primary rounded-full flex items-center justify-center"><Ruler size={32} /></div>
+                <h3 className="text-5xl font-black italic tracking-tighter uppercase leading-none">{t.handleTitle}</h3>
+                <p className="text-lg font-bold uppercase tracking-widest text-slate-400 italic leading-relaxed max-w-md">{t.handleDesc}</p>
               </div>
-              <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" />
+              <div className="mt-12 flex gap-8">
+                 <div className="text-center">
+                    <p className="text-4xl font-black italic tracking-tighter leading-none text-brand-primary">18"</p>
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] mt-2 opacity-40">Safety Reach</p>
+                 </div>
+                 <div className="text-center border-l border-white/10 pl-8">
+                    <p className="text-4xl font-black italic tracking-tighter leading-none">ZERO</p>
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] mt-2 opacity-40">Contact Risk</p>
+                 </div>
+              </div>
             </div>
             
-            <div className="md:col-span-4 bg-slate-950 p-12 rounded-[4rem] text-white flex flex-col justify-end relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-12 text-white/10 group-hover:scale-150 transition-all duration-1000"><Shield size={200} /></div>
-              <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4 leading-none">{t.handleTitle}</h3>
-              <p className="text-sm font-bold text-slate-400 italic leading-relaxed">{t.handleDesc}</p>
-            </div>
-
-            <div className="md:col-span-4 bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm group">
-               <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                  <Sparkles size={32} />
-                </div>
-                <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-slate-900">Triple Action</h3>
-                <p className="text-sm font-bold text-slate-400 italic leading-relaxed">Scrub, Disinfect, Protect. All in one disposable pad.</p>
-            </div>
-
-            <div className="md:col-span-8 bg-blue-600 p-12 rounded-[4rem] text-white flex flex-col md:flex-row items-center gap-12 group overflow-hidden">
-               <div className="flex-1">
-                 <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 leading-none">Biodegradable Pads</h3>
-                 <p className="text-lg font-bold text-blue-100 italic leading-relaxed">Eco-friendly materials that don't compromise on cleaning power.</p>
-               </div>
-               <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl group-hover:scale-125 transition-all duration-1000">
-                  <Recycle size={80} />
+            <div className="bg-slate-50 p-16 rounded-[4rem] flex flex-col justify-between border border-slate-100">
+               <div className="space-y-6">
+                 <div className="w-16 h-16 bg-white shadow-xl rounded-full flex items-center justify-center text-brand-primary"><Recycle size={32} /></div>
+                 <h3 className="text-4xl font-black italic tracking-tighter uppercase leading-none">{t.zeroTouchTitle}</h3>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic leading-loose">{t.zeroTouchDesc}</p>
                </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Comparison */}
-      <section className="py-40 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-            <div>
-               <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-10 text-slate-950 leading-none">Stop Touching<br/>the Grime.</h2>
-               <div className="space-y-10">
-                  <div className="flex gap-8 items-start">
-                    <div className="p-4 bg-red-50 rounded-full text-red-500 flex-shrink-0"><X size={20} /></div>
-                    <div>
-                      <h4 className="font-black italic tracking-tighter uppercase text-lg mb-2">Old Brushes</h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic leading-relaxed">Traps bacteria in bristles, short handles cause splashes, unhygienic storage.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-8 items-start">
-                    <div className="p-4 bg-emerald-50 rounded-full text-emerald-500 flex-shrink-0"><CheckCircle size={20} /></div>
-                    <div>
-                      <h4 className="font-black italic tracking-tighter uppercase text-lg mb-2 text-emerald-600">clowand System</h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic leading-relaxed">Zero-touch release, 18" splash-guard reach, single-use power pads.</p>
-                    </div>
-                  </div>
+            <div className="bg-slate-50 p-16 rounded-[4rem] border border-slate-100 flex flex-col justify-between group overflow-hidden">
+               <div className="space-y-6 relative z-10">
+                 <div className="w-16 h-16 bg-white shadow-xl rounded-full flex items-center justify-center text-brand-primary"><Droplet size={32} /></div>
+                 <h3 className="text-4xl font-black italic tracking-tighter uppercase leading-none">{t.padTitle}</h3>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic leading-loose">{t.padDesc}</p>
+               </div>
+               <div className="mt-10 h-1 bg-slate-200 rounded-full relative overflow-hidden">
+                 <div className="absolute inset-0 bg-brand-primary w-2/3 group-hover:w-full transition-all duration-1000" />
                </div>
             </div>
-            <div className="relative">
-              <div className="aspect-square bg-slate-950 rounded-[4rem] overflow-hidden flex items-center justify-center">
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 grayscale"
-                >
-                  <source src="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-video.mp4?v=1631526367" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-blue-600/10 mix-blend-overlay"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-slate-950 shadow-2xl animate-pulse cursor-pointer">
-                      <Play size={32} className="ml-2" />
-                   </div>
-                </div>
-              </div>
+
+            <div className="md:col-span-2 bg-brand-primary p-16 rounded-[4rem] text-white flex flex-col md:flex-row items-center justify-between gap-12">
+               <div className="space-y-6">
+                 <h3 className="text-5xl font-black italic tracking-tighter uppercase leading-none">Bio-Safety Standard</h3>
+                 <p className="text-lg font-bold uppercase tracking-widest italic opacity-80 max-w-md leading-relaxed">Engineered for US residential standards. High-strength polymers, ergonomic grip, instant pad release.</p>
+               </div>
+               <div className="shrink-0 w-32 h-32 border-4 border-white/20 rounded-full flex items-center justify-center">
+                 <Shield size={64} className="opacity-40" />
+               </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Bundles */}
-      <section id="bundles" className="py-40 bg-slate-950 relative overflow-hidden">
-        <div className="absolute top-0 left-0 -ml-40 -mt-40 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px]"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-32">
-             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Deals</span>
-             <h2 className="text-6xl font-black italic tracking-tighter uppercase mt-6 text-white leading-none">{t.bundles}</h2>
-             <p className="text-blue-200/40 font-bold italic mt-4">{t.saveUpTo}</p>
+      <section className="py-40 bg-slate-50" id="bundles">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-6 mb-32">
+             <h2 className="text-7xl font-black italic tracking-tighter leading-none uppercase">{t.bundles}</h2>
+             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 italic">{t.saveUpTo}</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {BUNDLES.map(bundle => (
-              <div 
-                key={bundle.id}
-                className={`group relative p-12 rounded-[5rem] transition-all duration-500 hover:-translate-y-4 ${bundle.popular ? 'bg-blue-600 scale-105 shadow-3xl shadow-blue-600/40 border-none' : 'bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10'}`}
-              >
+          <div className="grid md:grid-cols-3 gap-8">
+            {BUNDLES.map((bundle) => (
+              <div key={bundle.id} className={`relative p-2 bg-white rounded-[4rem] transition-all duration-700 hover:-translate-y-4 shadow-xl shadow-slate-200/50 ${bundle.popular ? 'border-4 border-brand-primary' : 'border border-slate-100'}`}>
                 {bundle.popular && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-8 py-3 bg-white text-blue-600 text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-2xl">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-8 py-3 bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
                     {t.mostPopular}
                   </div>
                 )}
-                <div className="mb-10">
-                  <h3 className={`text-3xl font-black uppercase italic tracking-tighter mb-2 ${bundle.popular ? 'text-white' : 'text-white/90'}`}>{bundle.name}</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className={`text-5xl font-black italic tracking-tighter ${bundle.popular ? 'text-white' : 'text-blue-500'}`}>${bundle.price}</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/30 italic">USD</span>
+                <div className="p-12 space-y-12">
+                  <div className="space-y-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary italic">{bundle.tag}</span>
+                    <h3 className="text-4xl font-black italic tracking-tighter uppercase leading-none">{bundle.name}</h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black italic tracking-tighter leading-none">${bundle.price}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">USD</span>
+                    </div>
                   </div>
+                  <div className="space-y-6">
+                    {bundle.items.map((item, i) => (
+                      <div key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest italic text-slate-400">
+                        <CheckCircle size={16} className="text-brand-primary" /> {item}
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => setSelectedProduct(bundle)}
+                    className={`w-full py-8 rounded-full text-xs font-black uppercase tracking-widest transition-all ${bundle.popular ? 'bg-brand-primary text-white hover:bg-brand-orange shadow-xl shadow-brand-primary/20' : 'bg-slate-950 text-white hover:bg-brand-primary'}`}
+                  >
+                    Select Plan
+                  </button>
                 </div>
-                
-                <ul className="space-y-6 mb-16">
-                  {bundle.items.map((item, i) => (
-                    <li key={i} className={`flex items-center gap-4 text-[10px] font-black uppercase tracking-widest italic ${bundle.popular ? 'text-blue-50' : 'text-white/40'}`}>
-                      <CheckCircle size={16} className={bundle.popular ? 'text-white' : 'text-blue-500'} /> {item}
-                    </li>
-                  ))}
-                </ul>
-                
-                <button 
-                  onClick={() => setSelectedBundle(bundle)}
-                  className={`w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-95 ${bundle.popular ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-600/20'}`}
-                >
-                  Buy {bundle.name}
-                </button>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Checkout Modal */}
-      {selectedBundle && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-3xl bg-slate-950/80 animate-in fade-in duration-500">
-           <div className="bg-white w-full max-w-xl rounded-[4rem] overflow-hidden shadow-3xl border border-slate-100 relative">
-              <button 
-                onClick={() => setSelectedBundle(null)}
-                className="absolute top-8 right-8 p-4 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
-              >
-                <X size={24} />
-              </button>
-              
-              <div className="p-16">
-                <div className="mb-12">
-                   <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
-                   <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">{t.checkout}</h2>
-                </div>
-
-                <div className="bg-slate-50 p-10 rounded-[3rem] mb-12 border border-slate-100 flex justify-between items-center group">
-                   <div>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-2">Selected Pack</p>
-                     <h4 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 leading-none">{selectedBundle.name}</h4>
-                   </div>
-                   <div className="text-right">
-                     <p className="text-3xl font-black italic tracking-tighter text-blue-600">${selectedBundle.price}</p>
-                   </div>
-                </div>
-
-                <div id="paypal-button-container" className="relative z-10"></div>
-                
-                {paymentStatus === 'processing' && (
-                  <div className="mt-10 p-10 bg-slate-50 rounded-[3rem] text-center border border-slate-100 animate-pulse">
-                     <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
-                  </div>
-                )}
-                
-                {paymentStatus === 'success' && (
-                  <div className="mt-10 p-10 bg-emerald-50 rounded-[3rem] text-center border border-emerald-100">
-                     <p className="text-xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Success!</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
-                  </div>
-                )}
-              </div>
-           </div>
-        </div>
-      )}
-
       {/* FAQ */}
-      <section id="reviews" className="py-40 bg-white">
+      <section className="py-40">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-32">
-             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Customer Service</span>
-             <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-none">Frequently Asked</h2>
-          </div>
-          
+          <h2 className="text-6xl font-black italic tracking-tighter uppercase text-center mb-24">Common Questions</h2>
           <div className="space-y-4">
             {FAQ.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm">
+              <div key={idx} className="bg-slate-50 rounded-[2.5rem] border border-slate-100 overflow-hidden">
                 <button 
                   onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
                   className="w-full px-10 py-8 flex justify-between items-center text-left"
@@ -497,6 +433,14 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </main>
+
+      {selectedProduct && (
+        <ProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)}
+          onPurchase={(id) => console.log('Order created:', id)}
+        />
+      )}
+    </div>
   )
 }
