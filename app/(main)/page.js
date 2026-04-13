@@ -135,7 +135,7 @@ export default function Home() {
 
   useEffect(() => {
     const script = document.createElement('script')
-    script.src = `https://www.paypal.com/sdk/js?client-id=AS_UeNNIxUa4S2p8E-H9-p3S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S&currency=USD&disable-funding=credit,card`
+    script.src = 'https://www.paypal.com/sdk/js?client-id=AS_UeNNIxUa4S2p8E-H9-p3S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S&currency=USD&disable-funding=credit,card'
     script.addEventListener('load', () => {
       if (window.paypal) {
         window.paypal.Buttons({
