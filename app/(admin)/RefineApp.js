@@ -2,7 +2,14 @@
 
 import React from 'react';
 import { Refine, Authenticated } from '@refinedev/core';
-import { useNotificationProvider, ThemedLayout, ErrorComponent, AuthPage, ThemedHeader } from '@refinedev/antd';
+import { 
+  useNotificationProvider, 
+  ThemedLayoutV2, 
+  ErrorComponent, 
+  AuthPage, 
+  ThemedHeaderV2,
+  ThemedSiderV2
+} from '@refinedev/antd';
 import { dataProvider } from '@refinedev/supabase';
 import routerProvider, {
   NavigateToResource,
@@ -18,7 +25,7 @@ const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 const Header = () => {
   return (
-    <ThemedHeader
+    <ThemedHeaderV2
       sticky
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -82,12 +89,12 @@ export default function RefineApp({ children }) {
           },
         },
         {
-          name: 'site_stats',
-          list: '/admin/stats',
-          meta: {
-            label: 'Dashboard',
-            icon: <Activity size={16} />
-          }
+            name: 'site_stats',
+            list: '/admin/stats',
+            meta: {
+              label: 'Dashboard',
+              icon: <Activity size={16} />
+            }
         }
       ]}
       options={{
@@ -96,10 +103,9 @@ export default function RefineApp({ children }) {
       }}
     >
       <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
-
-        <ThemedLayout Header={Header}>
+        <ThemedLayoutV2 Header={Header} Sider={ThemedSiderV2}>
             {children}
-        </ThemedLayout>
+        </ThemedLayoutV2>
       </Authenticated>
     </Refine>
   );
