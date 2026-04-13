@@ -1,5 +1,4 @@
 'use client';
-
 import React, { Suspense } from 'react';
 import RefineApp from './RefineApp';
 import { AntdRegistry } from "@ant-design/nextjs-registry";
