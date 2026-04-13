@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Show, useShow, TextField, TagField, NumberField, EmailField } from '@refinedev/antd';
+import { useShow } from '@refinedev/core';
+import { Show, TextField, TagField, NumberField, EmailField } from '@refinedev/antd';
 import { Typography, Tag, Space, Descriptions, Divider } from 'antd';
 
 const { Title, Text } = Typography;
