@@ -2,12 +2,10 @@
 
 import React from 'react';
 import { Refine, Authenticated } from '@refinedev/core';
-import { notificationProvider, ThemedLayoutV2, ErrorComponent, AuthPage, ThemedHeaderV2 } from '@refinedev/antd';
+import { useNotificationProvider, ThemedLayout, ErrorComponent, AuthPage, ThemedHeader } from '@refinedev/antd';
 import { dataProvider } from '@refinedev/supabase';
 import routerProvider, {
   NavigateToResource,
-  UnsavedChangesNotifier,
-  DocumentTitleHandler,
 } from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
 import { Shield, Package, ShoppingCart, Activity, Users } from 'lucide-react';
@@ -20,7 +18,7 @@ const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 const Header = () => {
   return (
-    <ThemedHeaderV2
+    <ThemedHeader
       sticky
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -62,6 +60,8 @@ const authProvider = {
 };
 
 export default function RefineApp({ children }) {
+  const notificationProvider = useNotificationProvider();
+
   return (
     <Refine
       dataProvider={dataProvider(supabaseClient)}
@@ -82,12 +82,12 @@ export default function RefineApp({ children }) {
           },
         },
         {
-            name: 'site_stats',
-            list: '/admin/stats',
-            meta: {
-              label: 'Dashboard',
-              icon: <Activity size={16} />
-            }
+          name: 'site_stats',
+          list: '/admin/stats',
+          meta: {
+            label: 'Dashboard',
+            icon: <Activity size={16} />
+          }
         }
       ]}
       options={{
@@ -97,12 +97,10 @@ export default function RefineApp({ children }) {
     >
       <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
 
-        <ThemedLayoutV2 Header={Header}>
+        <ThemedLayout Header={Header}>
             {children}
-        </ThemedLayoutV2>
+        </ThemedLayout>
       </Authenticated>
-      <UnsavedChangesNotifier />
-      <DocumentTitleHandler />
     </Refine>
   );
 }
