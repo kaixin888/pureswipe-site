@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-[8px] font-black uppercase tracking-[0.4em]">
-        © 2026 clowand. 100% US Compliant. Redefining Bathroom Hygiene.
+        © 2026 clowand. 100% US Compliant. Redefining Bathroom Hygiene. Build: 20:30 PM (v2.4.0)
       </div>
     </footer>
   );
