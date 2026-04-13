@@ -1,16 +1,9 @@
 'use client';
 import React from 'react';
 import { Refine, Authenticated } from '@refinedev/core';
-import { 
-  useNotificationProvider, 
-  ThemedLayoutV2, 
-  ErrorComponent, 
-  AuthPage, 
-  ThemedHeaderV2,
-  ThemedSiderV2
-} from '@refinedev/antd';
+import { useNotificationProvider, ThemedLayoutV2, ErrorComponent, AuthPage, ThemedHeaderV2, ThemedSiderV2 } from '@refinedev/antd';
 import { dataProvider } from '@refinedev/supabase';
-import routerProvider, { NavigateToResource } from '@refinedev/nextjs-router/app';
+import routerProvider from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
 import { Shield, ShoppingCart, Activity } from 'lucide-react';
 import '@refinedev/antd/dist/reset.css';
@@ -60,7 +53,6 @@ export default function RefineApp({ children }) {
         { name: 'orders', list: '/admin/orders', edit: '/admin/orders/edit/:id', show: '/admin/orders/show/:id', meta: { label: 'Orders', icon: <ShoppingCart size={16} /> } },
         { name: 'site_stats', list: '/admin/stats', meta: { label: 'Dashboard', icon: <Activity size={16} /> } }
       ]}
-      options={{ syncWithLocation: true, warnWhenUnsavedChanges: true }}
     >
       <Authenticated fallback={<AuthPage type="login" title="clowand Admin" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
         <ThemedLayoutV2 Header={Header} Sider={ThemedSiderV2}>{children}</ThemedLayoutV2>
