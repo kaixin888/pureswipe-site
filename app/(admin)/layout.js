@@ -2,7 +2,6 @@
 import React, { Suspense } from 'react';
 import RefineApp from './RefineApp';
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-
 export default function AdminLayout({ children }) {
   return (
     <AntdRegistry>
