@@ -1,16 +1,13 @@
-'use client';
-import React, { Suspense } from 'react';
-import RefineApp from './RefineApp';
-import { AntdRegistry } from "@ant-design/nextjs-registry";
+import './globals.css'
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
 
-export default function AdminLayout({ children }) {
+export default function RootLayout({ children }) {
   return (
-    <AntdRegistry>
-      <Suspense fallback={<div style={{ padding: '24px', background: '#0f172a', height: '100vh', color: '#fff' }}>Loading clowand OS...</div>}>
-        <RefineApp>
-          {children}
-        </RefineApp>
-      </Suspense>
-    </AntdRegistry>
-  );
+    <html lang="en">
+      <body className={inter.className}>
+        {children}
+      </body>
+    </html>
+  )
 }
