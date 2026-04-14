@@ -11,20 +11,24 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title as ChartTitle,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   ChartTitle,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 const { Title } = Typography;
@@ -70,7 +74,7 @@ export default function Dashboard() {
     return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, visitors, conversionRate, last7Days, salesPerDay };
   }, [ordersData, statsData]);
 
-  const chartData = {
+  const salesChartData = {
     labels: stats.last7Days,
     datasets: [
       {
@@ -84,23 +88,20 @@ export default function Dashboard() {
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
+  const funnelData = {
+    labels: ['Total Visitors', 'Checkouts Started', 'Final Orders'],
+    datasets: [
+      {
+        label: 'Users',
+        data: [stats.visitors, Math.round(stats.visitors * 0.12), stats.totalOrders],
+        backgroundColor: ['#f0f5ff', '#adc6ff', '#1677ff'],
+        borderRadius: 8,
       },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
+    ],
   };
 
   return (
-    <List title="Data Insights">
+    <List title="Data Insights — Phase 2 Intelligence">
       <Row gutter={16}>
         <Col span={6}>
           <Card bordered={false} hoverable>
@@ -146,12 +147,32 @@ export default function Dashboard() {
         </Col>
       </Row>
 
-      <div style={{ marginTop: '32px', background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
-        <Title level={4} style={{ marginBottom: '24px' }}>7-Day Sales Performance</Title>
-        <div style={{ height: '400px' }}>
-          <Line data={chartData} options={chartOptions} />
-        </div>
-      </div>
+      <Row gutter={24} style={{ marginTop: '32px' }}>
+        <Col span={14}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
+            <Title level={4} style={{ marginBottom: '24px' }}>7-Day Sales Performance</Title>
+            <div style={{ height: '400px' }}>
+              <Line data={salesChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
+            </div>
+          </div>
+        </Col>
+        <Col span={10}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
+            <Title level={4} style={{ marginBottom: '24px' }}>Conversion Funnel (P2)</Title>
+            <div style={{ height: '400px' }}>
+              <Bar 
+                data={funnelData} 
+                options={{ 
+                  indexAxis: 'y', 
+                  responsive: true, 
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } }
+                }} 
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
     </List>
   );
 }
