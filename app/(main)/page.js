@@ -22,7 +22,7 @@ const TRANSLATIONS = {
     shopBundles: "Shop Bundles",
     freeShipping: "Free Shipping Across USA",
     features: "Features",
-    bundles: "Choose Your Bundle",
+    bundles: "Select Your System",
     saveUpTo: "Save Up to 40% with bulk packs",
     zeroTouchTitle: "Zero Contact",
     zeroTouchDesc: "Attach and release with a single click. Your hands never touch the dirty water.",
@@ -47,7 +47,7 @@ const BUNDLES = [
     price: 19.99,
     description: 'Perfect for beginners',
     image: '/images/hero.jpg',
-    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '12x Fresh Ocean Refills'],
+    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '12x Single-Use Fresh Ocean Refill Pads'],
     tag: 'Start Here'
   },
   {
@@ -56,7 +56,7 @@ const BUNDLES = [
     price: 34.99,
     description: 'BEST VALUE & RESULTS',
     image: '/images/wand-box.jpg',
-    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '36x Mixed Scents Refills'],
+    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '36x Mixed Scent Single-Use Refill Pads'],
     tag: 'Best Seller',
     popular: true
   },
@@ -66,7 +66,7 @@ const BUNDLES = [
     price: 24.99,
     description: 'Stock up & Save',
     image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400',
-    items: ['48x Extra-Strength Refills', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
+    items: ['48x Extra-Strength Single-Use Refill Pads', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
     tag: 'Eco Friendly'
   }
 ]
@@ -89,7 +89,7 @@ const FAQ = [
   { q: "What is your return policy?", a: "We offer a 100% Satisfaction Guarantee. If you're not happy with clowand, we'll provide a full refund—no need to ship used products back. Your hygiene and convenience are our priority." },
   { q: "Are the refill pads environmentally friendly?", a: "Yes! Our refills are made from biodegradable materials and the packaging is 100% recyclable. Clean your home without the guilt." },
   { q: "Will the pads work on my toilet?", a: "Clowand is designed to reach deep under the rim and into the trap, making it effective for 99% of toilet designs including low-flow models." },
-  { q: "How many uses do I get per pad?", a: "Each pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
+  { q: "How many uses per disposable pad?", a: "Each refill pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
 ]
 
 function TrustBar() {
@@ -208,6 +208,36 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": "clowand Disposable Toilet Brush System",
+            "image": "/images/hero.jpg",
+            "description": "The ultimate 18-inch reach bathroom hygiene system. Triple-action pads, zero-touch mechanism, and 365-day supply in one box. Designed for the modern US home.",
+            "brand": {
+              "@type": "Brand",
+              "name": "clowand"
+            },
+            "offers": {
+              "@type": "AggregateOffer",
+              "url": "https://clowand.com",
+              "priceCurrency": "USD",
+              "lowPrice": "19.99",
+              "highPrice": "34.99",
+              "offerCount": "3",
+              "availability": "https://schema.org/InStock"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "52300"
+            }
+          })
+        }}
+      />
       {/* Hero */}
       <section className="relative pt-44 pb-32 px-6 overflow-hidden">
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-blue-50 rounded-full blur-[160px] opacity-60"></div>
@@ -231,7 +261,7 @@ export default function Home() {
               </button>
               <div className="flex items-center gap-6 px-4">
                 <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/40?u=${i}`} alt="user" /></div>)}
+                  {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/40?u=${i}`} alt="happy user" /></div>)}
                 </div>
                 <div>
                   <div className="flex text-blue-600 gap-1"><Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /></div>
@@ -242,7 +272,7 @@ export default function Home() {
           </div>
           <div className="flex-1 relative">
             <div className="aspect-square bg-slate-50 rounded-[5rem] overflow-hidden relative border border-slate-100 shadow-2xl group">
-               <img src="/images/hero.jpg" className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" alt="product" />
+               <img src="/images/hero.jpg" className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" alt="clowand Professional 18 inch Anti-Splash Toilet Brush" />
                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent"></div>
                <div className="absolute bottom-12 left-12 p-8 bg-white/90 backdrop-blur-xl rounded-[3rem] border border-white shadow-2xl flex items-center gap-6 max-w-xs animate-float">
                   <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg"><Ruler size={32} /></div>
@@ -275,7 +305,7 @@ export default function Home() {
                 <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-slate-900">{t.zeroTouchTitle}</h3>
                 <p className="text-lg font-bold text-slate-400 italic max-w-md leading-relaxed">{t.zeroTouchDesc}</p>
               </div>
-              <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" />
+              <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" alt="Zero-touch hygiene technology" />
             </div>
             
             <div className="md:col-span-4 bg-slate-950 p-12 rounded-[4rem] text-white flex flex-col justify-end relative overflow-hidden group">
@@ -375,7 +405,7 @@ export default function Home() {
                 
                 <div className="bg-white rounded-[5rem] p-12 h-full flex flex-col">
                   <div className="aspect-[4/3] rounded-[3rem] overflow-hidden mb-10 bg-slate-50 border border-slate-100">
-                    <img src={bundle.image} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000" alt={bundle.name} />
+                    <img src={bundle.image} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000" alt={`${bundle.name} - clowand Professional Toilet Brush Bundle`} />
                   </div>
                   
                   <div className="mb-10">
@@ -398,7 +428,7 @@ export default function Home() {
                     onClick={() => setSelectedBundle(bundle)}
                     className="w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-slate-950 text-white hover:bg-blue-600 shadow-2xl active:scale-95"
                   >
-                    Buy {bundle.name}
+                    Add {bundle.name} to Cart
                   </button>
                 </div>
               </div>
@@ -441,7 +471,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-24">
           <div className="flex-1 relative">
             <div className="aspect-[3/4] rounded-[4rem] overflow-hidden border border-slate-100 shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale" alt="about clowand" />
+              <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale" alt="clowand Brand Story and USA presence" />
             </div>
             <div className="absolute -bottom-10 -right-10 p-12 bg-blue-600 text-white rounded-[3rem] shadow-2xl animate-float">
                <Shield size={64} className="opacity-20 absolute top-4 right-4" />
@@ -470,7 +500,7 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="py-40 bg-slate-50/50">
+      <section id="faq" className="py-40 bg-slate-50/50">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-32">
              <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Customer Service</span>
@@ -488,7 +518,7 @@ export default function Home() {
                   <ChevronDown className={`transition-all ${activeFaq === idx ? 'rotate-180' : ''}`} />
                 </button>
                 {activeFaq === idx && (
-                  <div className="px-10 pb-8 text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-loose border-t border-slate-50 pt-6">
+                  <div className="px-10 pb-8 text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-loose border-t border-slate-50 pt-6 animate-in slide-in-from-top duration-300">
                     {item.a}
                   </div>
                 )}
@@ -502,7 +532,10 @@ export default function Home() {
       <section className="py-40 bg-white">
         <div className="max-w-xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-12">Track Order</h2>
-          <div className="flex gap-4 p-4 bg-slate-50 rounded-[3rem] border border-slate-100 shadow-sm">
+          <form 
+            onSubmit={(e) => { e.preventDefault(); handleTrack(); }}
+            className="flex gap-4 p-4 bg-slate-50 rounded-[3rem] border border-slate-100 shadow-sm"
+          >
             <input 
               type="text" 
               placeholder="Enter Order ID" 
@@ -510,10 +543,10 @@ export default function Home() {
               onChange={(e) => setTrackId(e.target.value)}
               className="flex-1 bg-transparent border-none text-slate-950 px-8 font-black focus:ring-0 uppercase tracking-widest text-sm"
             />
-            <button onClick={handleTrack} className="px-10 py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
+            <button type="submit" className="px-10 py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
               Track
             </button>
-          </div>
+          </form>
           {trackResult && (
             <div className="mt-16 p-12 bg-white border border-slate-100 rounded-[3rem] text-left shadow-xl animate-in slide-in-from-bottom duration-500">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Order ID: #{trackResult.order_id}</span>

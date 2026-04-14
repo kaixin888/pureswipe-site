@@ -4,6 +4,14 @@ import { Menu, X, ShoppingCart } from 'lucide-react';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const scrollTo = (id) => {
+    setIsOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -14,9 +22,10 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-          <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-          <a href="#bundles" className="hover:text-blue-600 transition-colors">Shop</a>
-          <a href="#reviews" className="hover:text-blue-600 transition-colors">Reviews</a>
+          <button onClick={() => scrollTo('features')} className="hover:text-blue-600 transition-colors uppercase">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="hover:text-blue-600 transition-colors uppercase">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="hover:text-blue-600 transition-colors uppercase">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="hover:text-blue-600 transition-colors uppercase">FAQ</button>
         </div>
 
         <div className="flex items-center gap-4">
@@ -25,9 +34,12 @@ export default function Navbar() {
               <ShoppingCart size={20} />
               <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
             </button>
-            <a href="#bundles" className="bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl">
+            <button 
+              onClick={() => scrollTo('bundles')} 
+              className="bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl"
+            >
               Buy Now
-            </a>
+            </button>
           </div>
 
           {/* Mobile Toggle */}
@@ -40,10 +52,11 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-6 flex flex-col gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400 animate-in slide-in-from-top duration-300">
-          <a href="#features" onClick={() => setIsOpen(false)} className="hover:text-blue-600">Features</a>
-          <a href="#bundles" onClick={() => setIsOpen(false)} className="hover:text-blue-600">Shop</a>
-          <a href="#reviews" onClick={() => setIsOpen(false)} className="hover:text-blue-600">Reviews</a>
-          <a href="#bundles" onClick={() => setIsOpen(false)} className="bg-slate-950 text-white p-4 rounded-full text-center">Buy Now</a>
+          <button onClick={() => scrollTo('features')} className="text-left hover:text-blue-600 uppercase">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="text-left hover:text-blue-600 uppercase">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="text-left hover:text-blue-600 uppercase">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="text-left hover:text-blue-600 uppercase">FAQ</button>
+          <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white p-4 rounded-full text-center uppercase">Buy Now</button>
         </div>
       )}
     </nav>

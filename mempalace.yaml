@@ -1,0 +1,30 @@
+wing: project
+rooms:
+- name: app
+  description: Files from app/
+  keywords:
+  - app
+  - app
+- name: frontend
+  description: Files from components/
+  keywords:
+  - frontend
+  - components
+- name: configuration
+  description: Files from config/
+  keywords:
+  - configuration
+  - config
+- name: public
+  description: Files from public/
+  keywords:
+  - public
+  - public
+- name: "\u5907\u4EFD\u8BB0\u5F55"
+  description: "Files from \u5907\u4EFD\u8BB0\u5F55/"
+  keywords:
+  - "\u5907\u4EFD\u8BB0\u5F55"
+  - "\u5907\u4EFD\u8BB0\u5F55"
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []
