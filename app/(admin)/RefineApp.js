@@ -19,8 +19,8 @@ import { Shield, Package, ShoppingCart, Activity, Users } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
-const supabaseUrl = 'https://olgfqcygqzuevaftmdja.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 const Header = () => {
@@ -41,7 +41,13 @@ const Header = () => {
 
 const authProvider = {
   login: async ({ password }) => {
-    if (password === "clowand888") {
+    const response = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    
+    if (response.ok) {
       localStorage.setItem("clowand_admin_auth", "true");
       return { success: true, redirectTo: "/admin/orders" };
     }

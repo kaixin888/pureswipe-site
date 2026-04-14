@@ -11,8 +11,8 @@ import {
 } from 'lucide-react'
 
 const supabase = createClient(
-  'https://olgfqcygqzuevaftmdja.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY'
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 )
 
 const TRANSLATIONS = {
@@ -123,7 +123,7 @@ export default function Home() {
     const trackVisitor = async () => {
       const sessionKey = 'clowand_visitor_active'
       if (!sessionStorage.getItem(sessionKey)) {
-        await supabase.from('site_stats').insert([{ 
+        // await supabase.from('site_stats').insert([{ 
           type: 'visitor', 
           session_id: Math.random().toString(36).substring(7)
         }])
@@ -135,7 +135,7 @@ export default function Home() {
 
   useEffect(() => {
     const script = document.createElement('script')
-    script.src = 'https://www.paypal.com/sdk/js?client-id=AS_UeNNIxUa4S2p8E-H9-p3S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S2E9p8S&currency=USD&disable-funding=credit,card'
+    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&disable-funding=credit,card`
     script.addEventListener('load', () => {
       if (window.paypal) {
         window.paypal.Buttons({
