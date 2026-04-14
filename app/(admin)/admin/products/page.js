@@ -7,8 +7,8 @@ import {
   EditButton,
   DeleteButton,
   CreateButton,
-  useUpdate,
 } from '@refinedev/antd';
+import { useUpdate } from '@refinedev/core';
 import { Table, Space, Tag, Switch, Typography, Image } from 'antd';
 
 const { Text } = Typography;
