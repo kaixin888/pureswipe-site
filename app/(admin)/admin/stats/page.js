@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useList } from '@refinedev/core';
 import { List } from '@refinedev/antd';
-import { Card, Col, Row, Statistic, Typography } from 'antd';
+import { Card, Col, Row, Statistic, Typography, Spin } from 'antd';
 import { DollarOutlined, ShoppingCartOutlined, UserOutlined, GlobalOutlined } from '@ant-design/icons';
 import {
   Chart as ChartJS,
@@ -73,6 +73,20 @@ export default function Dashboard() {
 
     return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, visitors, conversionRate, last7Days, salesPerDay };
   }, [ordersData, statsData]);
+
+  useEffect(() => {
+    if (!ordersLoading) {
+      console.log(`[Phase 3 Monitor] Admin Panel v2.6.2 Ready. Orders: ${stats.totalOrders}. Conversion: ${stats.conversionRate}%.`);
+    }
+  }, [ordersLoading, stats]);
+
+  if (ordersLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spin size="large" tip="Loading clowand Intelligence..." />
+      </div>
+    );
+  }
 
   const salesChartData = {
     labels: stats.last7Days,

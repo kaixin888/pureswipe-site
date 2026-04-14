@@ -29,13 +29,14 @@
 
 ---
 
-## Phase 3: Engagement & Growth (v2.7.0 - v2.8.0) - Target: April 20, 2026
+## Phase 3: Engagement & Growth (v2.7.0 - v2.8.0) - IN_PROGRESS (Started: April 14, 2026)
 
-### 1. Newsletter & Lead Capture (P2)
+### 1. Newsletter & Lead Capture (P1)
 - **Goal**: Build an email list for repeat refill sales.
 - **Task**:
+  - [IN_PROGRESS] Drafted PRD for "10% Off Your First Order" exit-intent popup.
   - Integration with a simple CSV-based or Supabase-backed newsletter form.
-  - "10% Off Your First Order" exit-intent popup.
+  - Success message to show discount code **CLOWAND10**.
 
 ### 2. Content Strategy (P2)
 - **Goal**: SEO long-tail keyword capture and brand story depth.
