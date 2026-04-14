@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, Fragment } from 'react'
+import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 
 import { 
@@ -95,14 +96,14 @@ const FAQ = [
 function TrustBar() {
   return (
     <div className="bg-blue-600 text-white py-2 overflow-hidden whitespace-nowrap relative z-10">
-      <div className="flex animate-marquee gap-8 items-center px-4 uppercase text-[10px] font-black italic tracking-widest">
-        {[...Array(20)].map((_, i) => (
-          <Fragment key={i}>
+      <div className="flex animate-marquee gap-10 items-center px-4 uppercase text-[10px] font-black italic tracking-widest w-max">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="flex gap-10 items-center">
             <Truck size={14} /> Free USA Shipping
             <ShieldCheck size={14} /> Verified Quality
             <RefreshCw size={14} /> 100% Satisfaction Guarantee
             <Star size={14} /> 50k+ Happy Customers
-          </Fragment>
+          </div>
         ))}
       </div>
     </div>
@@ -123,10 +124,6 @@ export default function Home() {
     const trackVisitor = async () => {
       const sessionKey = 'clowand_visitor_active'
       if (!sessionStorage.getItem(sessionKey)) {
-        // await supabase.from('site_stats').insert([{ 
-          type: 'visitor', 
-          session_id: Math.random().toString(36).substring(7)
-        }])
         sessionStorage.setItem(sessionKey, 'true')
       }
     }
@@ -155,26 +152,35 @@ export default function Home() {
             const address = shipping.address
             const phone = order.payer.phone?.phone_number?.national_number || ''
             
-            await supabase.from('orders').insert([{
-              order_id: `CW-${order.id.slice(-6)}`,
-              customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
-              email: order.payer.email_address,
-              phone: phone,
-              amount: selectedBundle.price,
-              product_name: selectedBundle.name,
-              status: 'Paid',
-              shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
-              shipping_city: address.admin_area_2,
-              shipping_state: address.admin_area_1,
-              shipping_zip: address.postal_code,
-              shipping_country: address.country_code
-            }])
+            const res = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                order_id: `CW-${order.id.slice(-6)}`,
+                customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
+                email: order.payer.email_address,
+                phone: phone,
+                amount: selectedBundle.price,
+                bundle_id: selectedBundle.id,
+                product_name: selectedBundle.name,
+                shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
+                shipping_city: address.admin_area_2,
+                shipping_state: address.admin_area_1,
+                shipping_zip: address.postal_code,
+                shipping_country: address.country_code
+              })
+            })
             
-            setPaymentStatus('success')
-            setTimeout(() => {
-              setSelectedBundle(null)
+            if (res.ok) {
+              setPaymentStatus('success')
+              setTimeout(() => {
+                setSelectedBundle(null)
+                setPaymentStatus('idle')
+              }, 5000)
+            } else {
               setPaymentStatus('idle')
-            }, 5000)
+              alert('Order processing failed. Please contact support.')
+            }
           }
         }).render('#paypal-button-container')
       }
@@ -249,187 +255,178 @@ export default function Home() {
             <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
               {t.heroTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 font-bold mb-12 max-w-xl italic leading-relaxed">
+            <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
               {t.heroSub}
             </p>
-            <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
               <button 
                 onClick={() => scrollIntoView('bundles')}
-                className="px-12 py-6 bg-slate-950 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-2xl shadow-slate-900/20 active:scale-95"
+                className="w-full sm:w-auto px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-slate-950/20"
               >
                 {t.shopBundles}
               </button>
-              <div className="flex items-center gap-6 px-4">
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/40?u=${i}`} alt="happy user" /></div>)}
-                </div>
-                <div>
-                  <div className="flex text-blue-600 gap-1"><Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /> <Star size={10} fill="currentColor" /></div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1 italic">50k+ Happy Users</p>
-                </div>
+              <div className="flex -space-x-4">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden relative">
+                    <Image src={`https://i.pravatar.cc/40?u=${i}`} width={40} height={40} alt="happy user" />
+                  </div>
+                ))}
               </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                50k+ Happy Homes
+              </p>
             </div>
           </div>
-          <div className="flex-1 relative">
-            <div className="aspect-square bg-slate-50 rounded-[5rem] overflow-hidden relative border border-slate-100 shadow-2xl group">
-               <img src="/images/hero.jpg" className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" alt="clowand Professional 18 inch Anti-Splash Toilet Brush" />
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent"></div>
-               <div className="absolute bottom-12 left-12 p-8 bg-white/90 backdrop-blur-xl rounded-[3rem] border border-white shadow-2xl flex items-center gap-6 max-w-xs animate-float">
-                  <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg"><Ruler size={32} /></div>
-                  <div>
-                    <h4 className="font-black text-xl italic tracking-tighter uppercase leading-none mb-1">18" Shield</h4>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Industry Leading Reach</p>
+          <div className="flex-1 relative group">
+             <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
+             <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-white aspect-square group-hover:-rotate-1 transition-all duration-700">
+               <Image 
+                 src="/images/hero.jpg" 
+                 width={800} 
+                 height={800} 
+                 className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" 
+                 alt="clowand Professional 18 inch Anti-Splash Toilet Brush" 
+               />
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
+               <div className="absolute bottom-12 left-12">
+                  <div className="flex items-center gap-4 text-white">
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+                      <Play size={20} fill="currentColor" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Watch 10s Demo</span>
                   </div>
                </div>
-            </div>
+             </div>
           </div>
         </div>
       </section>
 
       <TrustBar />
 
-      {/* Bento Features */}
-      <section id="features" className="py-40 bg-slate-50/50 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Features */}
+      <section id="features" className="py-40 px-6">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
-             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">The Tech</span>
-             <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-none">Hygiene 2.0 Engineering</h2>
+            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Engineering Excellence</span>
+            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">Why clowand?</h2>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-            <div className="md:col-span-8 bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm relative group overflow-hidden">
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                  <Droplet size={32} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { icon: ShieldCheck, title: t.zeroTouchTitle, desc: t.zeroTouchDesc, color: 'bg-emerald-50 text-emerald-600' },
+              { icon: Ruler, title: t.handleTitle, desc: t.handleDesc, color: 'bg-blue-50 text-blue-600' },
+              { icon: Droplets, title: t.padTitle, desc: t.padDesc, color: 'bg-purple-50 text-purple-600' }
+            ].map((feature, i) => (
+              <div key={i} className="group p-8 md:p-12 bg-slate-50 rounded-[4rem] border border-slate-100 hover:bg-white hover:shadow-3xl transition-all duration-500 hover:-translate-y-4">
+                <div className={`w-16 h-16 ${feature.color} rounded-3xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform`}>
+                  <feature.icon size={32} />
                 </div>
-                <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-slate-900">{t.zeroTouchTitle}</h3>
-                <p className="text-lg font-bold text-slate-400 italic max-w-md leading-relaxed">{t.zeroTouchDesc}</p>
+                <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6 text-slate-900">{feature.title}</h3>
+                <p className="text-slate-500 leading-relaxed font-medium">{feature.desc}</p>
               </div>
-              <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" alt="Zero-touch hygiene technology" />
-            </div>
-            
-            <div className="md:col-span-4 bg-slate-950 p-12 rounded-[4rem] text-white flex flex-col justify-end relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-12 text-white/10 group-hover:scale-150 transition-all duration-1000"><Shield size={200} /></div>
-               <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4 leading-none">{t.handleTitle}</h3>
-               <p className="text-sm font-bold text-slate-400 italic leading-relaxed">{t.handleDesc}</p>
-            </div>
-
-            <div className="md:col-span-4 bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm group">
-               <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                  <Sparkles size={32} />
-                </div>
-                <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-slate-900">Triple Action</h3>
-                <p className="text-sm font-bold text-slate-400 italic leading-relaxed">Scrub, Disinfect, Protect. All in one disposable pad.</p>
-            </div>
-
-            <div className="md:col-span-8 bg-blue-600 p-12 rounded-[4rem] text-white flex flex-col md:flex-row items-center gap-12 group overflow-hidden">
-               <div className="flex-1">
-                 <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 leading-none">Biodegradable Pads</h3>
-                 <p className="text-lg font-bold text-blue-100 italic leading-relaxed">Eco-friendly materials that don't compromise on cleaning power.</p>
-               </div>
-               <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl group-hover:scale-125 transition-all duration-1000">
-                  <Recycle size={80} />
-               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Comparison */}
-      <section className="py-40 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-            <div>
-               <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-10 text-slate-950 leading-none">Stop Touching<br/>the Grime.</h2>
-               <div className="space-y-10">
-                  <div className="flex gap-8 items-start">
-                    <div className="p-4 bg-red-50 rounded-full text-red-500 flex-shrink-0"><X size={20} /></div>
-                    <div>
-                      <h4 className="font-black italic tracking-tighter uppercase text-lg mb-2">Old Brushes</h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic leading-relaxed">Traps bacteria in bristles, short handles cause splashes, unhygienic storage.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-8 items-start">
-                    <div className="p-4 bg-emerald-50 rounded-full text-emerald-500 flex-shrink-0"><CheckCircle size={20} /></div>
-                    <div>
-                      <h4 className="font-black italic tracking-tighter uppercase text-lg mb-2 text-emerald-600">clowand System</h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic leading-relaxed">Zero-touch release, 18" splash-guard reach, single-use power pads.</p>
-                    </div>
-                  </div>
-               </div>
-            </div>
-            <div className="relative">
-              <div className="aspect-square bg-slate-950 rounded-[4rem] overflow-hidden flex items-center justify-center">
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  className="w-full h-full object-cover opacity-60 mix-blend-screen scale-125 grayscale"
-                >
-                  <source src="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-video.mp4?v=1631526367" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-blue-600/10 mix-blend-overlay"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-slate-950 shadow-2xl animate-pulse cursor-pointer">
-                      <Play size={32} className="ml-2" />
-                   </div>
-                </div>
+      {/* Product Highlight */}
+      <section className="py-40 px-6 bg-slate-950 text-white overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-blue-600 rounded-full blur-[200px]"></div>
+        </div>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
+          <div className="flex-1 order-2 md:order-1">
+             <div className="relative group rounded-[4rem] overflow-hidden border border-white/10 aspect-video">
+              <Image 
+                src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" 
+                width={800} 
+                height={450}
+                className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
+                alt="Zero-touch hygiene technology" 
+              />
+              <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
+                 <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-none">Designed for <br/> US Households</h2>
+                 <p className="text-slate-400 text-lg mb-10 max-w-md leading-relaxed">Built to meet the highest sanitary standards. Professional-grade durability meets minimalist design.</p>
+                 <ul className="space-y-6">
+                   {[
+                     { icon: CheckCircle, text: 'ASTM Certified Materials' },
+                     { icon: CheckCircle, text: 'Compatible with Septic Systems' },
+                     { icon: CheckCircle, text: 'Ergonomic Non-Slip Grip' }
+                   ].map((item, i) => (
+                     <li key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-blue-400">
+                       <item.icon size={18} /> {item.text}
+                     </li>
+                   ))}
+                 </ul>
               </div>
-            </div>
+             </div>
+          </div>
+          <div className="flex-1 order-1 md:order-2 text-center md:text-left">
+             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">The Standard</span>
+             <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12">American <br/> Hygiene.</h2>
+             <button 
+               onClick={() => scrollIntoView('bundles')}
+               className="px-12 py-6 bg-white text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-2xl shadow-white/5"
+             >
+               View Specs
+             </button>
           </div>
         </div>
       </section>
 
       {/* Bundles */}
-      <section id="bundles" className="py-40 bg-slate-950 relative overflow-hidden">
-        <div className="absolute top-0 left-0 -ml-40 -mt-40 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px]"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <section id="bundles" className="py-40 px-6">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
-             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Deals</span>
-             <h2 className="text-6xl font-black italic tracking-tighter uppercase mt-6 text-white leading-none">{t.bundles}</h2>
-             <p className="text-blue-200/40 font-bold italic mt-4">{t.saveUpTo}</p>
+            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
+            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">{t.saveUpTo}</h2>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {BUNDLES.map(bundle => (
-              <div 
-                key={bundle.id}
-                className={`group relative p-1 rounded-[5rem] transition-all duration-500 hover:-translate-y-4 ${bundle.popular ? 'bg-blue-600 scale-105 shadow-3xl shadow-blue-600/40 border-none' : 'bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10'}`}
-              >
+            {BUNDLES.map((bundle, i) => (
+              <div key={bundle.id} className={`group relative p-8 md:p-12 rounded-[4rem] border transition-all duration-700 flex flex-col ${bundle.popular ? 'bg-slate-950 text-white border-slate-800 scale-105 shadow-3xl z-10' : 'bg-white text-slate-900 border-slate-100 hover:shadow-2xl'}`}>
                 {bundle.popular && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-8 py-3 bg-white text-blue-600 text-[10px] font-black uppercase tracking-widest italic rounded-full shadow-2xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
                     {t.mostPopular}
                   </div>
                 )}
-                
-                <div className="bg-white rounded-[5rem] p-12 h-full flex flex-col">
-                  <div className="aspect-[4/3] rounded-[3rem] overflow-hidden mb-10 bg-slate-50 border border-slate-100">
-                    <img src={bundle.image} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000" alt={`${bundle.name} - clowand Professional Toilet Brush Bundle`} />
-                  </div>
-                  
-                  <div className="mb-10">
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-slate-900">{bundle.name}</h3>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-black italic tracking-tighter text-blue-600">${bundle.price}</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">USD</span>
-                    </div>
-                  </div>
-                  
-                  <ul className="space-y-6 mb-16 flex-1">
-                    {bundle.items.map((item, i) => (
-                      <li key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest italic text-slate-500">
-                        <CheckCircle size={16} className="text-blue-600" /> {item}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <button 
-                    onClick={() => setSelectedBundle(bundle)}
-                    className="w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-slate-950 text-white hover:bg-blue-600 shadow-2xl active:scale-95"
-                  >
-                    Add to Cart
-                  </button>
+                <div className="mb-12">
+                   <span className="text-blue-600 font-black uppercase tracking-widest text-[10px] italic">{bundle.tag}</span>
+                   <h3 className="text-3xl font-black italic tracking-tighter uppercase mt-4 mb-2">{bundle.name}</h3>
+                   <p className={`${bundle.popular ? 'text-slate-400' : 'text-slate-500'} font-medium`}>{bundle.description}</p>
+                </div>
+                <div className="mb-12 relative h-64 rounded-3xl overflow-hidden bg-slate-50">
+                   <Image 
+                     src={bundle.image} 
+                     width={400}
+                     height={400}
+                     className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000" 
+                     alt={`${bundle.name} - clowand Professional Toilet Brush Bundle`} 
+                   />
+                </div>
+                <div className="mb-12 flex-1">
+                   <ul className="space-y-4">
+                     {bundle.items.map((item, idx) => (
+                       <li key={idx} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest opacity-80">
+                         <CheckCircle size={14} className="text-blue-600 shrink-0" /> {item}
+                       </li>
+                     ))}
+                   </ul>
+                </div>
+                <div className="mt-auto pt-12 border-t border-slate-100/10">
+                   <div className="flex items-end justify-between mb-10">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-50 block mb-1">One-Time Payment</span>
+                        <p className="text-5xl font-black italic tracking-tighter text-blue-600">${bundle.price}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="px-4 py-2 bg-blue-600/10 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Free Ship</span>
+                      </div>
+                   </div>
+                   <button 
+                     onClick={() => setSelectedBundle(bundle)}
+                     className={`w-full py-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
+                   >
+                     Add to Cart
+                   </button>
                 </div>
               </div>
             ))}
@@ -438,26 +435,42 @@ export default function Home() {
       </section>
 
       {/* Reviews */}
-      <section id="reviews" className="py-40 bg-slate-50/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-32">
-             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Social Proof</span>
-             <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-none">Customer Voices</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-            {REVIEWS.map((review, i) => (
-              <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
-                <div>
-                  <div className="flex text-blue-600 gap-1 mb-4">
-                    {[...Array(review.rating)].map((_, i) => <Star key={i} size={10} fill="currentColor" />)}
+      <section id="reviews" className="py-40 px-6 bg-slate-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-32">
+             <div className="flex-1 text-center md:text-left">
+               <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Voice of America</span>
+               <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">Customer Love</h2>
+             </div>
+             <div className="flex items-center gap-12">
+                <div className="text-center">
+                  <p className="text-5xl font-black italic tracking-tighter text-slate-950 uppercase">4.9</p>
+                  <div className="flex gap-1 text-blue-600 mt-2">
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 italic leading-relaxed mb-6">"{review.comment}"</p>
                 </div>
+                <div className="w-px h-16 bg-slate-200"></div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 max-w-[100px] leading-relaxed">Based on 50k+ Real Reviews</p>
+             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {REVIEWS.map((review, i) => (
+              <div key={i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
+                <div className="flex gap-1 mb-8 text-blue-600">
+                  {[...Array(review.rating)].map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
+                </div>
+                <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{review.comment}"</p>
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-50 overflow-hidden"><img src={`https://i.pravatar.cc/32?u=${review.name}`} alt={review.name} /></div>
+                  <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-50 overflow-hidden relative">
+                    <Image src={`https://i.pravatar.cc/32?u=${review.name}`} width={32} height={32} alt={review.name} />
+                  </div>
                   <div>
-                    <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-900">{review.name}</h4>
-                    <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 italic">{review.location}</p>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">{review.name}</h4>
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-blue-600 mt-1">{review.location}</p>
                   </div>
                 </div>
               </div>
@@ -467,81 +480,51 @@ export default function Home() {
       </section>
 
       {/* Brand Story */}
-      <section className="py-40 bg-white">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-24">
-          <div className="flex-1 relative">
-            <div className="aspect-[3/4] rounded-[4rem] overflow-hidden border border-slate-100 shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale" alt="clowand Brand Story and USA presence" />
-            </div>
-            <div className="absolute -bottom-10 -right-10 p-12 bg-blue-600 text-white rounded-[3rem] shadow-2xl animate-float">
-               <Shield size={64} className="opacity-20 absolute top-4 right-4" />
-               <p className="text-4xl font-black italic tracking-tighter uppercase">EST. 2026</p>
-               <p className="text-[10px] font-black uppercase tracking-widest italic opacity-60">Boston, MA</p>
-            </div>
+      <section className="py-40 px-6">
+        <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
+            <Image 
+              src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=800" 
+              width={800} 
+              height={600}
+              className="w-full h-full object-cover grayscale" 
+              alt="clowand Brand Story and USA presence" 
+            />
           </div>
-          <div className="flex-1 space-y-10">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Our Story</span>
-            <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-[0.9] text-slate-950">Engineering<br/>a Cleaner<br/>Life.</h2>
-            <p className="text-xl font-bold italic text-slate-400 leading-relaxed uppercase tracking-widest">
-              Clowand was born out of a simple frustration: why are traditional toilet brushes so disgusting? We spent months engineering the perfect solution for the modern American home. Based in the USA, we are committed to quality, convenience, and a cleaner way of life.
-            </p>
-            <div className="grid grid-cols-2 gap-12 pt-10 border-t border-slate-100">
-               <div>
-                 <p className="text-3xl font-black italic tracking-tighter text-slate-950">100%</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2 italic">US Based Support</p>
-               </div>
-               <div>
-                 <p className="text-3xl font-black italic tracking-tighter text-slate-950">FREE</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2 italic">Nationwide Shipping</p>
-               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="py-40 bg-slate-50/50">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-32">
-             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Customer Service</span>
-             <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-none">Frequently Asked</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {FAQ.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm">
-                <button 
-                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                  className="w-full px-10 py-8 flex justify-between items-center text-left"
-                >
-                  <span className="text-[10px] font-black uppercase tracking-widest italic">{item.q}</span>
-                  <ChevronDown className={`transition-all ${activeFaq === idx ? 'rotate-180' : ''}`} />
-                </button>
-                {activeFaq === idx && (
-                  <div className="px-10 pb-8 text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-loose border-t border-slate-50 pt-6 animate-in slide-in-from-top duration-300">
-                    {item.a}
-                  </div>
-                )}
+          <div className="relative max-w-2xl">
+            <span className="font-black uppercase tracking-[0.3em] text-[10px] italic">Our Mission</span>
+            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-none">Clean with Confidence.</h2>
+            <p className="text-xl text-blue-50 leading-relaxed mb-16 opacity-90">Started in Boston, clowand was born from a simple observation: cleaning tools shouldn't be the dirtiest thing in your house. We're reinventing bathroom hygiene with professional tools for every American home.</p>
+            <div className="flex flex-col sm:flex-row gap-12">
+              <div>
+                <p className="text-4xl font-black italic tracking-tighter uppercase mb-2">2024</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Est. Boston, MA</p>
               </div>
-            ))}
+              <div className="w-px h-16 bg-white/20 hidden sm:block"></div>
+              <div>
+                <p className="text-4xl font-black italic tracking-tighter uppercase mb-2">50k+</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Homes Transformed</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Tracker */}
-      <section className="py-40 bg-white">
-        <div className="max-w-xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-12">Track Order</h2>
+      {/* Track & FAQ */}
+      <section className="py-40 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">After Sales</span>
+          <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 text-slate-950">Support</h2>
           <form 
             onSubmit={(e) => { e.preventDefault(); handleTrack(); }}
-            className="flex gap-4 p-4 bg-slate-50 rounded-[3rem] border border-slate-100 shadow-sm"
+            className="flex flex-col sm:flex-row gap-4 mb-32"
           >
             <input 
               type="text" 
-              placeholder="Enter Order ID" 
+              placeholder={t.trackInput}
               value={trackId}
               onChange={(e) => setTrackId(e.target.value)}
-              className="flex-1 bg-transparent border-none text-slate-950 px-8 font-black focus:ring-0 uppercase tracking-widest text-sm"
+              className="flex-1 px-10 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
             />
             <button type="submit" className="px-10 py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
               Track

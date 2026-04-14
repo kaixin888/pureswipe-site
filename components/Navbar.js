@@ -53,7 +53,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-6 flex flex-col gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-8 flex flex-col gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400 animate-in slide-in-from-top duration-300">
           <button onClick={() => scrollTo('features')} className="text-left hover:text-blue-600 uppercase">Features</button>
           <button onClick={() => scrollTo('bundles')} className="text-left hover:text-blue-600 uppercase">Shop</button>
           <button onClick={() => scrollTo('reviews')} className="text-left hover:text-blue-600 uppercase">Reviews</button>

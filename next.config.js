@@ -37,6 +37,9 @@ const nextConfig = {
     'rc-switch',
     'rc-virtual-list',
   ],
+  images: {
+    domains: ['i.pravatar.cc', 'images.unsplash.com'],
+  },
 };
 
 module.exports = nextConfig;
