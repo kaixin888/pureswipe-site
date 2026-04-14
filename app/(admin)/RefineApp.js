@@ -92,6 +92,17 @@ export default function RefineApp({ children }) {
       notificationProvider={notificationProvider}
       resources={[
         {
+          name: 'products',
+          list: '/admin/products',
+          create: '/admin/products/create',
+          edit: '/admin/products/edit/:id',
+          meta: {
+            canDelete: true,
+            label: 'Products',
+            icon: <Package size={16} />
+          },
+        },
+        {
           name: 'orders',
           list: '/admin/orders',
           create: '/admin/orders/create',

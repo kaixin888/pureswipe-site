@@ -48,7 +48,15 @@
   - Added Session Persistence in `Navbar.js`.
   - Configured RLS-ready order lookup.
 
-### 3. Content Strategy (P2)
+### 4. Admin ERP & Inventory (P1) - DONE (April 15, 2026)
+- **Goal**: Internal product management and status control.
+- **Task**:
+  - Created `products` table in Supabase.
+  - Implemented `/admin/products` List, Create, and Edit pages.
+  - Added support for one-click status toggle (Active/Inactive).
+  - Integrated product inventory management (Stock tracking).
+
+### 5. Content Strategy (P2)
 - **Goal**: SEO long-tail keyword capture and brand story depth.
 - **Task**:
   - Expand "About Us" page with "Boston Engineering" narrative.
