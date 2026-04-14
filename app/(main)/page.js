@@ -423,7 +423,7 @@ export default function Home() {
                    </div>
                    <button 
                      onClick={() => setSelectedBundle(bundle)}
-                     className={`w-full py-6 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
+                     className={`w-full py-6 rounded-full text-[10px] font-black tracking-widest transition-all ${bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
                    >
                      Add to Cart
                    </button>
@@ -469,8 +469,7 @@ export default function Home() {
                     <Image src={`https://i.pravatar.cc/32?u=${review.name}`} width={32} height={32} alt={review.name} />
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">{review.name}</h4>
-                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-blue-600 mt-1">{review.location}</p>
+                    <h4 className="text-[10px] font-black tracking-widest text-slate-900">{review.name} ({review.location})</h4>
                   </div>
                 </div>
               </div>
