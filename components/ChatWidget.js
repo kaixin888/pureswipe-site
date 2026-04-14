@@ -16,7 +16,7 @@ export default function ChatWidget() {
             g.async = true;
             g.onload=function(){
               window.chatwootSDK.run({
-                websiteToken: '3S2vY5n5D89x9Y5D89x9',
+                websiteToken: 'UgFhqRHCBAivmm5C4f3b3SJL',
                 baseUrl: BASE_URL
               })
               // Proactive message after 15s

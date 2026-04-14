@@ -3,6 +3,8 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
+import { useCart } from 'react-use-cart'
+import { useStore } from '../../components/Providers'
 
 import { 
   Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
@@ -111,12 +113,17 @@ function TrustBar() {
 }
 
 export default function Home() {
+  const { addItem, cartTotal, items, emptyCart } = useCart()
+  const { isCheckoutOpen, setIsCheckoutOpen } = useStore()
   const [lang, setLang] = useState('en')
-  const [selectedBundle, setSelectedBundle] = useState(null)
   const [paymentStatus, setPaymentStatus] = useState('idle')
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
+  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
+  const [subscriberEmail, setSubscriberEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -131,6 +138,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (!isCheckoutOpen) return
     const script = document.createElement('script')
     script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&disable-funding=credit,card`
     script.addEventListener('load', () => {
@@ -139,8 +147,23 @@ export default function Home() {
           createOrder: (data, actions) => {
             return actions.order.create({
               purchase_units: [{
-                amount: { value: selectedBundle.price.toString() },
-                description: selectedBundle.name
+                amount: { 
+                  value: cartTotal.toFixed(2),
+                  breakdown: {
+                    item_total: {
+                      currency_code: 'USD',
+                      value: cartTotal.toFixed(2)
+                    }
+                  }
+                },
+                items: items.map(item => ({
+                  name: item.name,
+                  unit_amount: {
+                    currency_code: 'USD',
+                    value: item.price.toString()
+                  },
+                  quantity: item.quantity.toString()
+                }))
               }]
             })
           },
@@ -160,9 +183,9 @@ export default function Home() {
                 customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
                 email: order.payer.email_address,
                 phone: phone,
-                amount: selectedBundle.price,
-                bundle_id: selectedBundle.id,
-                product_name: selectedBundle.name,
+                amount: cartTotal,
+                bundle_id: items.map(i => i.id).join(', '),
+                product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
                 shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
                 shipping_city: address.admin_area_2,
                 shipping_state: address.admin_area_1,
@@ -174,7 +197,8 @@ export default function Home() {
             if (res.ok) {
               setPaymentStatus('success')
               setTimeout(() => {
-                setSelectedBundle(null)
+                emptyCart()
+                setIsCheckoutOpen(false)
                 setPaymentStatus('idle')
               }, 5000)
             } else {
@@ -185,15 +209,61 @@ export default function Home() {
         }).render('#paypal-button-container')
       }
     })
-    if (selectedBundle) {
-      document.body.appendChild(script)
-    }
+    document.body.appendChild(script)
     return () => {
       if (document.body.contains(script)) {
         document.body.removeChild(script)
       }
     }
-  }, [selectedBundle])
+  }, [isCheckoutOpen])
+
+  useEffect(() => {
+    const shown = localStorage.getItem('clowand_exit_popup_shown')
+    if (shown) return
+
+    const handleMouseLeave = (e) => {
+      if (e.clientY <= 0) {
+        setIsExitPopupOpen(true)
+        localStorage.setItem('clowand_exit_popup_shown', 'true')
+        window.removeEventListener('mouseleave', handleMouseLeave)
+      }
+    }
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        setIsExitPopupOpen(true)
+        localStorage.setItem('clowand_exit_popup_shown', 'true')
+      }, 30000)
+      return () => clearTimeout(timer)
+    } else {
+      window.addEventListener('mouseleave', handleMouseLeave)
+      return () => window.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [])
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault()
+    if (!subscriberEmail || isSubmitting) return
+    
+    setIsSubmitting(true)
+    const { error } = await supabase
+      .from('subscribers')
+      .insert([{ email: subscriberEmail }])
+    
+    setIsSubmitting(false)
+    if (!error) {
+      setIsSubscribed(true)
+      setTimeout(() => {
+        setIsExitPopupOpen(false)
+      }, 3000)
+    } else if (error.code === '23505') {
+      setIsSubscribed(true) // Already subscribed
+      setTimeout(() => {
+        setIsExitPopupOpen(false)
+      }, 3000)
+    }
+  }
 
   const handleTrack = async () => {
     const { data } = await supabase
@@ -539,11 +609,11 @@ export default function Home() {
       </section>
 
       {/* Checkout Modal */}
-      {selectedBundle && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-3xl bg-slate-950/80 animate-in fade-in duration-500">
+      {isCheckoutOpen && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-6 backdrop-blur-3xl bg-slate-950/80 animate-in fade-in duration-500">
            <div className="bg-white w-full max-w-xl rounded-[4rem] overflow-hidden shadow-3xl border border-slate-100 relative">
               <button 
-                onClick={() => setSelectedBundle(null)}
+                onClick={() => setIsCheckoutOpen(false)}
                 className="absolute top-8 right-8 p-4 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
               >
                 <X size={24} />
@@ -555,14 +625,23 @@ export default function Home() {
                    <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">Checkout</h2>
                 </div>
 
-                <div className="bg-slate-50 p-10 rounded-[3rem] mb-12 border border-slate-100 flex justify-between items-center group">
-                   <div>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-2">Selected Pack</p>
-                     <h4 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 leading-none">{selectedBundle.name}</h4>
-                   </div>
-                   <div className="text-right">
-                     <p className="text-3xl font-black italic tracking-tighter text-blue-600">${selectedBundle.price}</p>
-                   </div>
+                <div className="max-h-[300px] overflow-y-auto mb-12 space-y-4 pr-4">
+                  {items.map((item) => (
+                    <div key={item.id} className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 flex justify-between items-center">
+                       <div>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-1">{item.quantity}x</p>
+                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-slate-900 leading-none">{item.name}</h4>
+                       </div>
+                       <div className="text-right">
+                         <p className="text-xl font-black italic tracking-tighter text-blue-600">${(item.price * item.quantity).toFixed(2)}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between items-center mb-12 px-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total Amount</p>
+                  <p className="text-4xl font-black italic tracking-tighter text-slate-950">${cartTotal.toFixed(2)}</p>
                 </div>
 
                 <div id="paypal-button-container" className="relative z-10"></div>
@@ -581,6 +660,57 @@ export default function Home() {
                 )}
               </div>
            </div>
+        </div>
+      )}
+
+      {/* Exit Intent Popup */}
+      {isExitPopupOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 backdrop-blur-2xl bg-slate-950/60 animate-in fade-in zoom-in duration-300">
+          <div className="bg-white w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl relative">
+            <button 
+              onClick={() => setIsExitPopupOpen(false)}
+              className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="p-12 text-center">
+              <div className="mb-8">
+                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Offer</span>
+                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-none">WAIT! Don't leave your<br/>hygiene to chance.</h2>
+              </div>
+
+              {!isSubscribed ? (
+                <>
+                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic mb-2">Get 10% OFF your first clowand system today.</p>
+                  <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest italic mb-8">Join 5,000+ households choosing zero-touch cleaning.</p>
+                  <form onSubmit={handleSubscribe} className="space-y-4">
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="ENTER YOUR EMAIL"
+                      value={subscriberEmail}
+                      onChange={(e) => setSubscriberEmail(e.target.value)}
+                      className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all text-center"
+                    />
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50"
+                    >
+                      {isSubmitting ? 'Authenticating...' : 'Unlock 10% Off'}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div className="py-8 animate-in zoom-in duration-500">
+                  <p className="text-2xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Welcome to the Club</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic mb-6">Your code: <span className="bg-emerald-100 px-3 py-1 rounded-full text-emerald-700">CLOWAND10</span></p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Check your inbox for details.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </main>

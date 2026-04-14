@@ -1,10 +1,34 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ShoppingCart, User } from 'lucide-react';
+import { useCart } from 'react-use-cart';
+import { useStore } from './Providers';
+import { createClient } from '@supabase/supabase-js';
+import Cart from './Cart';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const { isCartOpen, setIsCartOpen, setIsCheckoutOpen } = useStore();
+  const { totalItems } = useCart();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const scrollTo = (id) => {
     setIsOpen(false);
@@ -32,9 +56,23 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-6">
-            <button className="text-slate-400 hover:text-blue-600 relative">
+            <a 
+              href={user ? "/account" : "/login"}
+              className="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 group"
+            >
+              <User size={20} className="group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">{user ? 'Account' : 'Login'}</span>
+            </a>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="text-slate-400 hover:text-blue-600 relative transition-all hover:scale-110 active:scale-90"
+            >
               <ShoppingCart size={20} />
-              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                  {totalItems}
+                </span>
+              )}
             </button>
             <button 
               onClick={() => scrollTo('bundles')} 
@@ -45,9 +83,28 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Toggle */}
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-slate-950">
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center gap-6">
+            <a 
+              href={user ? "/account" : "/login"}
+              className="text-slate-400 hover:text-blue-600 relative transition-all"
+            >
+              <User size={20} />
+            </a>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="text-slate-400 hover:text-blue-600 relative transition-all"
+            >
+              <ShoppingCart size={20} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setIsOpen(!isOpen)} className="text-slate-950">
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -61,6 +118,15 @@ export default function Navbar() {
           <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white p-4 rounded-full text-center uppercase">Buy Now</button>
         </div>
       )}
+
+      <Cart 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        onCheckout={() => {
+          setIsCartOpen(false);
+          setIsCheckoutOpen(true);
+        }}
+      />
     </nav>
   );
 }

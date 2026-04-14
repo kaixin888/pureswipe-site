@@ -31,14 +31,24 @@
 
 ## Phase 3: Engagement & Growth (v2.7.0 - v2.8.0) - IN_PROGRESS (Started: April 14, 2026)
 
-### 1. Newsletter & Lead Capture (P1)
+### 1. Newsletter & Lead Capture (P1) - DONE (April 14, 2026)
 - **Goal**: Build an email list for repeat refill sales.
 - **Task**:
-  - [IN_PROGRESS] Drafted PRD for "10% Off Your First Order" exit-intent popup.
-  - Integration with a simple CSV-based or Supabase-backed newsletter form.
-  - Success message to show discount code **CLOWAND10**.
+  - Implemented Exit-intent Popup (PC mouseleave / Mobile 30s delay).
+  - Created `subscribers` table in Supabase for real-time lead capture.
+  - Added `CLOWAND10` success code for 10% discount.
+  - Integrated `localStorage` persistence (once per device).
 
-### 2. Content Strategy (P2)
+### 2. User Accounts & Persistence (P1) - DONE (April 14, 2026)
+- **Goal**: Allow customers to track orders and save shipping info.
+- **Task**:
+  - Integrated **Supabase Auth** (Email/Password).
+  - Created `/login` and `/register` pages with mobile-responsive UI.
+  - Implemented `/account` dashboard showing **Order History** linked to user email.
+  - Added Session Persistence in `Navbar.js`.
+  - Configured RLS-ready order lookup.
+
+### 3. Content Strategy (P2)
 - **Goal**: SEO long-tail keyword capture and brand story depth.
 - **Task**:
   - Expand "About Us" page with "Boston Engineering" narrative.
