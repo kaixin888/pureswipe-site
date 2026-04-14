@@ -428,7 +428,7 @@ export default function Home() {
                     onClick={() => setSelectedBundle(bundle)}
                     className="w-full py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all bg-slate-950 text-white hover:bg-blue-600 shadow-2xl active:scale-95"
                   >
-                    Add {bundle.name} to Cart
+                    Add to Cart
                   </button>
                 </div>
               </div>
