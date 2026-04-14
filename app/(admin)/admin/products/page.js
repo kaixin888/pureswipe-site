@@ -15,7 +15,7 @@ const { Text } = Typography;
 
 export default function ProductList() {
   const { tableProps } = useTable({
-    resource: 'products',
+    resource: 'orders',
   });
 
   return (
