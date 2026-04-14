@@ -54,7 +54,7 @@ const authProvider = {
   check: async () => {
     const auth = typeof window !== 'undefined' ? localStorage.getItem("clowand_admin_auth") : null;
     if (auth === "true") return { authenticated: true };
-    return { authenticated: false, redirectTo: "/admin" };
+    return { authenticated: false };
   },
   getPermissions: async () => null,
   getIdentity: async () => ({ id: 1, name: "Clowand Admin" }),
@@ -67,7 +67,16 @@ const authProvider = {
 };
 
 export default function RefineApp({ children }) {
+  const [mounted, setMounted] = React.useState(false);
   const notificationProvider = useNotificationProvider();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div style={{ padding: '24px', background: '#0f172a', height: '100vh', color: '#fff' }}>clowand OS Loading...</div>;
+  }
 
   return (
     <Refine
