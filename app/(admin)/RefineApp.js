@@ -91,7 +91,7 @@ export default function RefineApp({ children }) {
       authProvider={authProvider}
       notificationProvider={notificationProvider}
       resources={[
-        /* {
+        {
           name: 'products',
           list: '/admin/products',
           create: '/admin/products/create',
@@ -101,7 +101,7 @@ export default function RefineApp({ children }) {
             label: 'Products',
             icon: <Package size={16} />
           },
-        }, */
+        },
         {
           name: 'orders',
           list: '/admin/orders',
