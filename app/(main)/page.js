@@ -250,7 +250,8 @@ export default function Home() {
                 shipping_city: address.admin_area_2,
                 shipping_state: address.admin_area_1,
                 shipping_zip: address.postal_code,
-                shipping_country: address.country_code
+                shipping_country: address.country_code,
+                                discount_code: discountInfo ? discountInfo.code : null
               })
             })
             
@@ -552,7 +553,7 @@ export default function Home() {
                       </div>
                    </div>
                    <button 
-                     onClick={() => setSelectedBundle(bundle)}
+                     onClick={() => { addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
                      className={`w-full py-6 rounded-full text-[10px] font-black tracking-widest transition-all ${bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
                    >
                      Add to Cart

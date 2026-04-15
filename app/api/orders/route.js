@@ -34,10 +34,15 @@ export async function POST(request) {
       .select();
 
     if (error) {
-      if (error.code === '23505') { // Unique constraint violation (duplicate order_id)
+      if (error.code === '23505') {
         return NextResponse.json({ success: false, error: 'Duplicate order' }, { status: 409 });
       }
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    // Increment usage_count for the discount code used in this order (if any)
+    if (data.discount_code) {
+      await supabase.rpc('increment_discount_usage', { p_code: data.discount_code.toUpperCase().trim() });
     }
 
     return NextResponse.json({ success: true, order: order[0] });
