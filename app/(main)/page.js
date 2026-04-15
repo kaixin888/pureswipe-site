@@ -552,12 +552,18 @@ export default function Home() {
                         <span className="px-4 py-2 bg-blue-600/10 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Free Ship</span>
                       </div>
                    </div>
-                   <button 
-                     onClick={() => { addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
-                     className={`w-full py-6 rounded-full text-[10px] font-black tracking-widest transition-all ${bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
-                   >
-                     Add to Cart
-                   </button>
+                   <div className="flex flex-col gap-2">
+                     <button 
+                       onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
+                       disabled={bundle.stock <= 0}
+                       className={`w-full py-6 rounded-full text-[10px] font-black tracking-widest transition-all ${bundle.stock <= 0 ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
+                     >
+                       {bundle.stock <= 0 ? 'OUT OF STOCK' : 'Add to Cart'}
+                     </button>
+                     {bundle.id && (
+                       <a href={`/products/${bundle.id}`} className="text-center text-[9px] text-slate-400 hover:text-white tracking-widest underline underline-offset-2 transition-colors">View Details →</a>
+                     )}
+                   </div>
                 </div>
               </div>
             ))}
