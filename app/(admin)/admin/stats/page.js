@@ -2,6 +2,7 @@
 
 import React, { useMemo, useEffect } from 'react';
 import { useList } from '@refinedev/core';
+// site_stats table removed — visitors hardcoded until Umami integration
 import { List } from '@refinedev/antd';
 import { Card, Col, Row, Statistic, Typography, Spin } from 'antd';
 import { DollarOutlined, ShoppingCartOutlined, UserOutlined, GlobalOutlined } from '@ant-design/icons';
@@ -38,13 +39,9 @@ export default function Dashboard() {
     resource: 'orders',
   });
 
-  // Since site_stats table might not exist, we handle errors gracefully
-  const { data: statsData } = useList({
-    resource: 'site_stats',
-    queryOptions: {
-      retry: false,
-    }
-  });
+  // site_stats table does not exist — removed to prevent schema cache error
+  // TODO: Replace with Umami analytics integration (Phase 4)
+  const statsData = null;
 
   const stats = useMemo(() => {
     const orders = ordersData?.data || [];
@@ -53,8 +50,8 @@ export default function Dashboard() {
     const uniqueCustomers = new Set(orders.map(o => o.email)).size;
     const avgOrderValue = totalOrders > 0 ? (totalGMV / totalOrders).toFixed(2) : 0;
     
-    // Real visitor count from site_stats or a safe default if table is missing
-    const visitors = statsData?.total || 1250; 
+    // Visitor count placeholder — connect Umami in Phase 4 for real data
+    const visitors = 0;
     const conversionRate = visitors > 0 ? ((totalOrders / visitors) * 100).toFixed(2) : 0;
 
     // Last 7 days chart data
@@ -72,7 +69,7 @@ export default function Dashboard() {
     });
 
     return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, visitors, conversionRate, last7Days, salesPerDay };
-  }, [ordersData, statsData]);
+  }, [ordersData]);
 
   useEffect(() => {
     if (!ordersLoading) {

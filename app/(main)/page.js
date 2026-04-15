@@ -124,8 +124,37 @@ export default function Home() {
   const [subscriberEmail, setSubscriberEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [bundles, setBundles] = useState(BUNDLES)
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
+
+  // Fetch active products from Supabase — falls back to hardcoded BUNDLES if table empty
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, description, image_url, stock, status')
+        .eq('status', 'active')
+        .order('created_at', { ascending: true })
+      
+      if (!error && data && data.length > 0) {
+        const mapped = data.map((p) => ({
+          id: String(p.id),
+          name: p.name,
+          price: Number(p.price),
+          description: p.description || '',
+          image: p.image_url || '/images/hero.jpg',
+          items: [],
+          tag: '',
+          popular: false,
+          stock: p.stock,
+        }))
+        setBundles(mapped)
+      }
+      // If table empty or error → keep BUNDLES fallback (no action needed)
+    }
+    fetchProducts()
+  }, [])
 
   useEffect(() => {
     const trackVisitor = async () => {
@@ -451,7 +480,7 @@ export default function Home() {
             <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">{t.saveUpTo}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {BUNDLES.map((bundle, i) => (
+            {bundles.map((bundle, i) => (
               <div key={bundle.id} className={`group relative p-8 md:p-12 rounded-[4rem] border transition-all duration-700 flex flex-col ${bundle.popular ? 'bg-slate-950 text-white border-slate-800 scale-105 shadow-3xl z-10' : 'bg-white text-slate-900 border-slate-100 hover:shadow-2xl'}`}>
                 {bundle.popular && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
