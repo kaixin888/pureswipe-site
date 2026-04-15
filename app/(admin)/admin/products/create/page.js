@@ -4,12 +4,6 @@ import React, { useState } from 'react';
 import { Create, useForm } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function ProductCreate() {
   const { formProps, saveButtonProps, form } = useForm({
@@ -20,27 +14,25 @@ export default function ProductCreate() {
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
 
+  // Upload file to Cloudflare R2 via server-side API route
   const handleUpload = async ({ file, onSuccess, onError }) => {
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const formData = new FormData();
+      formData.append('file', file);
 
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-      const { data: urlData } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(fileName);
-
-      const publicUrl = urlData.publicUrl;
-      form.setFieldValue('image_url', publicUrl);
-      setPreviewUrl(publicUrl);
-      onSuccess(publicUrl);
-      message.success('Image uploaded successfully');
+      form.setFieldValue('image_url', data.url);
+      setPreviewUrl(data.url);
+      onSuccess(data.url);
+      message.success('Image uploaded to Cloudflare R2');
     } catch (err) {
       message.error('Upload failed: ' + err.message);
       onError(err);
@@ -70,7 +62,6 @@ export default function ProductCreate() {
           />
         </Form.Item>
 
-        {/* Upload image — stored in Supabase Storage bucket: product-images */}
         <Form.Item label="Product Image">
           <Upload customRequest={handleUpload} showUploadList={false} accept="image/*">
             <Button icon={<UploadOutlined />} loading={uploading}>
@@ -86,7 +77,6 @@ export default function ProductCreate() {
           )}
         </Form.Item>
 
-        {/* Hidden field — auto-filled after upload, can also paste URL manually */}
         <Form.Item label="Image URL (auto-filled after upload)" name="image_url">
           <Input placeholder="Auto-filled after upload, or paste URL manually" />
         </Form.Item>
