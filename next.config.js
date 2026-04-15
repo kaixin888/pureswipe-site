@@ -38,7 +38,12 @@ const nextConfig = {
     'rc-virtual-list',
   ],
   images: {
-    domains: ['i.pravatar.cc', 'images.unsplash.com'],
+    domains: [
+      'i.pravatar.cc',
+      'images.unsplash.com',
+      'pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev',
+      'm.media-amazon.com',
+    ],
   },
 };
 
