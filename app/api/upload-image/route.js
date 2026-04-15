@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
+import sharp from 'sharp';
 
 // Cloudflare R2 — S3-compatible endpoint
 const r2 = new S3Client({
@@ -12,7 +13,22 @@ const r2 = new S3Client({
 });
 
 const BUCKET = 'clowand-images';
-const PUBLIC_URL = process.env.CF_R2_PUBLIC_URL; // https://pub-xxx.r2.dev
+const PUBLIC_URL = process.env.CF_R2_PUBLIC_URL;
+
+// Compress with sharp → convert to WebP (best size/quality ratio for product images)
+async function compressImage(buffer, mimeType) {
+  if (mimeType === 'image/gif') {
+    // GIF: skip compression, keep original
+    return { buffer, ext: 'gif', contentType: 'image/gif' };
+  }
+
+  const compressed = await sharp(buffer)
+    .resize({ width: 1200, withoutEnlargement: true }) // cap at 1200px wide, never upscale
+    .webp({ quality: 82 })                             // WebP q82 — near-lossless, ~60% smaller than JPEG
+    .toBuffer();
+
+  return { buffer: compressed, ext: 'webp', contentType: 'image/webp' };
+}
 
 export async function POST(request) {
   try {
@@ -23,14 +39,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const ext = file.name.split('.').pop().toLowerCase();
+    const originalExt = file.name.split('.').pop().toLowerCase();
     const allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-    if (!allowed.includes(ext)) {
+    if (!allowed.includes(originalExt)) {
       return NextResponse.json({ error: 'File type not allowed' }, { status: 400 });
     }
+
+    const rawBuffer = Buffer.from(await file.arrayBuffer());
+
+    // Compress and convert to WebP (except GIF)
+    const { buffer, ext, contentType } = await compressImage(rawBuffer, file.type);
 
     const fileName = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
@@ -39,13 +57,20 @@ export async function POST(request) {
         Bucket: BUCKET,
         Key: fileName,
         Body: buffer,
-        ContentType: file.type,
+        ContentType: contentType,
         CacheControl: 'public, max-age=31536000',
       })
     );
 
     const publicUrl = `${PUBLIC_URL}/${fileName}`;
-    return NextResponse.json({ url: publicUrl });
+
+    // Return URL + compression stats for frontend feedback
+    return NextResponse.json({
+      url: publicUrl,
+      originalSize: rawBuffer.length,
+      compressedSize: buffer.length,
+      savings: Math.round((1 - buffer.length / rawBuffer.length) * 100),
+    });
   } catch (err) {
     console.error('R2 upload error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });

@@ -32,7 +32,7 @@ export default function ProductCreate() {
       form.setFieldValue('image_url', data.url);
       setPreviewUrl(data.url);
       onSuccess(data.url);
-      message.success('Image uploaded to Cloudflare R2');
+      message.success(`Uploaded to R2 — saved ${data.savings ?? 0}% (compressed to WebP)`);
     } catch (err) {
       message.error('Upload failed: ' + err.message);
       onError(err);
