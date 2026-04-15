@@ -31,6 +31,23 @@ export default function ProductList() {
       )}
     >
       <Table {...tableProps} rowKey="id">
+        <Table.Column
+          dataIndex="image_url"
+          title="Image"
+          render={(url) =>
+            url ? (
+              <img
+                src={url}
+                alt="product"
+                style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+              />
+            ) : (
+              <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
+                No img
+              </div>
+            )
+          }
+        />
         <Table.Column dataIndex="name" title="Name" />
         <Table.Column dataIndex="price" title="Price" render={(v) => `$${v}`} />
         <Table.Column dataIndex="stock" title="Stock" />
