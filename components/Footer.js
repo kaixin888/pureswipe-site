@@ -33,8 +33,9 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Legal Compliance</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Company</h3>
           <ul className="space-y-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+            <li><a href="/about" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">About Us</a></li>
             <li><a href="/privacy" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Privacy Policy</a></li>
             <li><a href="/refund" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Refund Policy</a></li>
             <li><a href="/terms" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Terms of Service</a></li>
