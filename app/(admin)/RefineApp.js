@@ -15,7 +15,7 @@ import routerProvider, {
   NavigateToResource,
 } from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
-import { Shield, Package, ShoppingCart, Activity, Users } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -115,12 +115,20 @@ export default function RefineApp({ children }) {
           },
         },
         {
-            name: 'site_stats',
-            list: '/admin/stats',
-            meta: {
-              label: 'Dashboard',
-              icon: <Activity size={16} />
-            }
+          name: 'site_stats',
+          list: '/admin/stats',
+          meta: { label: 'Dashboard', icon: <Activity size={16} /> }
+        },
+        {
+          name: 'discount_codes',
+          list: '/admin/discounts',
+          create: '/admin/discounts/create',
+          meta: { canDelete: true, label: 'Discounts', icon: <Tag size={16} /> }
+        },
+        {
+          name: 'subscribers',
+          list: '/admin/subscribers',
+          meta: { label: 'Subscribers', icon: <Mail size={16} /> }
         }
       ]}
       options={{

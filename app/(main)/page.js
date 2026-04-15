@@ -125,6 +125,10 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [bundles, setBundles] = useState(BUNDLES)
+  const [discountCode, setDiscountCode] = useState('')
+  const [discountInfo, setDiscountInfo] = useState(null) // {code, discountPercent, discount, finalTotal}
+  const [discountError, setDiscountError] = useState('')
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false)
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -156,6 +160,33 @@ export default function Home() {
     fetchProducts()
   }, [])
 
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) return
+    setIsApplyingDiscount(true)
+    setDiscountError('')
+    setDiscountInfo(null)
+    try {
+      const res = await fetch('/api/apply-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: discountCode, cartTotal }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setDiscountError(data.error || 'Invalid code')
+      } else {
+        setDiscountInfo(data)
+      }
+    } catch {
+      setDiscountError('Failed to apply code. Try again.')
+    } finally {
+      setIsApplyingDiscount(false)
+    }
+  }
+
+  // Reset discount when checkout closes
+  const finalTotal = discountInfo ? parseFloat(discountInfo.finalTotal) : cartTotal
+
   useEffect(() => {
     const trackVisitor = async () => {
       const sessionKey = 'clowand_visitor_active'
@@ -177,11 +208,11 @@ export default function Home() {
             return actions.order.create({
               purchase_units: [{
                 amount: { 
-                  value: cartTotal.toFixed(2),
+                  value: finalTotal.toFixed(2),
                   breakdown: {
                     item_total: {
                       currency_code: 'USD',
-                      value: cartTotal.toFixed(2)
+                      value: finalTotal.toFixed(2)
                     }
                   }
                 },
@@ -212,7 +243,7 @@ export default function Home() {
                 customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
                 email: order.payer.email_address,
                 phone: phone,
-                amount: cartTotal,
+                amount: finalTotal,
                 bundle_id: items.map(i => i.id).join(', '),
                 product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
                 shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
@@ -668,9 +699,40 @@ export default function Home() {
                   ))}
                 </div>
 
+                {/* Discount Code */}
+                <div className="mb-8 px-2">
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={discountCode}
+                      onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
+                      placeholder="Discount code (e.g. CLOWAND10)"
+                      className="flex-1 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={handleApplyDiscount}
+                      disabled={isApplyingDiscount || !discountCode.trim()}
+                      className="px-5 py-3 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
+                    >
+                      {isApplyingDiscount ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                  {discountError && <p className="mt-2 text-xs text-red-500 font-bold pl-2">{discountError}</p>}
+                  {discountInfo && (
+                    <p className="mt-2 text-xs text-emerald-600 font-black pl-2 uppercase tracking-wider">
+                      ✓ {discountInfo.discountPercent}% OFF applied — saving ${discountInfo.discount}
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex justify-between items-center mb-12 px-6">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total Amount</p>
-                  <p className="text-4xl font-black italic tracking-tighter text-slate-950">${cartTotal.toFixed(2)}</p>
+                  <div className="text-right">
+                    {discountInfo && (
+                      <p className="text-lg font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
+                    )}
+                    <p className="text-4xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
+                  </div>
                 </div>
 
                 <div id="paypal-button-container" className="relative z-10"></div>
