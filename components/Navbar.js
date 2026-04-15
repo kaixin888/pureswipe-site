@@ -5,6 +5,7 @@ import { Menu, X, ShoppingCart, User } from 'lucide-react';
 import { useCart } from 'react-use-cart';
 import { useStore } from './Providers';
 import { createClient } from '@supabase/supabase-js';
+import { usePathname } from 'next/navigation';
 import Cart from './Cart';
 
 const supabase = createClient(
@@ -30,8 +31,15 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const pathname = usePathname();
+
   const scrollTo = (id) => {
     setIsOpen(false);
+    if (pathname !== '/') {
+      // Not on homepage — navigate there with anchor
+      window.location.href = `/#${id}`;
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
