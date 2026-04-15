@@ -56,6 +56,18 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-6">
+            <a
+              href="/blog"
+              className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest"
+            >
+              Blog
+            </a>
+            <a
+              href="/about"
+              className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest"
+            >
+              About
+            </a>
             <a 
               href={user ? "/account" : "/login"}
               className="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 group"
