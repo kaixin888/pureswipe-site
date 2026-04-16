@@ -1,31 +1,52 @@
 'use client';
 
-import { useList, useUpdate, useDelete, useGo } from '@refinedev/core';
-import { Button, Table, Tag, Space, Popconfirm, message, Switch } from 'antd';
+import { useState, useEffect, useCallback } from 'react';
+import { useGo } from '@refinedev/core';
+import { Button, Table, Space, Popconfirm, message, Switch } from 'antd';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function FaqsPage() {
   const go = useGo();
-  const { data, isLoading, refetch } = useList({
-    resource: 'faqs',
-    pagination: { pageSize: 100, mode: 'off' },
-  });
-  const { mutate: updateFaq } = useUpdate();
-  const { mutate: deleteFaq } = useDelete();
-  const faqs = (data?.data || []).slice().sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  function togglePublish(record) {
-    updateFaq(
-      { resource: 'faqs', id: record.id, values: { is_published: !record.is_published } },
-      { onSuccess: () => { message.success('Updated'); refetch(); } }
-    );
+  const fetchFaqs = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('faqs')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    if (error) {
+      message.error('Failed to load FAQs: ' + error.message);
+    } else {
+      setFaqs(data || []);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchFaqs(); }, [fetchFaqs]);
+
+  async function togglePublish(record) {
+    const { error } = await supabase
+      .from('faqs')
+      .update({ is_published: !record.is_published })
+      .eq('id', record.id);
+    if (error) { message.error('Update failed'); return; }
+    message.success('Updated');
+    fetchFaqs();
   }
 
-  function handleDelete(id) {
-    deleteFaq(
-      { resource: 'faqs', id },
-      { onSuccess: () => { message.success('Deleted'); refetch(); } }
-    );
+  async function handleDelete(id) {
+    const { error } = await supabase.from('faqs').delete().eq('id', id);
+    if (error) { message.error('Delete failed'); return; }
+    message.success('Deleted');
+    fetchFaqs();
   }
 
   const columns = [
@@ -44,7 +65,7 @@ export default function FaqsPage() {
       dataIndex: 'answer',
       render: (a) => (
         <span style={{ color: '#64748b', fontSize: 13 }}>
-          {a.length > 100 ? a.slice(0, 100) + '...' : a}
+          {a && a.length > 100 ? a.slice(0, 100) + '...' : a}
         </span>
       ),
     },
@@ -85,7 +106,7 @@ export default function FaqsPage() {
           Add FAQ
         </Button>
       </div>
-      <Table dataSource={faqs} columns={columns} rowKey="id" loading={isLoading} size="middle" pagination={false} />
+      <Table dataSource={faqs} columns={columns} rowKey="id" loading={loading} size="middle" pagination={false} />
     </div>
   );
 }
