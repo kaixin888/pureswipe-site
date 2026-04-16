@@ -559,66 +559,72 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bundles */}
-      <section id="bundles" className="py-40 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-32">
+      {/* Products */}
+      <section id="bundles" className="py-24 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
-            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">{t.saveUpTo}</h2>
+            <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">{t.saveUpTo}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {bundles.map((bundle, i) => (
-              <div key={bundle.id} className={`group relative p-8 md:p-12 rounded-[4rem] border transition-all duration-700 flex flex-col ${bundle.popular ? 'bg-slate-950 text-white border-slate-800 scale-105 shadow-3xl z-10' : 'bg-white text-slate-900 border-slate-100 hover:shadow-2xl'}`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {bundles.map((bundle) => (
+              <div
+                key={bundle.id}
+                className="group relative bg-white border border-slate-100 rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col"
+              >
                 {bundle.popular && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                    {t.mostPopular}
+                  <div className="absolute top-4 left-4 z-10 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
+                    Best Seller
                   </div>
                 )}
-                <div className="mb-12">
-                   <span className="text-blue-600 font-black uppercase tracking-widest text-[10px] italic">{bundle.tag}</span>
-                   <h3 className="text-3xl font-black italic tracking-tighter uppercase mt-4 mb-2">{bundle.name}</h3>
-                   <p className={`${bundle.popular ? 'text-slate-400' : 'text-slate-500'} font-medium`}>{bundle.description}</p>
+                {bundle.tag && !bundle.popular && (
+                  <div className="absolute top-4 left-4 z-10 px-4 py-1.5 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                    {bundle.tag}
+                  </div>
+                )}
+                {/* Image top */}
+                <div className="relative w-full bg-gray-50 overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                  <Image
+                    src={bundle.image}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
+                  />
                 </div>
-                <div className="mb-12 relative h-64 rounded-3xl overflow-hidden bg-slate-50">
-                   <Image 
-                     src={bundle.image} 
-                     width={400}
-                     height={400}
-                     className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000" 
-                     alt={`${bundle.name} - clowand Professional Toilet Brush Bundle`} 
-                   />
-                </div>
-                <div className="mb-12 flex-1">
-                   <ul className="space-y-4">
-                     {bundle.items.map((item, idx) => (
-                       <li key={idx} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest opacity-80">
-                         <CheckCircle size={14} className="text-blue-600 shrink-0" /> {item}
-                       </li>
-                     ))}
-                   </ul>
-                </div>
-                <div className="mt-auto pt-12 border-t border-slate-100/10">
-                   <div className="flex items-end justify-between mb-10">
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-50 block mb-1">One-Time Payment</span>
-                        <p className="text-5xl font-black italic tracking-tighter text-blue-600">${bundle.price}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="px-4 py-2 bg-blue-600/10 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Free Ship</span>
-                      </div>
-                   </div>
-                   <div className="flex flex-col gap-2">
-                     <button 
-                       onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
-                       disabled={bundle.stock <= 0}
-                       className={`w-full py-6 rounded-full text-[10px] font-black tracking-widest transition-all ${bundle.stock <= 0 ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : bundle.popular ? 'bg-white text-slate-950 hover:bg-blue-600 hover:text-white' : 'bg-slate-950 text-white hover:bg-blue-600'}`}
-                     >
-                       {bundle.stock <= 0 ? 'OUT OF STOCK' : 'Add to Cart'}
-                     </button>
-                     {bundle.id && (
-                       <a href={`/products/${bundle.id}`} className="text-center text-[9px] text-slate-400 hover:text-white tracking-widest underline underline-offset-2 transition-colors">View Details →</a>
-                     )}
-                   </div>
+                {/* Text bottom */}
+                <div className="p-7 flex flex-col flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">{bundle.name}</h3>
+                  {bundle.description && (
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">{bundle.description}</p>
+                  )}
+                  {bundle.items && bundle.items.length > 0 && (
+                    <ul className="space-y-1.5 mb-5">
+                      {bundle.items.slice(0, 3).map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
+                          <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="mt-auto space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold text-gray-900">${bundle.price.toFixed(2)}</span>
+                      <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Shipping</span>
+                    </div>
+                    <button
+                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
+                      disabled={bundle.stock <= 0}
+                      className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
+                    >
+                      {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                    </button>
+                    {bundle.id && (
+                      <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
+                        View Details →
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
