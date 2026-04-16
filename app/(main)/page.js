@@ -131,6 +131,7 @@ export default function Home() {
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false)
   const [reviews, setReviews] = useState([])
   const [faqs, setFaqs] = useState([])
+  const [siteSettings, setSiteSettings] = useState({})
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -191,6 +192,21 @@ export default function Home() {
       if (!error && data && data.length > 0) setFaqs(data)
     }
     fetchFaqs()
+  }, [])
+
+  // Fetch site settings (hero/announcement) from Supabase
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('key, value')
+      if (!error && data && data.length > 0) {
+        const map = {}
+        data.forEach(row => { map[row.key] = row.value })
+        setSiteSettings(map)
+      }
+    }
+    fetchSettings()
   }, [])
 
   const handleApplyDiscount = async () => {
@@ -420,13 +436,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
           <div className="flex-1 text-center md:text-left">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
-              <Zap size={14} /> 2026 Hygiene Revolution
+              {siteSettings.hero_badge || "2026 Hygiene Revolution"}
             </div>
             <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
-              {t.heroTitle}
+              {siteSettings.hero_title || t.heroTitle}
             </h1>
             <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
-              {t.heroSub}
+              {siteSettings.hero_subtitle || t.heroSub}
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <button 
