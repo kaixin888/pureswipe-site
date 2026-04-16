@@ -129,6 +129,7 @@ export default function Home() {
   const [discountInfo, setDiscountInfo] = useState(null) // {code, discountPercent, discount, finalTotal}
   const [discountError, setDiscountError] = useState('')
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false)
+  const [reviews, setReviews] = useState([])
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -162,6 +163,20 @@ export default function Home() {
       // If table empty or error → keep BUNDLES fallback (no action needed)
     }
     fetchProducts()
+  }, [])
+
+  // Fetch published reviews from Supabase
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(9)
+      if (!error && data && data.length > 0) setReviews(data)
+    }
+    fetchReviews()
   }, [])
 
   const handleApplyDiscount = async () => {
@@ -605,22 +620,28 @@ export default function Home() {
              </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {REVIEWS.map((review, i) => (
-              <div key={i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
+            {(reviews.length > 0 ? reviews : REVIEWS).map((review, i) => {
+              const displayName = review.author_name || review.name || 'Anonymous'
+              const displayLocation = review.author_location || review.location || ''
+              const displayComment = review.content || review.comment || ''
+              const displayRating = review.rating || 5
+              return (
+              <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
                 <div className="flex gap-1 mb-8 text-blue-600">
-                  {[...Array(review.rating)].map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
+                  {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
                 </div>
-                <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{review.comment}"</p>
+                <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{displayComment}"</p>
                 <div className="flex items-center gap-4">
                   <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-50 overflow-hidden relative">
-                    <Image src={`https://i.pravatar.cc/32?u=${review.name}`} width={32} height={32} alt={review.name} />
+                    <Image src={`https://i.pravatar.cc/32?u=${displayName}`} width={32} height={32} alt={displayName} />
                   </div>
                   <div>
-                    <h4 className="text-[10px] font-black tracking-widest text-slate-900">{review.name} ({review.location})</h4>
+                    <h4 className="text-[10px] font-black tracking-widest text-slate-900">{displayName}{displayLocation ? ` (${displayLocation})` : ''}</h4>
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

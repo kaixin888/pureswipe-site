@@ -22,6 +22,7 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [added, setAdded] = useState(false)
   const [qty, setQty] = useState(1)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     async function fetchProduct() {
@@ -40,6 +41,21 @@ export default function ProductDetailPage() {
     }
     if (id) fetchProduct()
   }, [id, router])
+
+  useEffect(() => {
+    if (!id) return
+    async function fetchReviews() {
+      const { data } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('is_published', true)
+        .or(`product_id.eq.${id},product_id.is.null`)
+        .order('created_at', { ascending: false })
+        .limit(6)
+      if (data && data.length > 0) setReviews(data)
+    }
+    fetchReviews()
+  }, [id])
 
   if (loading) {
     return (
@@ -234,6 +250,36 @@ export default function ProductDetailPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Reviews Section */}
+      {reviews.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 pb-16">
+          <div className="border-t border-slate-800 pt-10">
+            <h2 className="text-xl font-black tracking-widest text-white mb-8 uppercase">Customer Reviews</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {reviews.map((review) => (
+                <div key={review.id} className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                  <div className="flex gap-1 mb-4 text-yellow-400 text-base">
+                    {[...Array(review.rating || 5)].map((_, i) => <span key={i}>★</span>)}
+                  </div>
+                  <p className="text-sm text-slate-300 leading-relaxed italic mb-5">"{review.content}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-black text-white">
+                      {(review.author_name || 'A')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-xs font-black tracking-widest text-white">{review.author_name}</p>
+                      {review.author_location && (
+                        <p className="text-[10px] text-slate-500">{review.author_location}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
