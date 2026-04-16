@@ -137,22 +137,26 @@ export default function Home() {
     const fetchProducts = async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, price, description, image_url, stock, status')
+        .select('id, name, price, description, image_url, stock, status, tag, popular, bullets')
         .eq('status', 'active')
         .order('created_at', { ascending: true })
       
       if (!error && data && data.length > 0) {
-        const mapped = data.map((p) => ({
-          id: String(p.id),
-          name: p.name,
-          price: Number(p.price),
-          description: p.description || '',
-          image: p.image_url || '/images/hero.jpg',
-          items: [],
-          tag: '',
-          popular: false,
-          stock: p.stock,
-        }))
+        const mapped = data.map((p) => {
+          let bullets = []
+          try { bullets = JSON.parse(p.bullets || '[]') } catch (e) {}
+          return {
+            id: String(p.id),
+            name: p.name,
+            price: Number(p.price),
+            description: p.description || '',
+            image: p.image_url || '/images/hero.jpg',
+            items: bullets,
+            tag: p.tag || '',
+            popular: !!p.popular,
+            stock: p.stock != null ? p.stock : 999,
+          }
+        })
         setBundles(mapped)
       }
       // If table empty or error → keep BUNDLES fallback (no action needed)
