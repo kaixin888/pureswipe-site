@@ -45,6 +45,15 @@ export async function POST(request) {
       await supabase.rpc('increment_discount_usage', { p_code: data.discount_code.toUpperCase().trim() });
     }
 
+    // Send order confirmation email (fire-and-forget, don't block response)
+    if (data.email && process.env.RESEND_API_KEY) {
+      fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://clowand.com'}/api/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'order_confirmation', email: data.email, orderData: data }),
+      }).catch(() => {});
+    }
+
     return NextResponse.json({ success: true, order: order[0] });
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

@@ -319,6 +319,12 @@ export default function Home() {
     setIsSubmitting(false)
     if (!error) {
       setIsSubscribed(true)
+      // Send welcome email with discount code (fire-and-forget)
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'welcome', email: subscriberEmail }),
+      }).catch(() => {})
       setTimeout(() => {
         setIsExitPopupOpen(false)
       }, 3000)
