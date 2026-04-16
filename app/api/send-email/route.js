@@ -58,6 +58,48 @@ function welcomeTemplate(email) {
 </html>`;
 }
 
+// Shipping notification email
+function shippingTemplate({ orderData }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <h1 style="color:#ffffff;font-size:28px;font-weight:900;letter-spacing:2px;margin:0;">CLOWAND</h1>
+    </div>
+    <div style="background:#1e293b;border-radius:16px;padding:32px;">
+      <h2 style="color:#60a5fa;font-size:20px;font-weight:700;margin:0 0 8px;">📦 Your order is on its way!</h2>
+      <p style="color:#94a3b8;font-size:14px;margin:0 0 24px;">
+        Hi ${orderData.customer_name || 'there'}, great news — order <strong style="color:#fff;">#${orderData.order_id}</strong> has shipped!
+      </p>
+      <div style="background:#0f172a;border-radius:12px;padding:20px;margin:0 0 24px;">
+        <p style="color:#64748b;font-size:11px;letter-spacing:2px;margin:0 0 12px;">TRACKING INFORMATION</p>
+        <p style="color:#ffffff;font-size:14px;margin:0 0 4px;"><strong>${orderData.product_name || 'Clowand Product'}</strong></p>
+        <p style="color:#94a3b8;font-size:13px;margin:0 0 12px;">Tracking Number:</p>
+        <p style="color:#60a5fa;font-size:20px;font-weight:900;letter-spacing:2px;margin:0;">${orderData.tracking_number}</p>
+      </div>
+      <div style="background:#1e3a5f;border-radius:8px;padding:16px;margin:0 0 24px;">
+        <p style="color:#93c5fd;font-size:13px;margin:0;">
+          🚚 <strong>Estimated Delivery:</strong> 7–14 business days<br>
+          <span style="font-size:12px;color:#60a5fa;">Use your tracking number at the carrier's website to follow your package.</span>
+        </p>
+      </div>
+      <div style="margin-top:16px;padding:16px;background:#052e16;border-radius:8px;border-left:4px solid #22c55e;">
+        <p style="color:#86efac;font-size:13px;margin:0;">
+          🛡️ <strong>100% Satisfaction Guarantee</strong> — Any issues? We'll make it right.
+        </p>
+      </div>
+    </div>
+    <p style="color:#475569;font-size:11px;text-align:center;margin-top:24px;">
+      Questions? Email <a href="mailto:support@clowand.com" style="color:#60a5fa;">support@clowand.com</a>
+    </p>
+  </div>
+</body>
+</html>`;
+}
+
 // Order confirmation email
 function orderConfirmTemplate({ orderData }) {
   const items = orderData.product_name || 'Clowand Product';
@@ -117,6 +159,12 @@ export async function POST(request) {
         to: email,
         subject: `Order Confirmed #${orderData?.order_id} — Clowand`,
         html: orderConfirmTemplate({ orderData }),
+      });
+    } else if (type === 'shipping_notification') {
+      result = await sendEmail({
+        to: email,
+        subject: `Your Clowand order #${orderData?.order_id} has shipped! 📦`,
+        html: shippingTemplate({ orderData }),
       });
     } else {
       return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });

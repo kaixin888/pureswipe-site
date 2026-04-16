@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useList } from '@refinedev/core';
-// site_stats table removed — visitors hardcoded until Umami integration
 import { List } from '@refinedev/antd';
 import { Card, Col, Row, Statistic, Typography, Spin } from 'antd';
 import { DollarOutlined, ShoppingCartOutlined, UserOutlined, GlobalOutlined } from '@ant-design/icons';
@@ -39,9 +38,14 @@ export default function Dashboard() {
     resource: 'orders',
   });
 
-  // site_stats table does not exist — removed to prevent schema cache error
-  // TODO: Replace with Umami analytics integration (Phase 4)
-  const statsData = null;
+  // Cloudflare Analytics — real visitor data
+  const [cfData, setCfData] = useState(null);
+  useEffect(() => {
+    fetch('/api/analytics')
+      .then(r => r.json())
+      .then(d => { if (!d.error) setCfData(d); })
+      .catch(() => {});
+  }, []);
 
   const stats = useMemo(() => {
     const orders = ordersData?.data || [];
@@ -49,12 +53,11 @@ export default function Dashboard() {
     const totalOrders = orders.length;
     const uniqueCustomers = new Set(orders.map(o => o.email)).size;
     const avgOrderValue = totalOrders > 0 ? (totalGMV / totalOrders).toFixed(2) : 0;
-    
-    // Visitor count placeholder — connect Umami in Phase 4 for real data
-    const visitors = 0;
+
+    const visitors = cfData?.totalUniques || 0;
     const conversionRate = visitors > 0 ? ((totalOrders / visitors) * 100).toFixed(2) : 0;
 
-    // Last 7 days chart data
+    // Last 7 days labels
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
@@ -68,8 +71,11 @@ export default function Dashboard() {
       }).reduce((sum, o) => sum + (Number(o.amount) || 0), 0);
     });
 
-    return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, visitors, conversionRate, last7Days, salesPerDay };
-  }, [ordersData]);
+    // Cloudflare pageviews per day
+    const pageViewsPerDay = cfData?.days?.map(d => d.pageViews) || last7Days.map(() => 0);
+
+    return { totalGMV, totalOrders, uniqueCustomers, avgOrderValue, visitors, conversionRate, last7Days, salesPerDay, pageViewsPerDay };
+  }, [ordersData, cfData]);
 
   useEffect(() => {
     if (!ordersLoading) {
@@ -93,6 +99,20 @@ export default function Dashboard() {
         data: stats.salesPerDay,
         borderColor: '#1677ff',
         backgroundColor: 'rgba(22, 119, 255, 0.1)',
+        tension: 0.4,
+        fill: true,
+      },
+    ],
+  };
+
+  const pageViewsChartData = {
+    labels: stats.last7Days,
+    datasets: [
+      {
+        label: 'Page Views',
+        data: stats.pageViewsPerDay,
+        borderColor: '#7c3aed',
+        backgroundColor: 'rgba(124,58,237,0.1)',
         tension: 0.4,
         fill: true,
       },
@@ -162,15 +182,15 @@ export default function Dashboard() {
         <Col span={14}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
             <Title level={4} style={{ marginBottom: '24px' }}>7-Day Sales Performance</Title>
-            <div style={{ height: '400px' }}>
+            <div style={{ height: '300px' }}>
               <Line data={salesChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
             </div>
           </div>
         </Col>
         <Col span={10}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
-            <Title level={4} style={{ marginBottom: '24px' }}>Conversion Funnel (P2)</Title>
-            <div style={{ height: '400px' }}>
+            <Title level={4} style={{ marginBottom: '24px' }}>Conversion Funnel</Title>
+            <div style={{ height: '300px' }}>
               <Bar 
                 data={funnelData} 
                 options={{ 
@@ -180,6 +200,17 @@ export default function Dashboard() {
                   plugins: { legend: { display: false } }
                 }} 
               />
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24} style={{ marginTop: '24px' }}>
+        <Col span={24}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
+            <Title level={4} style={{ marginBottom: '4px' }}>7-Day Page Views <span style={{ fontSize: 13, fontWeight: 400, color: '#94a3b8' }}>(Cloudflare Analytics)</span></Title>
+            <div style={{ height: '220px' }}>
+              <Line data={pageViewsChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
             </div>
           </div>
         </Col>

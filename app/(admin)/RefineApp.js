@@ -15,7 +15,7 @@ import routerProvider, {
   NavigateToResource,
 } from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
-import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -142,6 +142,13 @@ export default function RefineApp({ children }) {
           list: '/admin/reviews',
           create: '/admin/reviews/create',
           meta: { canDelete: true, label: 'Reviews', icon: <Star size={16} /> }
+        },
+        {
+          name: 'faqs',
+          list: '/admin/faqs',
+          create: '/admin/faqs/create',
+          edit: '/admin/faqs/edit/:id',
+          meta: { canDelete: true, label: 'FAQs', icon: <HelpCircle size={16} /> }
         }
       ]}
       options={{

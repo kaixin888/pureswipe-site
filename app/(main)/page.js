@@ -130,6 +130,7 @@ export default function Home() {
   const [discountError, setDiscountError] = useState('')
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false)
   const [reviews, setReviews] = useState([])
+  const [faqs, setFaqs] = useState([])
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -177,6 +178,19 @@ export default function Home() {
       if (!error && data && data.length > 0) setReviews(data)
     }
     fetchReviews()
+  }, [])
+
+  // Fetch published FAQs from Supabase
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .eq('is_published', true)
+        .order('sort_order', { ascending: true })
+      if (!error && data && data.length > 0) setFaqs(data)
+    }
+    fetchFaqs()
   }, [])
 
   const handleApplyDiscount = async () => {
@@ -703,6 +717,34 @@ export default function Home() {
               <p className="text-2xl font-black italic tracking-tighter text-blue-600 uppercase mt-4">{trackResult.status}</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-40 px-6 bg-slate-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-20">
+            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Got Questions?</span>
+            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">FAQ</h2>
+          </div>
+          <div className="space-y-4">
+            {(faqs.length > 0 ? faqs : FAQ).map((faq, i) => (
+              <div key={i} className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden">
+                <button
+                  onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                  className="w-full text-left px-10 py-8 flex justify-between items-center gap-4"
+                >
+                  <span className="font-black italic tracking-tighter text-xl text-slate-950">{faq.question || faq.q}</span>
+                  <span className="text-blue-600 text-2xl font-black flex-shrink-0">{activeFaq === i ? '-' : '+'}</span>
+                </button>
+                {activeFaq === i && (
+                  <div className="px-10 pb-8 text-slate-500 leading-relaxed text-sm font-medium animate-in slide-in-from-top duration-200">
+                    {faq.answer || faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
