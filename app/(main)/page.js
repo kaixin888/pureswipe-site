@@ -583,12 +583,12 @@ export default function Home() {
                   </div>
                 )}
                 {/* Image top */}
-                <div className="relative w-full bg-gray-50 overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                <div className="w-full bg-gray-50 overflow-hidden" style={{ aspectRatio: '4/3' }}>
                   <Image
                     src={bundle.image}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    width={600}
+                    height={450}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
                   />
                 </div>
