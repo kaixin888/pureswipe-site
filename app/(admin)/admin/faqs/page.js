@@ -8,12 +8,11 @@ export default function FaqsPage() {
   const go = useGo();
   const { data, isLoading, refetch } = useList({
     resource: 'faqs',
-    sorters: [{ field: 'sort_order', order: 'asc' }],
-    pagination: { pageSize: 100 },
+    pagination: { pageSize: 100, mode: 'off' },
   });
   const { mutate: updateFaq } = useUpdate();
   const { mutate: deleteFaq } = useDelete();
-  const faqs = data?.data || [];
+  const faqs = (data?.data || []).slice().sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
   function togglePublish(record) {
     updateFaq(
