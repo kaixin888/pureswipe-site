@@ -40,7 +40,8 @@ export async function GET() {
     const json = await res.json();
 
     if (json.errors) {
-      return NextResponse.json({ error: json.errors[0]?.message }, { status: 500 });
+      // Return 200 with permission_error flag so stats page can show a friendly message
+      return NextResponse.json({ permission_error: true, error: json.errors[0]?.message }, { status: 200 });
     }
 
     const rows = json?.data?.viewer?.zones?.[0]?.httpRequests1dGroups || [];

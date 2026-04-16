@@ -43,7 +43,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetch('/api/analytics')
       .then(r => r.json())
-      .then(d => { if (!d.error) setCfData(d); })
+      .then(d => { if (!d.permission_error && !d.error) setCfData(d); })
       .catch(() => {});
   }, []);
 
@@ -209,9 +209,16 @@ export default function Dashboard() {
         <Col span={24}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #f0f0f0' }}>
             <Title level={4} style={{ marginBottom: '4px' }}>7-Day Page Views <span style={{ fontSize: 13, fontWeight: 400, color: '#94a3b8' }}>(Cloudflare Analytics)</span></Title>
-            <div style={{ height: '220px' }}>
-              <Line data={pageViewsChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
-            </div>
+            {stats.pageViewsPerDay.every(v => v === 0) ? (
+              <div style={{ height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+                <span style={{ color: '#f59e0b', fontSize: 13, fontWeight: 600 }}>⚠ Cloudflare token lacks Zone Analytics permission</span>
+                <span style={{ color: '#94a3b8', fontSize: 12 }}>Regenerate CF token with "Zone / Analytics / Read" scope to enable real data</span>
+              </div>
+            ) : (
+              <div style={{ height: '220px' }}>
+                <Line data={pageViewsChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
+              </div>
+            )}
           </div>
         </Col>
       </Row>
