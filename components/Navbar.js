@@ -47,95 +47,89 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+      {/* Mobile Navbar: hamburger | logo center | cart */}
+      <div className="md:hidden flex items-center justify-between px-4 py-3">
+        <button onClick={() => setIsOpen(!isOpen)} className="text-slate-950 p-1">
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">C</div>
+          <span className="text-lg font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
+        </a>
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="text-slate-950 relative p-1"
+        >
+          <ShoppingCart size={22} />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
+              {totalItems}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Search Bar */}
+      <div className="md:hidden px-4 pb-3">
+        <div className="flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 bg-gray-50">
+          <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search products..."
+            className="bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none w-full"
+            readOnly
+            onClick={() => scrollTo('bundles')}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Navbar */}
+      <div className="hidden md:flex max-w-7xl mx-auto px-6 py-4 items-center justify-between">
         <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">C</div>
           <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
         </a>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-          <button onClick={() => scrollTo('features')} className="hover:text-blue-600 transition-colors uppercase">Features</button>
-          <button onClick={() => scrollTo('bundles')} className="hover:text-blue-600 transition-colors uppercase">Shop</button>
-          <button onClick={() => scrollTo('reviews')} className="hover:text-blue-600 transition-colors uppercase">Reviews</button>
-          <button onClick={() => scrollTo('faq')} className="hover:text-blue-600 transition-colors uppercase">FAQ</button>
+        <div className="flex items-center gap-10 text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <button onClick={() => scrollTo('features')} className="hover:text-blue-600 transition-colors">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="hover:text-blue-600 transition-colors">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="hover:text-blue-600 transition-colors">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="hover:text-blue-600 transition-colors">FAQ</button>
         </div>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-6">
-            <a
-              href="/blog"
-              className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest"
-            >
-              Blog
-            </a>
-            <a
-              href="/about"
-              className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest"
-            >
-              About
-            </a>
-            <a 
-              href={user ? "/account" : "/login"}
-              className="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 group"
-            >
-              <User size={20} className="group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">{user ? 'Account' : 'Login'}</span>
-            </a>
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="text-slate-400 hover:text-blue-600 relative transition-all hover:scale-110 active:scale-90"
-            >
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-            <button 
-              onClick={() => scrollTo('bundles')} 
-              className="bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl"
-            >
-              Buy Now
-            </button>
-          </div>
-
-          {/* Mobile Toggle */}
-          <div className="md:hidden flex items-center gap-6">
-            <a 
-              href={user ? "/account" : "/login"}
-              className="text-slate-400 hover:text-blue-600 relative transition-all"
-            >
-              <User size={20} />
-            </a>
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="text-slate-400 hover:text-blue-600 relative transition-all"
-            >
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center animate-in zoom-in duration-300">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-            <button onClick={() => setIsOpen(!isOpen)} className="text-slate-950">
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+        <div className="flex items-center gap-6">
+          <a href="/blog" className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest">Blog</a>
+          <a href="/about" className="text-slate-400 hover:text-blue-600 transition-all text-[10px] font-black uppercase tracking-widest">About</a>
+          <a href={user ? "/account" : "/login"} className="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 group">
+            <User size={20} className="group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest">{user ? 'Account' : 'Login'}</span>
+          </a>
+          <button onClick={() => setIsCartOpen(true)} className="text-slate-400 hover:text-blue-600 relative transition-all hover:scale-110 active:scale-90">
+            <ShoppingCart size={20} />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {totalItems}
+              </span>
+            )}
+          </button>
+          <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl">
+            Buy Now
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-8 flex flex-col gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400 animate-in slide-in-from-top duration-300">
-          <button onClick={() => scrollTo('features')} className="text-left hover:text-blue-600 uppercase">Features</button>
-          <button onClick={() => scrollTo('bundles')} className="text-left hover:text-blue-600 uppercase">Shop</button>
-          <button onClick={() => scrollTo('reviews')} className="text-left hover:text-blue-600 uppercase">Reviews</button>
-          <button onClick={() => scrollTo('faq')} className="text-left hover:text-blue-600 uppercase">FAQ</button>
-          <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white p-4 rounded-full text-center uppercase">Buy Now</button>
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 px-6 py-6 flex flex-col gap-5 text-sm font-bold uppercase tracking-widest text-slate-600 shadow-lg animate-in slide-in-from-top duration-200">
+          <button onClick={() => scrollTo('features')} className="text-left hover:text-blue-600">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="text-left hover:text-blue-600">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="text-left hover:text-blue-600">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="text-left hover:text-blue-600">FAQ</button>
+          <a href="/blog" className="hover:text-blue-600">Blog</a>
+          <a href="/about" className="hover:text-blue-600">About</a>
+          <a href={user ? "/account" : "/login"} className="hover:text-blue-600">{user ? 'Account' : 'Login'}</a>
+          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-black text-white py-4 rounded-full text-center mt-2">Shop Now</button>
         </div>
       )}
 

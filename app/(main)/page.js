@@ -306,6 +306,15 @@ export default function Home() {
             
             if (res.ok) {
               setPaymentStatus('success')
+              // GTM purchase event
+              if (typeof window !== 'undefined' && window.dataLayer) {
+                window.dataLayer.push({
+                  event: 'purchase',
+                  value: finalTotal,
+                  currency: 'USD',
+                  transaction_id: `CW-${order.id.slice(-6)}`
+                })
+              }
               setTimeout(() => {
                 emptyCart()
                 setIsCheckoutOpen(false)
@@ -430,24 +439,68 @@ export default function Home() {
           })
         }}
       />
-      {/* Hero */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden">
+      {/* Hero — Mobile: full-bleed immersive image; Desktop: original layout */}
+      {/* Mobile Hero */}
+      <section className="md:hidden relative w-full overflow-hidden" style={{ height: '70vh', minHeight: '480px' }}>
+        <Image
+          src="/images/hero.jpg"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          alt="clowand Professional 18 inch Disposable Toilet Brush"
+        />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 flex flex-col justify-end px-6 pb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
+            {siteSettings.hero_badge || "2026 Hygiene Revolution"}
+          </div>
+          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mb-3">
+            {siteSettings.hero_title || t.heroTitle}
+          </h1>
+          <p className="text-sm text-white/80 mb-6 leading-relaxed">
+            {siteSettings.hero_subtitle || t.heroSub}
+          </p>
+          <button
+            onClick={() => scrollIntoView('bundles')}
+            className="w-full bg-black text-white rounded-full py-4 text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-transform"
+          >
+            {t.shopBundles}
+          </button>
+        </div>
+      </section>
+
+      {/* Mobile Category Tags */}
+      <div className="md:hidden overflow-x-auto flex gap-2 px-4 py-4 border-b border-gray-100 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {['All', 'Starter Kit', 'Refill Pack', 'Bundle', 'Best Seller'].map((tag) => (
+          <button
+            key={tag}
+            onClick={() => scrollIntoView('bundles')}
+            className="border border-gray-300 rounded-full px-4 py-1.5 text-sm whitespace-nowrap text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop Hero */}
+      <section className="hidden md:block relative pt-44 pb-32 px-6 overflow-hidden">
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-blue-50 rounded-full blur-[160px] opacity-60"></div>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
-          <div className="flex-1 text-center md:text-left">
+        <div className="max-w-7xl mx-auto flex flex-row items-center gap-24 relative">
+          <div className="flex-1 text-left">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
               {siteSettings.hero_badge || "2026 Hygiene Revolution"}
             </div>
-            <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
+            <h1 className="text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
               {siteSettings.hero_title || t.heroTitle}
             </h1>
             <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
               {siteSettings.hero_subtitle || t.heroSub}
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <button 
+            <div className="flex flex-row items-center gap-6">
+              <button
                 onClick={() => scrollIntoView('bundles')}
-                className="w-full sm:w-auto px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-slate-950/20"
+                className="px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-slate-950/20"
               >
                 {t.shopBundles}
               </button>
@@ -458,31 +511,30 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                50k+ Happy Homes
-              </p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">50k+ Happy Homes</p>
             </div>
           </div>
           <div className="flex-1 relative group">
-             <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
-             <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-white aspect-square group-hover:-rotate-1 transition-all duration-700">
-               <Image 
-                 src="/images/hero.jpg" 
-                 width={800} 
-                 height={800} 
-                 className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0" 
-                 alt="clowand Professional 18 inch Anti-Splash Toilet Brush" 
-               />
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
-               <div className="absolute bottom-12 left-12">
-                  <div className="flex items-center gap-4 text-white">
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
-                      <Play size={20} fill="currentColor" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Watch 10s Demo</span>
+            <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
+            <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-white aspect-square group-hover:-rotate-1 transition-all duration-700">
+              <Image
+                src="/images/hero.jpg"
+                width={800}
+                height={800}
+                priority
+                className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0"
+                alt="clowand Professional 18 inch Anti-Splash Toilet Brush"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
+              <div className="absolute bottom-12 left-12">
+                <div className="flex items-center gap-4 text-white">
+                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+                    <Play size={20} fill="currentColor" />
                   </div>
-               </div>
-             </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Watch 10s Demo</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -560,46 +612,47 @@ export default function Home() {
       </section>
 
       {/* Products */}
-      <section id="bundles" className="py-24 px-6 bg-white">
+      <section id="bundles" className="py-16 md:py-24 px-4 md:px-6 bg-white overflow-hidden">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-16">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
-            <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">{t.saveUpTo}</h2>
+            <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">{t.saveUpTo}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Mobile: single col gap-3 | Desktop: 2-col gap-8 */}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
             {bundles.map((bundle) => (
               <div
                 key={bundle.id}
-                className="group relative bg-white border border-slate-100 rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col"
+                className="group relative bg-white border border-slate-100 rounded-2xl md:rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col"
               >
                 {bundle.popular && (
-                  <div className="absolute top-4 left-4 z-10 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
+                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
                     Best Seller
                   </div>
                 )}
                 {bundle.tag && !bundle.popular && (
-                  <div className="absolute top-4 left-4 z-10 px-4 py-1.5 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
                     {bundle.tag}
                   </div>
                 )}
-                {/* Image top */}
-                <div className="w-full bg-gray-50 overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                {/* Image: mobile 3:4 portrait, desktop 4:3 landscape */}
+                <div className="w-full bg-gray-50 overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3]">
                   <Image
                     src={bundle.image}
                     width={600}
-                    height={450}
+                    height={800}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
                   />
                 </div>
-                {/* Text bottom */}
-                <div className="p-7 flex flex-col flex-1">
+                {/* Text */}
+                <div className="p-5 md:p-7 flex flex-col flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">{bundle.name}</h3>
                   {bundle.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">{bundle.description}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
                   )}
                   {bundle.items && bundle.items.length > 0 && (
-                    <ul className="space-y-1.5 mb-5">
+                    <ul className="space-y-1 mb-4 hidden md:block">
                       {bundle.items.slice(0, 3).map((item, idx) => (
                         <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
                           <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
@@ -609,11 +662,11 @@ export default function Home() {
                   )}
                   <div className="mt-auto space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-gray-900">${bundle.price.toFixed(2)}</span>
-                      <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Shipping</span>
+                      <span className="text-lg font-bold text-gray-900">${bundle.price.toFixed(2)}</span>
+                      <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                     </div>
                     <button
-                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); setIsCheckoutOpen(true); }}
+                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); }}
                       disabled={bundle.stock <= 0}
                       className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
                     >
