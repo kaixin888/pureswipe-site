@@ -41,7 +41,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'i.pravatar.cc' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev' },
+      { protocol: 'https', hostname: 'media.clowand.com' },
       { protocol: 'https', hostname: 'm.media-amazon.com' },
     ],
   },

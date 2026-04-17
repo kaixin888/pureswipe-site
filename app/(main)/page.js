@@ -451,7 +451,7 @@ export default function Home() {
           className="absolute inset-0 w-full h-full object-cover"
           onEnded={() => setVideoIndex(v => (v + 1) % 2)}
         >
-          <source src={videoIndex === 0 ? "https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-wand.mp4" : "https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-lid.mp4"} type="video/mp4" />
+          <source src={videoIndex === 0 ? "https://media.clowand.com/videos/product-wand.mp4" : "https://media.clowand.com/videos/product-lid.mp4"} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40" />
         {/* Video indicator dots */}
@@ -538,7 +538,7 @@ export default function Home() {
                 className="w-full h-full object-cover"
                 onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
               >
-                <source src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-wand.mp4" type="video/mp4" />
+                <source src="https://media.clowand.com/videos/product-wand.mp4" type="video/mp4" />
               </video>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
               <div className="absolute bottom-12 left-12">
