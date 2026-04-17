@@ -27,7 +27,7 @@ export default function AnnouncementBar() {
   const segments = text.split('|').map(s => s.trim()).filter(Boolean);
 
   return (
-    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest py-2 px-4 text-center z-[60] relative">
+    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest py-2 px-4 text-center z-[60] fixed top-0 left-0 right-0">
       <div className="flex items-center justify-center gap-6 flex-wrap">
         {segments.map((seg, i) => (
           <span key={i} className="flex items-center gap-2">

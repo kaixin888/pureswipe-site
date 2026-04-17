@@ -11,7 +11,7 @@ export default function SiteLayout({ children }) {
     <Providers>
       <AnnouncementBar />
       <Navbar />
-      {children}
+      <div className="pt-[128px] md:pt-[104px]">{children}</div>
       <Footer />
       <ChatWidget />
     </Providers>

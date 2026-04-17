@@ -651,6 +651,7 @@ export default function Home() {
                   </div>
                 )}
                 {/* Image: mobile 3:4 portrait, desktop 4:3 landscape */}
+                <a href={`/products/${bundle.id}`} className="block">
                 <div className="w-full bg-white overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3] flex items-center justify-center p-3">
                   <Image
                     src={bundle.image}
@@ -660,9 +661,12 @@ export default function Home() {
                     alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
                   />
                 </div>
+                </a>
                 {/* Text */}
                 <div className="p-5 md:p-7 flex flex-col flex-1">
+                  <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
                   <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">{bundle.name}</h3>
+                  </a>
                   {bundle.description && (
                     <p className="text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
                   )}
