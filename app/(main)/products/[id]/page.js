@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
   function handleAddToCart() {
     if (isOutOfStock) return
     for (let i = 0; i < qty; i++) {
-      addItem({ id: product.id.toString(), name: product.name, price: product.price })
+      addItem({ id: product.id.toString(), name: product.name, price: product.price, image: product.image_url })
     }
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)

@@ -690,7 +690,7 @@ export default function Home() {
                       <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                     </div>
                     <button
-                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); }}
+                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); }}
                       disabled={bundle.stock <= 0}
                       className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
                     >
