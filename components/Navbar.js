@@ -47,7 +47,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-10 w-full z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+    <nav className="fixed top-8 md:top-10 w-full z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
       {/* Mobile Navbar: hamburger | logo center | cart */}
       <div className="md:hidden flex items-center justify-between px-4 py-3">
         <button onClick={() => setIsOpen(!isOpen)} className="text-slate-950 p-1">

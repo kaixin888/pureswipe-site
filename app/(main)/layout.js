@@ -11,7 +11,8 @@ export default function SiteLayout({ children }) {
     <Providers>
       <AnnouncementBar />
       <Navbar />
-      <div className="pt-[128px] md:pt-[104px]">{children}</div>
+      {/* mobile: 32px bar + ~80px navbar = 112px; desktop: 40px bar + 64px navbar = 104px */}
+      <div className="pt-[112px] md:pt-[104px]">{children}</div>
       <Footer />
       <ChatWidget />
     </Providers>
