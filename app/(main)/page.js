@@ -936,14 +936,14 @@ export default function Home() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-[130] animate-in fade-in duration-300"
+            className="fixed inset-0 z-[9997] animate-in fade-in duration-300"
             style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)' }}
             onClick={() => setIsCheckoutOpen(false)}
           />
 
           {/* Mobile: bottom sheet */}
           <div
-            className="md:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-[9998] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
             style={{ maxHeight: '92vh' }}
           >
             <div className="shrink-0 pt-3 pb-1 flex justify-center">
@@ -1022,7 +1022,7 @@ export default function Home() {
 
           {/* Desktop: centered modal */}
           <div
-            className="hidden md:flex fixed top-1/2 left-1/2 z-[140] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
+            className="hidden md:flex fixed top-1/2 left-1/2 z-[9998] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
             style={{ maxHeight: '88vh' }}
           >
             <button
