@@ -132,6 +132,7 @@ export default function Home() {
   const [reviews, setReviews] = useState([])
   const [faqs, setFaqs] = useState([])
   const [siteSettings, setSiteSettings] = useState({})
+  const [videoIndex, setVideoIndex] = useState(0)
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -439,18 +440,30 @@ export default function Home() {
           })
         }}
       />
-      {/* Hero — Mobile: full-bleed immersive image; Desktop: original layout */}
+      {/* Hero — Mobile: full-bleed immersive video carousel; Desktop: original layout */}
       {/* Mobile Hero */}
       <section className="md:hidden relative w-full overflow-hidden" style={{ height: '70vh', minHeight: '480px' }}>
-        <Image
-          src="/images/hero.jpg"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          alt="clowand Professional 18 inch Disposable Toilet Brush"
-        />
-        <div className="absolute inset-0 bg-black/45" />
+        <video
+          key={videoIndex}
+          autoPlay
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          onEnded={() => setVideoIndex(v => (v + 1) % 2)}
+        >
+          <source src={videoIndex === 0 ? "https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-wand.mp4" : "https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-lid.mp4"} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/40" />
+        {/* Video indicator dots */}
+        <div className="absolute top-4 right-4 flex gap-1.5">
+          {[0,1].map(i => (
+            <button
+              key={i}
+              onClick={() => setVideoIndex(i)}
+              className={"w-2 h-2 rounded-full transition-all " + (videoIndex === i ? "bg-white scale-125" : "bg-white/40")}
+            />
+          ))}
+        </div>
         <div className="absolute inset-0 flex flex-col justify-end px-6 pb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
             {siteSettings.hero_badge || "2026 Hygiene Revolution"}
@@ -516,15 +529,16 @@ export default function Home() {
           </div>
           <div className="flex-1 relative group">
             <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
-            <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-white aspect-square group-hover:-rotate-1 transition-all duration-700">
-              <Image
-                src="/images/hero.jpg"
-                width={800}
-                height={800}
-                priority
-                className="w-full h-full object-cover grayscale opacity-80 group-hover:scale-110 transition-all duration-1000 group-hover:grayscale-0"
-                alt="clowand Professional 18 inch Anti-Splash Toilet Brush"
-              />
+            <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-black aspect-square group-hover:-rotate-1 transition-all duration-700">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              >
+                <source src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-wand.mp4" type="video/mp4" />
+              </video>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
               <div className="absolute bottom-12 left-12">
                 <div className="flex items-center gap-4 text-white">
@@ -636,12 +650,12 @@ export default function Home() {
                   </div>
                 )}
                 {/* Image: mobile 3:4 portrait, desktop 4:3 landscape */}
-                <div className="w-full bg-gray-50 overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3]">
+                <div className="w-full bg-white overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3] flex items-center justify-center p-3">
                   <Image
                     src={bundle.image}
                     width={600}
                     height={800}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
                   />
                 </div>
