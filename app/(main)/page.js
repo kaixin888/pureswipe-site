@@ -142,21 +142,6 @@ export default function Home() {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
   // Fetch active products from Supabase — falls back to hardcoded BUNDLES if table empty
-  // Chatwoot visibility: hide during checkout to prevent z-index conflict (Chatwoot z-index ~2147483000)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const selectors = ['#chatwoot-widget-live-chat-widget', '.chatwoot-widget-holder', '[id*="chatwoot"]', '[class*="chatwoot-widget-holder"]'];
-    let el = null;
-    for (const sel of selectors) {
-      el = document.querySelector(sel);
-      if (el) break;
-    }
-    window.$chatwoot?.toggleBubbleVisibility?.(isCheckoutOpen ? 'hide' : 'show');
-    document.querySelector('.chatwoot--bubble-holder')?.style?.[isCheckoutOpen ? 'setProperty' : 'removeProperty']('display', isCheckoutOpen ? 'none' : '', 'important');
-    document.querySelector('#chatwoot-widget-holder')?.style?.[isCheckoutOpen ? 'setProperty' : 'removeProperty']('display', isCheckoutOpen ? 'none' : '', 'important');
-    if (el) el.style.display = isCheckoutOpen ? 'none' : '';
-  }, [isCheckoutOpen]);
-
   useEffect(() => {
     const fetchProducts = async () => {
       const { data, error } = await supabase
@@ -229,6 +214,18 @@ export default function Home() {
     }
     fetchSettings()
   }, [])
+
+  // Hide Chatwoot during checkout - Chatwoot z-index ~2147483000 cannot be overridden by CSS
+  useEffect(() => {
+    const el = document.querySelector('#chatwoot-widget-holder');
+    if (isCheckoutOpen) {
+      if (el) el.style.setProperty('display', 'none', 'important');
+      window.$chatwoot?.toggleBubbleVisibility?.('hide');
+    } else {
+      if (el) el.style.removeProperty('display');
+      window.$chatwoot?.toggleBubbleVisibility?.('show');
+    }
+  }, [isCheckoutOpen])
 
   const handleApplyDiscount = async () => {
     if (!discountCode.trim()) return
@@ -951,26 +948,26 @@ export default function Home() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-[9999] animate-in fade-in duration-300"
+            className="fixed inset-0 z-[130] animate-in fade-in duration-300"
             style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
-            onClick={() => { setIsCheckoutOpen(false); }}
+            onClick={() => setIsCheckoutOpen(false)}
           />
 
           {/* Mobile: bottom sheet */}
           <div
-            className="md:hidden fixed bottom-0 left-0 right-0 z-[10000] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
             style={{ maxHeight: '92vh' }}
           >
             <div className="shrink-0 pt-3 pb-1 flex justify-center">
               <div className="w-10 h-1 bg-slate-200 rounded-full" />
             </div>
             <button
-              onClick={() => { setIsCheckoutOpen(false); }}
+              onClick={() => setIsCheckoutOpen(false)}
               className="absolute top-3 right-4 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
             >
               <X size={20} />
             </button>
-            <div className="flex-1 overflow-y-auto px-5 pt-3" style={{ paddingBottom: '96px' }}>
+            <div className="flex-1 overflow-y-auto px-5 py-3" style={{ paddingBottom: '96px' }}>
               <div className="mb-5">
                 <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
                 <h2 className="text-2xl font-black italic tracking-tighter uppercase mt-1 text-slate-950">Checkout</h2>
@@ -1031,17 +1028,17 @@ export default function Home() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
                 </div>
               )}
-              <div className="h-24" />
+              <div className="h-6" />
             </div>
           </div>
 
           {/* Desktop: centered modal */}
           <div
-            className="hidden md:flex fixed top-1/2 left-1/2 z-[10000] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
+            className="hidden md:flex fixed top-1/2 left-1/2 z-[140] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
             style={{ maxHeight: '88vh' }}
           >
             <button
-              onClick={() => { setIsCheckoutOpen(false); }}
+              onClick={() => setIsCheckoutOpen(false)}
               className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
             >
               <X size={22} />
@@ -1164,130 +1161,4 @@ export default function Home() {
       )}
     </main>
   )
-}useEffect(() => {
-    // Hide Chatwoot during checkout - Chatwoot z-index ~2147483000 cannot be overridden by CSS
-    const el = document.querySelector('#chatwoot-widget-holder');
-    if (isCheckoutOpen) {
-      if (el) el.style.setProperty('display', 'none', 'important');
-      window.$chatwoot?.toggleBubbleVisibility?.('hide');
-    } else {
-      if (el) el.style.removeProperty('display');
-      window.$chatwoot?.toggleBubbleVisibility?.('show');
-    }
-  }, [isCheckoutOpen]);
-act, { useState, useEffect, Fragment } from 'react'
-import Image from 'next/image'
-import { createClient } from '@supabase/supabase-js'
-import { useCart } from 'react-use-cart'
-import { useStore } from '../../components/Providers'
-
-import { 
-  Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
-  Truck, Globe, X, Search, MapPin, Star, AlertCircle, ThumbsUp, 
-  ChevronDown, Trash2, Recycle, Droplet, Sparkles, Ruler, Shield, RefreshCw,
-  Mail, Phone
-} from 'lucide-react'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
-
-const TRANSLATIONS = {
-  en: {
-    heroTitle: "Clean Smarter, Not Harder.",
-    heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism. Hassle-Free No-Return Refund.",
-    shopBundles: "Shop Bundles",
-    freeShipping: "Free Shipping Across USA",
-    features: "Features",
-    bundles: "Select Your System",
-    saveUpTo: "Save Up to 40% with bulk packs",
-    zeroTouchTitle: "Zero Contact",
-    zeroTouchDesc: "Attach and release with a single click. Your hands never touch the dirty water.",
-    handleTitle: "18\" Long Reach",
-    handleDesc: "Industry-leading length keeps you at a safe distance. No more bending over.",
-    padTitle: "3-Layer Power Pad",
-    padDesc: "Scrub, disinfect, and protect with our reinforced 3-layer scouring technology.",
-    mostPopular: "Most Popular",
-    checkout: "Checkout",
-    payNow: "Pay Now",
-    success: "Success!",
-    trackTitle: "Track Order",
-    trackInput: "Enter Order ID",
-    trackBtn: "Track"
-  }
-}
-
-const BUNDLES = [
-  {
-    id: 'starter',
-    name: 'Starter Kit',
-    price: 19.99,
-    description: 'Perfect for beginners',
-    image: '/images/hero.jpg',
-    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '12x Single-Use Fresh Ocean Refill Pads'],
-    tag: 'Start Here'
-  },
-  {
-    id: 'family',
-    name: 'Family Value Pack',
-    price: 34.99,
-    description: 'BEST VALUE & RESULTS',
-    image: '/images/wand-box.jpg',
-    items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '36x Mixed Scent Single-Use Refill Pads'],
-    tag: 'Best Seller',
-    popular: true
-  },
-  {
-    id: 'eco-refill',
-    name: 'Eco Refill Box',
-    price: 24.99,
-    description: 'Stock up & Save',
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400',
-    items: ['48x Extra-Strength Single-Use Refill Pads', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
-    tag: 'Eco Friendly'
-  }
-]
-
-const REVIEWS = [
-  { name: "Sarah J.", location: "Houston, TX", comment: "Finally, a toilet brush that doesn't gross me out! The 18-inch handle is a game-changer. I don't have to get anywhere near the bowl. Love the zero-touch release!", rating: 5 },
-  { name: "Mike R.", location: "New York, NY", comment: "Best purchase for my new apartment. The caddy is well-ventilated so it stays dry. The pads really scrub off the tough stains without scratching.", rating: 5 },
-  { name: "Linda W.", location: "Chicago, IL", comment: "The 'no-return' refund policy gave me the confidence to try it. But I'm keeping it! It's much more hygienic than those traditional brushes.", rating: 5 },
-  { name: "Robert D.", location: "Miami, FL", comment: "I have back issues, and the extra-long handle means I don't have to bend down as much. Very sturdy and professional feel.", rating: 5 },
-  { name: "Jessica M.", location: "Seattle, WA", comment: "One box lasts me almost a year with the 48 refills. Great value and it actually cleans better than the soap-dispensing brushes I've used before.", rating: 5 },
-  { name: "David K.", location: "Denver, CO", comment: "Super easy to use. Click on, clean, click off. No mess, no dripping on the floor. Highly recommend for busy families.", rating: 5 },
-  { name: "Karen L.", location: "Atlanta, GA", comment: "The pads have a lot of cleaning agent in them. One pad is enough for a deep clean. My bathroom smells like the ocean now!", rating: 5 },
-  { name: "Thomas B.", location: "Boston, MA", comment: "A bit skeptical at first, but the quality of the wand is top-notch. It's solid, not flimsy like the ones you find at the supermarket.", rating: 5 },
-  { name: "Jennifer S.", location: "San Francisco, CA", comment: "Excellent customer service. I had a question about the refills and they replied within minutes. Great product, even better team.", rating: 5 },
-  { name: "Steven P.", location: "Phoenix, AZ", comment: "Love that it's designed for US standards. Fits perfectly under the rim. Makes a chore I hate a lot less disgusting.", rating: 5 }
-]
-
-const FAQ = [
-  { q: "How does free shipping work?", a: "We offer free standard shipping (3-5 business days) on all bundles across the continental USA. Tracking is provided via email once your order ships." },
-  { q: "What is your return policy?", a: "We offer a 100% Satisfaction Guarantee. If you're not happy with clowand, we'll provide a full refund—no need to ship used products back. Your hygiene and convenience are our priority." },
-  { q: "Are the refill pads environmentally friendly?", a: "Yes! Our refills are made from biodegradable materials and the packaging is 100% recyclable. Clean your home without the guilt." },
-  { q: "Will the pads work on my toilet?", a: "Clowand is designed to reach deep under the rim and into the trap, making it effective for 99% of toilet designs including low-flow models." },
-  { q: "How many uses per disposable pad?", a: "Each refill pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
-]
-
-function TrustBarItems() {
-  return (
-    <div className="flex gap-16 items-center px-8 uppercase text-[10px] font-black italic tracking-widest shrink-0">
-      <span className="flex items-center gap-2"><Truck size={14} /> Free USA Shipping</span>
-      <span className="flex items-center gap-2"><ShieldCheck size={14} /> Verified Quality</span>
-      <span className="flex items-center gap-2"><RefreshCw size={14} /> 100% Satisfaction Guarantee</span>
-      <span className="flex items-center gap-2"><Star size={14} /> 50k+ Happy Customers</span>
-    </div>
-  );
-}
-
-function TrustBar() {
-  return (
-    <div className="bg-blue-600 text-white py-2 overflow-hidden relative z-10">
-      <div className="flex animate-marquee w-max">
-        <TrustBarItems />
-        <TrustBarItems aria-hidden="true" />
-      </div>
-    </div>
-  );
 }
