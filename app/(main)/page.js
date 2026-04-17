@@ -95,21 +95,26 @@ const FAQ = [
   { q: "How many uses per disposable pad?", a: "Each refill pad is single-use for maximum hygiene. It contains enough concentrated cleaning agent for one thorough, deep clean." }
 ]
 
+function TrustBarItems() {
+  return (
+    <div className="flex gap-16 items-center px-8 uppercase text-[10px] font-black italic tracking-widest shrink-0">
+      <span className="flex items-center gap-2"><Truck size={14} /> Free USA Shipping</span>
+      <span className="flex items-center gap-2"><ShieldCheck size={14} /> Verified Quality</span>
+      <span className="flex items-center gap-2"><RefreshCw size={14} /> 100% Satisfaction Guarantee</span>
+      <span className="flex items-center gap-2"><Star size={14} /> 50k+ Happy Customers</span>
+    </div>
+  );
+}
+
 function TrustBar() {
   return (
-    <div className="bg-blue-600 text-white py-2 overflow-hidden whitespace-nowrap relative z-10">
-      <div className="flex animate-marquee gap-10 items-center px-4 uppercase text-[10px] font-black italic tracking-widest w-max">
-        {[...Array(2)].map((_, i) => (
-          <div key={i} className="flex gap-10 items-center">
-            <Truck size={14} /> Free USA Shipping
-            <ShieldCheck size={14} /> Verified Quality
-            <RefreshCw size={14} /> 100% Satisfaction Guarantee
-            <Star size={14} /> 50k+ Happy Customers
-          </div>
-        ))}
+    <div className="bg-blue-600 text-white py-2 overflow-hidden relative z-10">
+      <div className="flex animate-marquee w-max">
+        <TrustBarItems />
+        <TrustBarItems aria-hidden="true" />
       </div>
     </div>
-  )
+  );
 }
 
 export default function Home() {
