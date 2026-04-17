@@ -60,8 +60,8 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
               {items.map((item) => (
                 <div key={item.id} className="flex gap-4 group py-3 border-b border-slate-50 last:border-0">
                   {/* Product image */}
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shrink-0">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shrink-0">
+                    <img src={(item.image || '').replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com')} alt={item.name} className="w-full h-full object-contain p-1" />
                   </div>
                   {/* Product info */}
                   <div className="flex-1 min-w-0 py-1">
