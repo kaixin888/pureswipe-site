@@ -173,7 +173,7 @@ export default function Home() {
     const fetchReviews = async () => {
       const { data, error } = await supabase
         .from('reviews')
-        .select('*')
+        .select('id,author_name,author_location,rating,content,ugc_image_url,is_published,created_at')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(9)
@@ -533,9 +533,10 @@ export default function Home() {
               <video
                 autoPlay
                 muted
-                loop
+                loop={true}
                 playsInline
                 className="w-full h-full object-cover"
+                onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
               >
                 <source src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/videos/product-wand.mp4" type="video/mp4" />
               </video>
