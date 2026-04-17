@@ -151,7 +151,9 @@ export default function Home() {
       el = document.querySelector(sel);
       if (el) break;
     }
-    if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility(isCheckoutOpen ? 'hide' : 'show');
+    window.$chatwoot?.toggleBubbleVisibility?.(isCheckoutOpen ? 'hide' : 'show');
+    document.querySelector('.chatwoot--bubble-holder')?.style?.[isCheckoutOpen ? 'setProperty' : 'removeProperty']('display', isCheckoutOpen ? 'none' : '', 'important');
+    document.querySelector('#chatwoot-widget-holder')?.style?.[isCheckoutOpen ? 'setProperty' : 'removeProperty']('display', isCheckoutOpen ? 'none' : '', 'important');
     if (el) el.style.display = isCheckoutOpen ? 'none' : '';
   }, [isCheckoutOpen]);
 
@@ -703,7 +705,7 @@ export default function Home() {
                       <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                     </div>
                     <button
-                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('hide'); const cw = document.querySelector('[id*="chatwoot"], [class*="chatwoot-widget-holder"]'); if (cw) cw.style.display = 'none'; } }}
+                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); if (typeof window !== 'undefined') { window.$chatwoot?.toggleBubbleVisibility?.('hide'); document.querySelector('.chatwoot--bubble-holder')?.style?.setProperty('display','none','important'); document.querySelector('#chatwoot-widget-holder')?.style?.setProperty('display','none','important'); } }}
                       disabled={bundle.stock <= 0}
                       className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
                     >
@@ -951,7 +953,7 @@ export default function Home() {
           <div
             className="fixed inset-0 z-[9999] animate-in fade-in duration-300"
             style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)' }}
-            onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
+            onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { window.$chatwoot?.toggleBubbleVisibility?.('show'); document.querySelector('.chatwoot--bubble-holder')?.style?.removeProperty('display'); document.querySelector('#chatwoot-widget-holder')?.style?.removeProperty('display'); } }}
           />
 
           {/* Mobile: bottom sheet */}
@@ -963,7 +965,7 @@ export default function Home() {
               <div className="w-10 h-1 bg-slate-200 rounded-full" />
             </div>
             <button
-              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
+              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { window.$chatwoot?.toggleBubbleVisibility?.('show'); document.querySelector('.chatwoot--bubble-holder')?.style?.removeProperty('display'); document.querySelector('#chatwoot-widget-holder')?.style?.removeProperty('display'); } }}
               className="absolute top-3 right-4 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
             >
               <X size={20} />
@@ -1039,7 +1041,7 @@ export default function Home() {
             style={{ maxHeight: '88vh' }}
           >
             <button
-              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
+              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { window.$chatwoot?.toggleBubbleVisibility?.('show'); document.querySelector('.chatwoot--bubble-holder')?.style?.removeProperty('display'); document.querySelector('#chatwoot-widget-holder')?.style?.removeProperty('display'); } }}
               className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
             >
               <X size={22} />
