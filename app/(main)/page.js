@@ -970,7 +970,7 @@ export default function Home() {
             >
               <X size={20} />
             </button>
-            <div className="flex-1 overflow-y-auto px-5 pt-3 pb-24">
+            <div className="flex-1 overflow-y-auto px-5 pt-3" style={{ paddingBottom: '96px' }}>
               <div className="mb-5">
                 <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
                 <h2 className="text-2xl font-black italic tracking-tighter uppercase mt-1 text-slate-950">Checkout</h2>
