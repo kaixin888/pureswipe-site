@@ -217,12 +217,16 @@ export default function Home() {
 
   // Hide Chatwoot during checkout - Chatwoot z-index ~2147483000 cannot be overridden by CSS
   useEffect(() => {
-    const el = document.querySelector('#chatwoot-widget-holder');
+    // Real Chatwoot DOM IDs: #cw-bubble-holder (bubble), #cw-widget-holder (panel)
+    const bubble = document.querySelector('#cw-bubble-holder');
+    const widget = document.querySelector('#cw-widget-holder');
     if (isCheckoutOpen) {
-      if (el) el.style.setProperty('display', 'none', 'important');
+      if (bubble) bubble.style.setProperty('display', 'none', 'important');
+      if (widget) widget.style.setProperty('display', 'none', 'important');
       window.$chatwoot?.toggleBubbleVisibility?.('hide');
     } else {
-      if (el) el.style.removeProperty('display');
+      if (bubble) bubble.style.removeProperty('display');
+      if (widget) widget.style.removeProperty('display');
       window.$chatwoot?.toggleBubbleVisibility?.('show');
     }
   }, [isCheckoutOpen])
