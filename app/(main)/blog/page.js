@@ -2,6 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import Image from 'next/image'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata = {
   title: 'Blog | Clowand - Bathroom Hygiene Tips & Guides',
   description: 'Expert tips, guides, and insights on bathroom hygiene, toilet cleaning, and creating a healthier home environment.',
