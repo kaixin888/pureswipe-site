@@ -632,6 +632,79 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Choose Clowand — Comparison Table */}
+      <section className="py-20 px-6 bg-gray-900">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Why Choose Clowand?</h2>
+            <p className="text-gray-400 mt-3 text-sm">See the difference for yourself</p>
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-gray-700">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-800">
+                  <th className="py-4 px-6 text-left text-gray-400 font-semibold uppercase tracking-widest text-xs w-1/3"></th>
+                  <th className="py-4 px-6 text-center text-white font-bold text-base w-1/3">Clowand</th>
+                  <th className="py-4 px-6 text-center text-gray-500 font-semibold text-base w-1/3">Traditional Brush</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {[
+                  { label: 'Hygiene', clowand: 'Single-use, always sterile', traditional: 'Bacteria build up after each use' },
+                  { label: 'Touch-Free', clowand: '100% no-touch disposal', traditional: 'Must handle dirty brush' },
+                  { label: 'Freshness', clowand: 'Sealed individual packaging', traditional: 'Exposed, wet, smelly storage' },
+                  { label: 'Odor', clowand: 'Zero odor guaranteed', traditional: 'Mildew & unpleasant smell' },
+                  { label: 'Replacement', clowand: 'No maintenance needed', traditional: 'Replace brush & holder regularly' },
+                  { label: 'Value', clowand: '~$0.50 per clean', traditional: 'Hidden costs of replacement + cleaning' },
+                ].map((row) => (
+                  <tr key={row.label} className="bg-gray-900 hover:bg-gray-800/60 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-gray-300 uppercase tracking-widest text-xs">{row.label}</td>
+                    <td className="py-4 px-6 text-center">
+                      <span className="inline-flex items-center gap-2 text-green-400 font-medium">
+                        <span className="text-green-500 font-bold">✓</span> {row.clowand}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <span className="inline-flex items-center gap-2 text-gray-500">
+                        <span className="text-red-500 font-bold">✗</span> {row.traditional}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-4">
+            {[
+              { label: 'Hygiene', clowand: 'Single-use, always sterile', traditional: 'Bacteria build up after each use' },
+              { label: 'Touch-Free', clowand: '100% no-touch disposal', traditional: 'Must handle dirty brush' },
+              { label: 'Freshness', clowand: 'Sealed individual packaging', traditional: 'Exposed, wet, smelly storage' },
+              { label: 'Odor', clowand: 'Zero odor guaranteed', traditional: 'Mildew & unpleasant smell' },
+              { label: 'Replacement', clowand: 'No maintenance needed', traditional: 'Replace brush & holder regularly' },
+              { label: 'Value', clowand: '~$0.50 per clean', traditional: 'Hidden costs of replacement + cleaning' },
+            ].map((row) => (
+              <div key={row.label} className="rounded-xl border border-gray-700 overflow-hidden">
+                <div className="bg-gray-800 px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-300">{row.label}</div>
+                <div className="grid grid-cols-2 divide-x divide-gray-700">
+                  <div className="p-4 bg-gray-900">
+                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Clowand</p>
+                    <p className="text-green-400 text-sm font-medium"><span className="text-green-500 mr-1">✓</span>{row.clowand}</p>
+                  </div>
+                  <div className="p-4 bg-gray-900">
+                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Traditional</p>
+                    <p className="text-gray-500 text-sm"><span className="text-red-500 mr-1">✗</span>{row.traditional}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Reviews */}
       <section id="reviews" className="py-40 px-6 bg-slate-50/50">
         <div className="max-w-7xl mx-auto">
