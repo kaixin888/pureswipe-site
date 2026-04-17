@@ -142,6 +142,19 @@ export default function Home() {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
   // Fetch active products from Supabase — falls back to hardcoded BUNDLES if table empty
+  // Chatwoot visibility: hide during checkout to prevent z-index conflict (Chatwoot z-index ~2147483000)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const selectors = ['#chatwoot-widget-live-chat-widget', '.chatwoot-widget-holder', '[id*="chatwoot"]', '[class*="chatwoot-widget-holder"]'];
+    let el = null;
+    for (const sel of selectors) {
+      el = document.querySelector(sel);
+      if (el) break;
+    }
+    if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility(isCheckoutOpen ? 'hide' : 'show');
+    if (el) el.style.display = isCheckoutOpen ? 'none' : '';
+  }, [isCheckoutOpen]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       const { data, error } = await supabase
@@ -690,7 +703,7 @@ export default function Home() {
                       <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                     </div>
                     <button
-                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); }}
+                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('hide'); const cw = document.querySelector('[id*="chatwoot"], [class*="chatwoot-widget-holder"]'); if (cw) cw.style.display = 'none'; } }}
                       disabled={bundle.stock <= 0}
                       className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
                     >
@@ -938,7 +951,7 @@ export default function Home() {
           <div
             className="fixed inset-0 z-[9999] animate-in fade-in duration-300"
             style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)' }}
-            onClick={() => setIsCheckoutOpen(false)}
+            onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
           />
 
           {/* Mobile: bottom sheet */}
@@ -950,7 +963,7 @@ export default function Home() {
               <div className="w-10 h-1 bg-slate-200 rounded-full" />
             </div>
             <button
-              onClick={() => setIsCheckoutOpen(false)}
+              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
               className="absolute top-3 right-4 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
             >
               <X size={20} />
@@ -1016,7 +1029,7 @@ export default function Home() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
                 </div>
               )}
-              <div className="h-6" />
+              <div className="h-24" />
             </div>
           </div>
 
@@ -1026,7 +1039,7 @@ export default function Home() {
             style={{ maxHeight: '88vh' }}
           >
             <button
-              onClick={() => setIsCheckoutOpen(false)}
+              onClick={() => { setIsCheckoutOpen(false); if (typeof window !== 'undefined') { if (window.$chatwoot) window.$chatwoot.toggleBubbleVisibility('show'); const cw = document.getElementById('chatwoot-widget-live-chat-widget'); if (cw) cw.style.display = ''; } }}
               className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
             >
               <X size={22} />
