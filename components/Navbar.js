@@ -92,18 +92,18 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">C</div>
           <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
         </a>
-        <div className="flex items-center gap-10 text-sm font-semibold uppercase tracking-widest text-slate-400">
+        <div className="flex items-center gap-10 text-base font-medium uppercase tracking-widest text-slate-400">
           <button onClick={() => scrollTo('features')} className="hover:text-blue-600 transition-colors">Features</button>
           <button onClick={() => scrollTo('bundles')} className="hover:text-blue-600 transition-colors">Shop</button>
           <button onClick={() => scrollTo('reviews')} className="hover:text-blue-600 transition-colors">Reviews</button>
           <button onClick={() => scrollTo('faq')} className="hover:text-blue-600 transition-colors">FAQ</button>
         </div>
         <div className="flex items-center gap-6">
-          <a href="/blog" className="text-slate-400 hover:text-blue-600 transition-all text-sm font-semibold uppercase tracking-widest">Blog</a>
-          <a href="/about" className="text-slate-400 hover:text-blue-600 transition-all text-sm font-semibold uppercase tracking-widest">About</a>
+          <a href="/blog" className="text-slate-400 hover:text-blue-600 transition-all text-base font-medium uppercase tracking-widest">Blog</a>
+          <a href="/about" className="text-slate-400 hover:text-blue-600 transition-all text-base font-medium uppercase tracking-widest">About</a>
           <a href={user ? "/account" : "/login"} className="text-slate-400 hover:text-blue-600 transition-all flex items-center gap-2 group">
             <User size={20} className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-semibold uppercase tracking-widest">{user ? 'Account' : 'Login'}</span>
+            <span className="text-base font-medium uppercase tracking-widest">{user ? 'Account' : 'Login'}</span>
           </a>
           <button onClick={() => setIsCartOpen(true)} className="text-slate-400 hover:text-blue-600 relative transition-all hover:scale-110 active:scale-90">
             <ShoppingCart size={20} />
@@ -113,7 +113,7 @@ export default function Navbar() {
               </span>
             )}
           </button>
-          <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white text-sm font-bold uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl">
+          <button onClick={() => scrollTo('bundles')} className="bg-slate-950 text-white text-base font-bold uppercase tracking-widest px-8 py-3 rounded-full hover:scale-105 transition-all shadow-xl">
             Buy Now
           </button>
         </div>
