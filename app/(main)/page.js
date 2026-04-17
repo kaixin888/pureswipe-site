@@ -815,7 +815,7 @@ export default function Home() {
                     {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={14} fill="currentColor" />)}
                   </div>
                   {review.ugc_image_url && (
-                    <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase">Verified Amazon Purchase</span>
+                    <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase" style={{color:'#2563eb',backgroundColor:'#eff6ff'}}>Verified Amazon Purchase</span>
                   )}
                 </div>
                 <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{displayComment}"</p>
