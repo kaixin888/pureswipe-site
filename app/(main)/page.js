@@ -803,8 +803,19 @@ export default function Home() {
               const displayRating = review.rating || 5
               return (
               <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
-                <div className="flex gap-1 mb-8 text-blue-600">
-                  {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
+                {/* UGC photo if available */}
+                {review.ugc_image_url && (
+                  <div className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-50">
+                    <Image src={review.ugc_image_url} width={400} height={128} className="w-full h-full object-cover" alt="Customer photo" unoptimized />
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="flex gap-1 text-blue-600">
+                    {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={14} fill="currentColor" />)}
+                  </div>
+                  {review.ugc_image_url && (
+                    <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase">Verified Amazon Purchase</span>
+                  )}
                 </div>
                 <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{displayComment}"</p>
                 <div className="flex items-center gap-4">
