@@ -110,8 +110,24 @@ export default async function BlogPostPage({ params }) {
 
   if (!post) notFound()
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.excerpt || "",
+    "image": post.cover_image || "https://clowand.com/logo.png",
+    "datePublished": post.published_at,
+    "author": { "@type": "Organization", "name": "Clowand" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Clowand",
+      "logo": { "@type": "ImageObject", "url": "https://clowand.com/logo.png" }
+    }
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-6 pt-8 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">

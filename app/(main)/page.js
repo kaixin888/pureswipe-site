@@ -106,6 +106,80 @@ function TrustBarItems() {
   );
 }
 
+function BeforeAfterSlider() {
+  const [split, setSplit] = React.useState(50)
+  const [animated, setAnimated] = React.useState(false)
+  const sliderRef = React.useRef(null)
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !animated) {
+        setAnimated(true)
+        setSplit(30)
+        setTimeout(() => setSplit(50), 700)
+      }
+    }, { threshold: 0.3 })
+    if (sliderRef.current) observer.observe(sliderRef.current)
+    return () => observer.disconnect()
+  }, [animated])
+
+  return (
+    <div ref={sliderRef} className="relative overflow-hidden rounded-2xl select-none" style={{ height: '280px' }}>
+      {/* Left: Before */}
+      <div className="absolute inset-0 bg-gray-100 flex items-center px-8 md:px-16">
+        <div>
+          <p className="text-xs font-black tracking-widest text-gray-400 uppercase mb-3">Before</p>
+          <h3 className="text-xl font-black text-gray-800 mb-4">Traditional Brush</h3>
+          <ul className="space-y-2">
+            {['Bacteria builds up', 'Drips on your floor', 'Must touch the bowl', 'Needs a holder'].map(item => (
+              <li key={item} className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="text-red-500 font-black">X</span> {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Right: After */}
+      <div
+        className="absolute inset-0 bg-gray-900 flex items-center px-8 md:px-16 justify-end"
+        style={{ clipPath: `inset(0 0 0 ${split}%)`, transition: animated ? 'clip-path 0.6s ease' : 'none' }}
+      >
+        <div className="text-right">
+          <p className="text-xs font-black tracking-widest text-blue-400 uppercase mb-3">After</p>
+          <h3 className="text-xl font-black text-white mb-4">Clowand System</h3>
+          <ul className="space-y-2">
+            {['Touch-free design', 'Disposable heads', '18-inch extended reach', 'No holder needed'].map(item => (
+              <li key={item} className="flex items-center gap-2 text-sm text-gray-200 justify-end">
+                {item} <span className="text-green-400 font-black">V</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Divider + handle */}
+      <div
+        className="absolute top-0 bottom-0 flex items-center justify-center"
+        style={{ left: `${split}%`, transform: 'translateX(-50%)', transition: animated ? 'left 0.6s ease' : 'none' }}
+      >
+        <div className="w-px h-full bg-white absolute" />
+        <div className="relative z-10 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 font-black text-sm">
+          &lt;|&gt;
+        </div>
+      </div>
+
+      {/* Transparent range input */}
+      <input
+        type="range" min="10" max="90" value={split}
+        onChange={e => setSplit(Number(e.target.value))}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize"
+        style={{ zIndex: 10 }}
+      />
+    </div>
+  )
+}
+
 function TrustBar() {
   return (
     <div className="bg-blue-600 text-white py-2 overflow-hidden relative z-10">
@@ -429,8 +503,17 @@ export default function Home() {
     }
   }
 
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Clowand",
+    "url": "https://clowand.com",
+    "description": "Premium disposable toilet brush systems for American households"
+  }
+
   return (
     <main className="min-h-screen bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -731,6 +814,11 @@ export default function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Why Choose Clowand?</h2>
             <p className="text-gray-400 mt-3 text-sm">See the difference for yourself</p>
+          </div>
+
+          {/* Before/After Slider */}
+          <div className="mb-10">
+            <BeforeAfterSlider />
           </div>
 
           {/* Desktop table */}
