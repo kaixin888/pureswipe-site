@@ -103,9 +103,9 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
           )}
         </div>
 
-        {/* Footer — checkout area */}
+        {/* Footer — checkout area, pb avoids Chatwoot bubble + iOS safe area */}
         {!isEmpty && (
-          <div className="px-5 py-5 bg-slate-50 border-t border-slate-100 shrink-0">
+          <div className="px-5 pt-4 pb-[max(80px,env(safe-area-inset-bottom,80px))] bg-slate-50 border-t border-slate-100 shrink-0">
             <div className="flex justify-between items-center mb-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Subtotal</p>
               <p className="text-2xl font-black italic tracking-tighter text-slate-950">${cartTotal.toFixed(2)}</p>

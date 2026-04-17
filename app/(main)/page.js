@@ -933,88 +933,168 @@ export default function Home() {
 
       {/* Checkout Modal */}
       {isCheckoutOpen && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center p-6 backdrop-blur-3xl bg-slate-950/80 animate-in fade-in duration-500">
-           <div className="bg-white w-full max-w-xl rounded-[4rem] overflow-hidden shadow-3xl border border-slate-100 relative">
-              <button 
-                onClick={() => setIsCheckoutOpen(false)}
-                className="absolute top-8 right-8 p-4 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
-              >
-                <X size={24} />
-              </button>
-              
-              <div className="p-16">
-                <div className="mb-12">
-                   <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
-                   <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">Checkout</h2>
-                </div>
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-[130] animate-in fade-in duration-300"
+            style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)' }}
+            onClick={() => setIsCheckoutOpen(false)}
+          />
 
-                <div className="max-h-[300px] overflow-y-auto mb-12 space-y-4 pr-4">
-                  {items.map((item) => (
-                    <div key={item.id} className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 flex justify-between items-center">
-                       <div>
-                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-1">{item.quantity}x</p>
-                         <h4 className="text-xl font-black italic uppercase tracking-tighter text-slate-900 leading-none">{item.name}</h4>
-                       </div>
-                       <div className="text-right">
-                         <p className="text-xl font-black italic tracking-tighter text-blue-600">${(item.price * item.quantity).toFixed(2)}</p>
-                       </div>
+          {/* Mobile: bottom sheet */}
+          <div
+            className="md:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
+            style={{ maxHeight: '92vh' }}
+          >
+            <div className="shrink-0 pt-3 pb-1 flex justify-center">
+              <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            </div>
+            <button
+              onClick={() => setIsCheckoutOpen(false)}
+              className="absolute top-3 right-4 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex-1 overflow-y-auto px-5 py-3">
+              <div className="mb-5">
+                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
+                <h2 className="text-2xl font-black italic tracking-tighter uppercase mt-1 text-slate-950">Checkout</h2>
+              </div>
+              <div className="max-h-[180px] overflow-y-auto mb-4 space-y-2">
+                {items.map((item) => (
+                  <div key={item.id} className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex justify-between items-center">
+                    <div className="min-w-0 mr-3">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic mb-0.5">{item.quantity}x</p>
+                      <h4 className="text-sm font-black italic uppercase tracking-tight text-slate-900 line-clamp-1">{item.name}</h4>
                     </div>
-                  ))}
+                    <p className="text-base font-black italic tracking-tighter text-blue-600 shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
+                    placeholder="Discount code (e.g. CLOWAND10)"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    onClick={handleApplyDiscount}
+                    disabled={isApplyingDiscount || !discountCode.trim()}
+                    className="px-4 py-2.5 bg-slate-950 text-white rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
+                  >
+                    {isApplyingDiscount ? '...' : 'Apply'}
+                  </button>
                 </div>
-
-                {/* Discount Code */}
-                <div className="mb-8 px-2">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={discountCode}
-                      onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
-                      placeholder="Discount code (e.g. CLOWAND10)"
-                      className="flex-1 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      onClick={handleApplyDiscount}
-                      disabled={isApplyingDiscount || !discountCode.trim()}
-                      className="px-5 py-3 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
-                    >
-                      {isApplyingDiscount ? '...' : 'Apply'}
-                    </button>
-                  </div>
-                  {discountError && <p className="mt-2 text-xs text-red-500 font-bold pl-2">{discountError}</p>}
-                  {discountInfo && (
-                    <p className="mt-2 text-xs text-emerald-600 font-black pl-2 uppercase tracking-wider">
-                      ✓ {discountInfo.discountPercent}% OFF applied — saving ${discountInfo.discount}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center mb-12 px-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total Amount</p>
-                  <div className="text-right">
-                    {discountInfo && (
-                      <p className="text-lg font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
-                    )}
-                    <p className="text-4xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
-                  </div>
-                </div>
-
-                <div id="paypal-button-container" className="relative z-10"></div>
-                
-                {paymentStatus === 'processing' && (
-                  <div className="mt-10 p-10 bg-slate-50 rounded-[3rem] text-center border border-slate-100 animate-pulse">
-                     <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
-                  </div>
-                )}
-                
-                {paymentStatus === 'success' && (
-                  <div className="mt-10 p-10 bg-emerald-50 rounded-[3rem] text-center border border-emerald-100">
-                     <p className="text-xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Success!</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
-                  </div>
+                {discountError && <p className="mt-1.5 text-xs text-red-500 font-bold pl-1">{discountError}</p>}
+                {discountInfo && (
+                  <p className="mt-1.5 text-xs text-emerald-600 font-black pl-1 uppercase tracking-wider">
+                    {discountInfo.discountPercent}% OFF applied
+                  </p>
                 )}
               </div>
-           </div>
-        </div>
+              <div className="flex justify-between items-center mb-4 px-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total</p>
+                <div className="text-right">
+                  {discountInfo && (
+                    <p className="text-sm font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
+                  )}
+                  <p className="text-2xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
+                </div>
+              </div>
+              <div id="paypal-button-container" className="relative z-10"></div>
+              {paymentStatus === 'processing' && (
+                <div className="mt-4 p-5 bg-slate-50 rounded-2xl text-center border border-slate-100 animate-pulse">
+                  <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
+                </div>
+              )}
+              {paymentStatus === 'success' && (
+                <div className="mt-4 p-5 bg-emerald-50 rounded-2xl text-center border border-emerald-100">
+                  <p className="text-lg font-black italic tracking-tighter text-emerald-600 uppercase mb-1">Success!</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
+                </div>
+              )}
+              <div className="h-6" />
+            </div>
+          </div>
+
+          {/* Desktop: centered modal */}
+          <div
+            className="hidden md:flex fixed top-1/2 left-1/2 z-[140] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
+            style={{ maxHeight: '88vh' }}
+          >
+            <button
+              onClick={() => setIsCheckoutOpen(false)}
+              className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
+            >
+              <X size={22} />
+            </button>
+            <div className="overflow-y-auto p-10">
+              <div className="mb-8">
+                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
+                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-3 text-slate-950">Checkout</h2>
+              </div>
+              <div className="max-h-[240px] overflow-y-auto mb-8 space-y-3 pr-2">
+                {items.map((item) => (
+                  <div key={item.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic mb-1">{item.quantity}x</p>
+                      <h4 className="text-lg font-black italic uppercase tracking-tight text-slate-900 leading-none">{item.name}</h4>
+                    </div>
+                    <p className="text-lg font-black italic tracking-tighter text-blue-600">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-6 px-1">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
+                    placeholder="Discount code (e.g. CLOWAND10)"
+                    className="flex-1 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    onClick={handleApplyDiscount}
+                    disabled={isApplyingDiscount || !discountCode.trim()}
+                    className="px-5 py-3 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
+                  >
+                    {isApplyingDiscount ? '...' : 'Apply'}
+                  </button>
+                </div>
+                {discountError && <p className="mt-2 text-xs text-red-500 font-bold pl-2">{discountError}</p>}
+                {discountInfo && (
+                  <p className="mt-2 text-xs text-emerald-600 font-black pl-2 uppercase tracking-wider">
+                    {discountInfo.discountPercent}% OFF applied — saving ${discountInfo.discount}
+                  </p>
+                )}
+              </div>
+              <div className="flex justify-between items-center mb-8 px-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total Amount</p>
+                <div className="text-right">
+                  {discountInfo && (
+                    <p className="text-lg font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
+                  )}
+                  <p className="text-4xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
+                </div>
+              </div>
+              <div id="paypal-button-container" className="relative z-10"></div>
+              {paymentStatus === 'processing' && (
+                <div className="mt-8 p-8 bg-slate-50 rounded-3xl text-center border border-slate-100 animate-pulse">
+                  <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
+                </div>
+              )}
+              {paymentStatus === 'success' && (
+                <div className="mt-8 p-8 bg-emerald-50 rounded-3xl text-center border border-emerald-100">
+                  <p className="text-xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Success!</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
       )}
 
       {/* Exit Intent Popup */}
