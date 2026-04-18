@@ -6,6 +6,7 @@ import { useCart } from 'react-use-cart'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import Product360 from '@/components/Product360'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -135,20 +136,12 @@ export default function ProductDetailPage() {
 
         {/* Images */}
         <div className="flex flex-col gap-4">
-          <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-white">
-            <Image
-              src={allImages[selectedImage] || product.image_url}
-              alt={product.name}
-              fill
-              className="object-contain p-4"
-              priority
-            />
-            {product.tag && (
-              <div className="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full">
-                {product.tag}
-              </div>
-            )}
-          </div>
+          <Product360
+            images={allImages}
+            tag={product.tag}
+            currentFrame={selectedImage}
+            onFrameChange={setSelectedImage}
+          />
           {/* Thumbnails */}
           {allImages.length > 1 && (
             <div className="flex gap-3 flex-wrap">

@@ -124,7 +124,7 @@ function BeforeAfterSlider() {
   }, [animated])
 
   return (
-    <div ref={sliderRef} className="relative overflow-hidden rounded-2xl select-none" style={{ height: '280px' }}>
+    <div ref={sliderRef} className="relative overflow-hidden rounded-2xl h-64 md:h-80 select-none">
       {/* Left: Before */}
       <div className="absolute inset-0 bg-gray-100 flex items-center px-8 md:px-16">
         <div>
@@ -508,6 +508,7 @@ export default function Home() {
     "@type": "Organization",
     "name": "Clowand",
     "url": "https://clowand.com",
+    "logo": "https://clowand.com/logo.png",
     "description": "Premium disposable toilet brush systems for American households"
   }
 
