@@ -6,7 +6,7 @@ import { useCart } from 'react-use-cart'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import Product360 from '../../../components/Product360'
+import Product360 from '../../../../components/Product360'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
