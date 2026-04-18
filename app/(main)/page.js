@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 import { useCart } from 'react-use-cart'
 import { useStore } from '../../components/Providers'
+import StripeCheckout from '../../components/StripeCheckout'
 
 import { 
   Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
@@ -201,6 +202,7 @@ export default function Home() {
   const { isCheckoutOpen, setIsCheckoutOpen } = useStore()
   const [lang, setLang] = useState('en')
   const [paymentStatus, setPaymentStatus] = useState('idle')
+  const [paymentTab, setPaymentTab] = useState('paypal') // 'paypal' | 'card'
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
@@ -778,8 +780,25 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">{bundle.name}</h3>
                   </a>
                   {bundle.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{bundle.description}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-2">{bundle.description}</p>
                   )}
+                  {(() => {
+                    try {
+                      const bts = typeof bundle.bullets === 'string'
+                        ? JSON.parse(bundle.bullets || '[]').slice(0, 3)
+                        : (Array.isArray(bundle.bullets) ? bundle.bullets.slice(0, 3) : [])
+                      return bts.length > 0 ? (
+                        <ul className="space-y-1 mb-3">
+                          {bts.map((b, i) => (
+                            <li key={i} className="flex items-center gap-1.5 text-xs text-gray-600">
+                              <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
+                              <span className="line-clamp-1">{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null
+                    } catch { return null }
+                  })()} 
                   {bundle.items && bundle.items.length > 0 && (
                     <ul className="space-y-1 mb-4 hidden md:block">
                       {bundle.items.slice(0, 3).map((item, idx) => (
@@ -1114,7 +1133,47 @@ export default function Home() {
                   <p className="text-2xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
                 </div>
               </div>
-              <div id="paypal-button-container" className="relative z-10"></div>
+              {/* Payment method tabs */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setPaymentTab('paypal')}
+                  style={{ flex:1, padding:'10px 0', borderRadius:10, border: paymentTab==='paypal' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='paypal' ? '#0f172a' : '#fff', color: paymentTab==='paypal' ? '#fff' : '#64748b', fontWeight:900, fontSize:12, letterSpacing:'0.1em', cursor:'pointer' }}
+                >
+                  PayPal
+                </button>
+                <button
+                  onClick={() => setPaymentTab('card')}
+                  style={{ flex:1, padding:'10px 0', borderRadius:10, border: paymentTab==='card' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='card' ? '#0f172a' : '#fff', color: paymentTab==='card' ? '#fff' : '#64748b', fontWeight:900, fontSize:12, letterSpacing:'0.1em', cursor:'pointer' }}
+                >
+                  Credit Card
+                </button>
+              </div>
+              {paymentTab === 'paypal' && (
+                <div id="paypal-button-container" className="relative z-10"></div>
+              )}
+              {paymentTab === 'card' && (
+                <StripeCheckout
+                  amount={finalTotal}
+                  onSuccess={async (pi) => {
+                    setPaymentStatus('processing')
+                    await fetch('/api/orders', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        order_id: `CW-${pi.id.slice(-6)}`,
+                        customer_name: 'Stripe Customer',
+                        email: '',
+                        amount: finalTotal,
+                        product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
+                        discount_code: discountInfo ? discountInfo.code : null
+                      })
+                    })
+                    setPaymentStatus('success')
+                    setTimeout(() => { emptyCart(); setIsCheckoutOpen(false); setPaymentStatus('idle') }, 5000)
+                  }}
+                  onError={(msg) => alert(msg)}
+                />
+              )}
               {paymentStatus === 'processing' && (
                 <div className="mt-4 p-5 bg-slate-50 rounded-2xl text-center border border-slate-100 animate-pulse">
                   <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
@@ -1190,7 +1249,47 @@ export default function Home() {
                   <p className="text-4xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
                 </div>
               </div>
-              <div id="paypal-button-container" className="relative z-10"></div>
+              {/* Payment method tabs */}
+              <div className="flex gap-3 mb-6">
+                <button
+                  onClick={() => setPaymentTab('paypal')}
+                  style={{ flex:1, padding:'13px 0', borderRadius:12, border: paymentTab==='paypal' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='paypal' ? '#0f172a' : '#fff', color: paymentTab==='paypal' ? '#fff' : '#64748b', fontWeight:900, fontSize:13, letterSpacing:'0.1em', cursor:'pointer' }}
+                >
+                  PayPal
+                </button>
+                <button
+                  onClick={() => setPaymentTab('card')}
+                  style={{ flex:1, padding:'13px 0', borderRadius:12, border: paymentTab==='card' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='card' ? '#0f172a' : '#fff', color: paymentTab==='card' ? '#fff' : '#64748b', fontWeight:900, fontSize:13, letterSpacing:'0.1em', cursor:'pointer' }}
+                >
+                  Credit Card
+                </button>
+              </div>
+              {paymentTab === 'paypal' && (
+                <div id="paypal-button-container" className="relative z-10"></div>
+              )}
+              {paymentTab === 'card' && (
+                <StripeCheckout
+                  amount={finalTotal}
+                  onSuccess={async (pi) => {
+                    setPaymentStatus('processing')
+                    await fetch('/api/orders', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        order_id: `CW-${pi.id.slice(-6)}`,
+                        customer_name: 'Stripe Customer',
+                        email: '',
+                        amount: finalTotal,
+                        product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
+                        discount_code: discountInfo ? discountInfo.code : null
+                      })
+                    })
+                    setPaymentStatus('success')
+                    setTimeout(() => { emptyCart(); setIsCheckoutOpen(false); setPaymentStatus('idle') }, 5000)
+                  }}
+                  onError={(msg) => alert(msg)}
+                />
+              )}
               {paymentStatus === 'processing' && (
                 <div className="mt-8 p-8 bg-slate-50 rounded-3xl text-center border border-slate-100 animate-pulse">
                   <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>

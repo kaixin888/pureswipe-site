@@ -1,41 +1,37 @@
-import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
-// In a real app, use process.env.STRIPE_SECRET_KEY
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  apiVersion: '2023-10-16',
-})
+// STRIPE_SECRET_KEY must be set in Vercel environment variables
+// Test key format: sk_test_...
+// Live key format: sk_live_...
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2024-12-18.acacia',
+});
 
-export async function POST(req) {
+export async function POST(request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json(
+      { error: 'Stripe not configured. Add STRIPE_SECRET_KEY to Vercel env vars.' },
+      { status: 500 }
+    );
+  }
+
   try {
-    const { amount, items } = await req.json()
+    const { amount, currency = 'usd', metadata = {} } = await request.json();
 
-    // 1. Check if we have a real secret key
-    if (!process.env.STRIPE_SECRET_KEY) {
-      // Simulation mode for now — returns a placeholder client secret
-      // This will fail on client side if no real test card is used,
-      // but serves as a placeholder for UI development.
-      return NextResponse.json({ 
-        clientSecret: 'pi_placeholder_secret_placeholder',
-        error: 'Stripe Secret Key missing. Contact admin to set up Stripe API.'
-      }, { status: 400 })
+    if (!amount || amount < 50) {
+      return NextResponse.json({ error: 'Invalid amount (min $0.50)' }, { status: 400 });
     }
 
-    // 2. Create PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // convert to cents
-      currency: 'usd',
-      metadata: {
-        order_items: JSON.stringify(items.map(i => `${i.quantity}x ${i.name}`)),
-      },
+      amount: Math.round(amount * 100), // convert dollars to cents
+      currency,
       automatic_payment_methods: { enabled: true },
-    })
+      metadata,
+    });
 
-    return NextResponse.json({
-      clientSecret: paymentIntent.client_secret,
-    })
+    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    console.error('Stripe PaymentIntent error:', err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
