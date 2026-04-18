@@ -9,6 +9,10 @@ export default function Product360({ images = [], currentFrame: externalFrame, o
   const startX = useRef(0)
   const currentFrameRef = useRef(externalFrame || 0)
 
+  useEffect(() => {
+    console.log('Product360 mounted with images:', images)
+  }, [images])
+  
   // Sync with external frame (thumbnails)
   useEffect(() => {
     if (externalFrame !== undefined && externalFrame !== frame) {
