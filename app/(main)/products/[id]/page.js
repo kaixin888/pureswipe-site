@@ -97,23 +97,34 @@ export default function ProductDetailPage() {
   const fullStars = Math.floor(rating)
   const halfStar = rating - fullStars >= 0.5
 
+  // SEO: use seo_title / seo_description if set, fallback to product fields
+  const seoTitle = product.seo_title || `${product.name} | Clowand`
+  const seoDesc = product.seo_description || product.description || 'Premium disposable toilet brush system by Clowand.'
+
+  // Update document title dynamically (client component)
+  React.useEffect(() => {
+    document.title = seoTitle
+    const meta = document.querySelector('meta[name="description"]')
+    if (meta) meta.setAttribute('content', seoDesc)
+  }, [seoTitle, seoDesc])
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": product ? product.name : "Clowand Toilet Brush",
-    "image": product ? product.image_url : "",
-    "description": product ? (product.description || "Premium disposable toilet brush system") : "",
+    "name": product.name,
+    "image": product.image_url,
+    "description": seoDesc,
     "brand": { "@type": "Brand", "name": "Clowand" },
     "offers": {
       "@type": "Offer",
-      "price": product ? String(product.price) : "19.99",
+      "price": String(product.price),
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock"
     },
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": product ? String(product.rating || 4.8) : "4.8",
-      "reviewCount": product ? String(product.review_count || 127) : "127"
+      "ratingValue": String(product.rating || 4.8),
+      "reviewCount": String(product.review_count || 127)
     }
   }
 
