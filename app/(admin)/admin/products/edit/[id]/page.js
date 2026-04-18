@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit, useForm } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Card, Divider, Space, Typography } from 'antd';
 import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
@@ -8,10 +8,12 @@ import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDow
 const { Text } = Typography;
 
 export default function ProductEdit() {
-  const { formProps, saveButtonProps, form } = useForm({
+  const { formProps, saveButtonProps, form, queryResult } = useForm({
     resource: 'products',
     redirect: 'list',
   });
+
+  const productData = queryResult?.data?.data;
 
   const [uploading, setUploading] = useState(false);
   const [mainPreview, setMainPreview] = useState('');
@@ -20,6 +22,31 @@ export default function ProductEdit() {
   const [descLen, setDescLen] = useState(0);
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
+
+  // Sync initial data from Supabase
+  useEffect(() => {
+    if (productData) {
+      if (productData.extra_images) {
+        try {
+          const parsed = typeof productData.extra_images === 'string' ? JSON.parse(productData.extra_images) : productData.extra_images;
+          if (Array.isArray(parsed)) setExtraImages(parsed);
+        } catch (err) {
+          console.error("Failed to parse extra_images:", err);
+        }
+      }
+      if (productData.bullets) {
+        try {
+          const parsed = typeof productData.bullets === 'string' ? JSON.parse(productData.bullets) : productData.bullets;
+          if (Array.isArray(parsed)) setBullets(parsed);
+        } catch (err) {
+          console.error("Failed to parse bullets:", err);
+        }
+      }
+      if (productData.description) setDescLen(productData.description.length);
+      if (productData.seo_description) setSeoDescLen(productData.seo_description.length);
+      if (productData.image_url) setMainPreview(productData.image_url);
+    }
+  }, [productData]);
 
   // Sync state from form values when form loads
   const onFormValuesChange = (_, allValues) => {

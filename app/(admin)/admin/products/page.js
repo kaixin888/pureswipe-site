@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   List,
   useTable,
@@ -9,9 +10,10 @@ import {
   CreateButton,
 } from '@refinedev/antd';
 import { useUpdate } from '@refinedev/core';
-import { Table, Space, Tag, Switch, Tabs, Badge } from 'antd';
+import { Table, Space, Tag, Switch, Tabs, Badge, Button } from 'antd';
 
 export default function ProductList() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('all');
 
   // Build filters based on active tab
@@ -62,7 +64,12 @@ export default function ProductList() {
       headerButtons={({ defaultButtons }) => (
         <>
           {defaultButtons}
-          <CreateButton />
+          <Button 
+            type="primary"
+            onClick={() => router.push('/admin/products/create')}
+          >
+            Create Product
+          </Button>
         </>
       )}
     >
@@ -128,7 +135,12 @@ export default function ProductList() {
           dataIndex="actions"
           render={(_, record) => (
             <Space>
-              <EditButton hideText size="small" recordItemId={record?.id} />
+              <Button 
+                size="small" 
+                onClick={() => router.push(`/admin/products/edit/${record.id}`)}
+              >
+                Edit
+              </Button>
               <DeleteButton hideText size="small" recordItemId={record?.id} />
             </Space>
           )}
