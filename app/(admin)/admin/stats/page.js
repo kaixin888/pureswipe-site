@@ -4,7 +4,8 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useList } from '@refinedev/core';
 import { List } from '@refinedev/antd';
 import { Card, Col, Row, Statistic, Typography, Spin } from 'antd';
-import { DollarOutlined, ShoppingCartOutlined, UserOutlined, GlobalOutlined } from '@ant-design/icons';
+import { DollarOutlined, ShoppingCartOutlined, UserOutlined, GlobalOutlined, WarningOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +38,16 @@ export default function Dashboard() {
   const { data: ordersData, isLoading: ordersLoading } = useList({
     resource: 'orders',
   });
+
+  // Low stock: fetch active products with stock < 10
+  const { data: productsData } = useList({
+    resource: 'products',
+    filters: [
+      { field: 'status', operator: 'eq', value: 'active' },
+    ],
+    pagination: { pageSize: 100 },
+  });
+  const lowStockProducts = (productsData?.data || []).filter(p => p.stock < 10);
 
   // Cloudflare Analytics — real visitor data
   const [cfData, setCfData] = useState(null);
@@ -133,6 +144,43 @@ export default function Dashboard() {
 
   return (
     <List title="Data Insights — Phase 2 Intelligence">
+
+      {/* Low Stock Alert */}
+      {lowStockProducts.length > 0 && (
+        <div style={{ marginBottom: 24, background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12, padding: '16px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <WarningOutlined style={{ color: '#ea580c', fontSize: 18 }} />
+            <span style={{ fontWeight: 700, fontSize: 15, color: '#9a3412' }}>
+              Low Stock Alert — {lowStockProducts.length} product{lowStockProducts.length > 1 ? 's' : ''} need attention
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {lowStockProducts.map(p => (
+              <Link key={p.id} href={`/admin/products/edit/${p.id}`}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '6px 14px', borderRadius: 8, textDecoration: 'none',
+                  background: p.stock === 0 ? '#fee2e2' : '#fff7ed',
+                  border: `1px solid ${p.stock === 0 ? '#fca5a5' : '#fdba74'}`,
+                }}
+              >
+                {p.image_url && (
+                  <img src={p.image_url} alt={p.name} style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} />
+                )}
+                <span style={{ fontSize: 13, color: '#1e293b', fontWeight: 500 }}>{p.name}</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                  background: p.stock === 0 ? '#ef4444' : '#f97316',
+                  color: '#fff',
+                }}>
+                  {p.stock === 0 ? 'OUT OF STOCK' : `${p.stock} left`}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Row gutter={16}>
         <Col span={6}>
           <Card bordered={false} hoverable>

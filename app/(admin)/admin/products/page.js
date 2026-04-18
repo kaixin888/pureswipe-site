@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   List,
   useTable,
@@ -9,17 +9,53 @@ import {
   CreateButton,
 } from '@refinedev/antd';
 import { useUpdate } from '@refinedev/core';
-import { Table, Space, Tag, Switch } from 'antd';
+import { Table, Space, Tag, Switch, Tabs, Badge } from 'antd';
 
 export default function ProductList() {
-  const { tableProps } = useTable({
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Build filters based on active tab
+  const tabFilters = {
+    all: [],
+    active: [
+      { field: 'status', operator: 'eq', value: 'active' },
+      { field: 'stock', operator: 'gt', value: 0 },
+    ],
+    out_of_stock: [
+      { field: 'stock', operator: 'eq', value: 0 },
+    ],
+    draft: [
+      { field: 'status', operator: 'eq', value: 'draft' },
+    ],
+  };
+
+  const { tableProps, tableQueryResult } = useTable({
     resource: 'products',
+    filters: {
+      permanent: tabFilters[activeTab] || [],
+    },
     sorters: {
       initial: [{ field: 'created_at', order: 'desc' }],
     },
   });
 
   const { mutate: updateStatus } = useUpdate();
+
+  // Count badges from full dataset (approximate from current page data)
+  const allData = tableQueryResult?.data?.data || [];
+  const counts = {
+    all: tableQueryResult?.data?.total || 0,
+    active: allData.filter(p => p.status === 'active' && p.stock > 0).length,
+    out_of_stock: allData.filter(p => p.stock === 0).length,
+    draft: allData.filter(p => p.status === 'draft').length,
+  };
+
+  const tabItems = [
+    { key: 'all', label: <span>All <Badge count={counts.all} showZero style={{ backgroundColor: '#6b7280', marginLeft: 4 }} /></span> },
+    { key: 'active', label: <span>Active <Badge count={counts.active} showZero style={{ backgroundColor: '#22c55e', marginLeft: 4 }} /></span> },
+    { key: 'out_of_stock', label: <span>Out of Stock <Badge count={counts.out_of_stock} showZero style={{ backgroundColor: '#ef4444', marginLeft: 4 }} /></span> },
+    { key: 'draft', label: <span>Draft <Badge count={counts.draft} showZero style={{ backgroundColor: '#f59e0b', marginLeft: 4 }} /></span> },
+  ];
 
   return (
     <List
@@ -30,6 +66,12 @@ export default function ProductList() {
         </>
       )}
     >
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={tabItems}
+        style={{ marginBottom: 16 }}
+      />
       <Table {...tableProps} rowKey="id">
         <Table.Column
           dataIndex="image_url"
@@ -50,15 +92,23 @@ export default function ProductList() {
         />
         <Table.Column dataIndex="name" title="Name" />
         <Table.Column dataIndex="price" title="Price" render={(v) => `$${v}`} />
-        <Table.Column dataIndex="stock" title="Stock" />
+        <Table.Column
+          dataIndex="stock"
+          title="Stock"
+          render={(v) => {
+            if (v === 0) return <Tag color="red">OUT</Tag>;
+            if (v < 10) return <Tag color="orange">{v} Low</Tag>;
+            return <Tag color="green">{v}</Tag>;
+          }}
+        />
         <Table.Column
           dataIndex="status"
           title="Status"
           render={(value, record) => (
             <Space>
-              <Switch 
+              <Switch
                 size="small"
-                checked={value === 'active'} 
+                checked={value === 'active'}
                 onChange={(checked) => {
                   updateStatus({
                     resource: 'products',
@@ -67,7 +117,7 @@ export default function ProductList() {
                   });
                 }}
               />
-              <Tag color={value === 'active' ? 'green' : 'red'}>
+              <Tag color={value === 'active' ? 'green' : value === 'draft' ? 'orange' : 'red'}>
                 {value ? value.toUpperCase() : 'UNKNOWN'}
               </Tag>
             </Space>

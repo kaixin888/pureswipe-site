@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   List,
   useTable,
@@ -8,7 +8,8 @@ import {
   ShowButton,
   ExportButton,
 } from '@refinedev/antd';
-import { Table, Space, Tag } from 'antd';
+import { Table, Space, Tag, Button, Tooltip, message } from 'antd';
+import { MailOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 export default function OrderList() {
   const { tableProps } = useTable({
@@ -18,12 +19,15 @@ export default function OrderList() {
     },
   });
 
-  // 映射物流导出字段 (匹配 PM 定义的 USPS/FedEx 标准)
+  // Track which order IDs have had review requests sent this session
+  const [sentIds, setSentIds] = useState({});
+  const [loadingIds, setLoadingIds] = useState({});
+
   const mapExportData = (data) => {
     return data.map((item) => ({
       'Recipient Name': item.customer_name || '',
       'Shipping Address 1': item.shipping_address || '',
-      'Shipping Address 2': '', 
+      'Shipping Address 2': '',
       'City': item.shipping_city || '',
       'State': item.shipping_state?.substring(0, 2).toUpperCase() || '',
       'Zip Code': item.shipping_zip ? `="\t${item.shipping_zip}"` : '',
@@ -35,6 +39,26 @@ export default function OrderList() {
       'Order Date': item.created_at ? new Date(item.created_at).toLocaleDateString() : '',
       'Internal Notes': item.status === 'Paid' ? 'Priority' : '',
     }));
+  };
+
+  const handleRequestReview = async (record) => {
+    if (!record.email) { message.warning('No email on record'); return; }
+    setLoadingIds(prev => ({ ...prev, [record.id]: true }));
+    try {
+      const res = await fetch('/api/send-review-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: record.id, email: record.email, orderData: record }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      setSentIds(prev => ({ ...prev, [record.id]: true }));
+      message.success(`Review request sent to ${record.email}`);
+    } catch (err) {
+      message.error('Send failed: ' + err.message);
+    } finally {
+      setLoadingIds(prev => ({ ...prev, [record.id]: false }));
+    }
   };
 
   return (
@@ -69,12 +93,33 @@ export default function OrderList() {
         <Table.Column
           title="Actions"
           dataIndex="actions"
-          render={(_, record) => (
-            <Space>
-              <EditButton hideText size="small" recordItemId={record.id} />
-              <ShowButton hideText size="small" recordItemId={record.id} />
-            </Space>
-          )}
+          render={(_, record) => {
+            const alreadySent = sentIds[record.id] || !!record.review_requested_at;
+            const isLoading = loadingIds[record.id];
+            const canRequest = record.status === 'Shipped' || record.status === 'Delivered';
+            return (
+              <Space>
+                <EditButton hideText size="small" recordItemId={record.id} />
+                <ShowButton hideText size="small" recordItemId={record.id} />
+                {canRequest && (
+                  <Tooltip title={alreadySent ? 'Review request already sent' : 'Send review request email'}>
+                    <Button
+                      size="small"
+                      icon={alreadySent ? <CheckCircleOutlined /> : <MailOutlined />}
+                      loading={isLoading}
+                      disabled={alreadySent}
+                      type={alreadySent ? 'default' : 'primary'}
+                      ghost={!alreadySent}
+                      onClick={() => handleRequestReview(record)}
+                      style={alreadySent ? { color: '#52c41a', borderColor: '#52c41a' } : {}}
+                    >
+                      {alreadySent ? 'Sent' : 'Review'}
+                    </Button>
+                  </Tooltip>
+                )}
+              </Space>
+            );
+          }}
         />
       </Table>
     </List>
