@@ -200,6 +200,25 @@ export default function ProductDetailPage() {
             <span className="text-xs bg-green-900 text-green-300 px-2 py-1 rounded font-bold">SAVE 23%</span>
           </div>
 
+          {/* Bullet points */}
+          {(() => {
+            try {
+              const bts = typeof product.bullets === 'string'
+                ? JSON.parse(product.bullets || '[]')
+                : (Array.isArray(product.bullets) ? product.bullets : [])
+              return bts.length > 0 ? (
+                <ul className="space-y-2 border-t border-slate-800 pt-4">
+                  {bts.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <span className="text-green-400 mt-0.5 flex-shrink-0 font-bold">✓</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null
+            } catch { return null }
+          })()}
+
           {/* Stock status */}
           {isOutOfStock ? (
             <div className="text-red-400 font-bold text-sm">OUT OF STOCK</div>

@@ -202,7 +202,7 @@ export default function Home() {
   const { isCheckoutOpen, setIsCheckoutOpen } = useStore()
   const [lang, setLang] = useState('en')
   const [paymentStatus, setPaymentStatus] = useState('idle')
-  const [paymentTab, setPaymentTab] = useState('paypal') // 'paypal' | 'card'
+  const [paymentTab, setPaymentTab] = useState('card') // 'paypal' | 'card'
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
