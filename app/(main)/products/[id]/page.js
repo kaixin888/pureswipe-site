@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Product360 from '../../../../components/Product360'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useStore } from '../../../../components/Providers'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -17,6 +19,8 @@ export default function ProductDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const { addItem } = useCart()
+  const { setIsCartOpen } = useStore()
+  const [showSticky, setShowSticky] = useState(false)
 
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -24,6 +28,12 @@ export default function ProductDetailPage() {
   const [added, setAdded] = useState(false)
   const [qty, setQty] = useState(1)
   const [reviews, setReviews] = useState([])
+
+  useEffect(() => {
+    const handleScroll = () => setShowSticky(window.scrollY > 500)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     async function fetchProduct() {
@@ -336,6 +346,43 @@ export default function ProductDetailPage() {
         >
           ← VIEW ALL PRODUCTS
         </Link>
+      {/* Sticky Mobile Add to Cart */}
+      <AnimatePresence>
+        {showSticky && (
+          <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="md:hidden fixed bottom-6 left-4 right-4 z-[100] bg-white rounded-3xl shadow-2xl p-4 flex items-center justify-between border border-slate-100"
+            style={{ 
+              boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
+              marginBottom: 'env(safe-area-inset-bottom, 0px)'
+            }}
+          >
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="w-12 h-12 bg-slate-50 rounded-xl overflow-hidden shrink-0 border border-slate-100 p-1">
+                <Image src={product.image_url} alt={product.name} width={48} height={48} className="w-full h-full object-contain" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[10px] font-black uppercase tracking-tighter text-slate-900 truncate pr-2">{product.name}</h4>
+                <p className="text-sm font-black italic tracking-tighter text-blue-600">${product.price?.toFixed(2)}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                handleAddToCart()
+                setIsCartOpen(true)
+              }}
+              disabled={isOutOfStock}
+              className={`px-8 py-3 rounded-full font-black tracking-widest text-[10px] uppercase transition-all ${
+                isOutOfStock ? 'bg-slate-200 text-slate-400' : 'bg-slate-950 text-white shadow-xl shadow-slate-900/20 active:scale-95'
+              }`}
+            >
+              {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       </section>
     </main>
   )

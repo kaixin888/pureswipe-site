@@ -3,6 +3,7 @@ import '../globals.css'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import ChatWidget from '../../components/ChatWidget'
+import RecentSales from '../../components/RecentSales'
 import AnnouncementBar from '../../components/AnnouncementBar'
 import { Providers } from '../../components/Providers'
 
@@ -15,6 +16,7 @@ export default function SiteLayout({ children }) {
       <div className="pt-[112px] md:pt-[104px]">{children}</div>
       <Footer />
       <ChatWidget />
+      <RecentSales />
     </Providers>
   )
 }
