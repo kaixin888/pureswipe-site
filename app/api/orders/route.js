@@ -23,6 +23,7 @@ export async function POST(request) {
           bundle_id: data.bundle_id,
           product_name: data.product_name,
           status: 'Paid',
+          payment_method: data.payment_method || 'paypal',
           shipping_address: data.shipping_address,
           shipping_city: data.shipping_city,
           shipping_state: data.shipping_state,

@@ -9,7 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 });
 
 export async function POST(request) {
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
     return NextResponse.json(
       { error: 'Stripe not configured. Add STRIPE_SECRET_KEY to Vercel env vars.' },
       { status: 500 }

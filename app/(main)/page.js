@@ -1163,6 +1163,7 @@ export default function Home() {
                         order_id: `CW-${pi.id.slice(-6)}`,
                         customer_name: 'Stripe Customer',
                         email: '',
+                        payment_method: 'stripe',
                         amount: finalTotal,
                         product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
                         discount_code: discountInfo ? discountInfo.code : null
@@ -1279,6 +1280,7 @@ export default function Home() {
                         order_id: `CW-${pi.id.slice(-6)}`,
                         customer_name: 'Stripe Customer',
                         email: '',
+                        payment_method: 'stripe',
                         amount: finalTotal,
                         product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
                         discount_code: discountInfo ? discountInfo.code : null
