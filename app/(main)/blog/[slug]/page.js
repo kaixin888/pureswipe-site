@@ -110,6 +110,7 @@ export default async function BlogPostPage({ params }) {
 
   if (!post) notFound()
 
+    // GEO: Enhanced Article and Breadcrumb Schema
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -117,7 +118,24 @@ export default async function BlogPostPage({ params }) {
     "description": post.excerpt || "",
     "image": post.cover_image || "https://clowand.com/logo.png",
     "datePublished": post.published_at,
-    "author": { "@type": "Organization", "name": "Clowand" },
+    "dateModified": post.published_at,
+    "author": { "@type": "Person", "name": "Clowand Engineering Team", "url": "https://clowand.com/about" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Clowand",
+      "logo": { "@type": "ImageObject", "url": "https://clowand.com/logo.png" }
+    }
+  }
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://clowand.com" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://clowand.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://clowand.com/blog/${params.slug}` }
+    ]
+  },
     "publisher": {
       "@type": "Organization",
       "name": "Clowand",
@@ -128,6 +146,7 @@ export default async function BlogPostPage({ params }) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-6 pt-8 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">

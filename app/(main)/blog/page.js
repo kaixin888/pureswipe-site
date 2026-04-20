@@ -37,8 +37,18 @@ function formatDate(iso) {
 export default async function BlogPage() {
   const posts = await getPosts()
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://clowand.com" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://clowand.com/blog" }
+    ]
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* Hero */}
       <section className="py-24 px-6 text-center border-b border-slate-800">
         <p className="text-xs font-black tracking-widest text-blue-400 uppercase mb-4">Clowand Blog</p>

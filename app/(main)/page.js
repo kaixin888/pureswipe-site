@@ -510,6 +510,20 @@ export default function Home() {
     }
   }
 
+  // GEO: FAQPage Schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": (faqs.length > 0 ? faqs : FAQ).map(faq => ({
+      "@type": "Question",
+      "name": faq.question || faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer || faq.a
+      }
+    }))
+  }
+
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -522,6 +536,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

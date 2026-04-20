@@ -118,29 +118,55 @@ export default function ProductDetailPage() {
     if (meta) meta.setAttribute('content', seoDesc)
   }, [seoTitle, seoDesc])
 
+  // GEO: Enhanced Product and Breadcrumb Schema
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
     "image": product.image_url,
     "description": seoDesc,
+    "sku": product.id.toString(),
     "brand": { "@type": "Brand", "name": "Clowand" },
     "offers": {
       "@type": "Offer",
-      "price": String(product.price),
+      "url": `https://clowand.com/products/${product.id}`,
       "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock"
+      "price": String(product.price),
+      "priceValidUntil": "2026-12-31",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition"
     },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": String(product.rating || 4.8),
       "reviewCount": String(product.review_count || 127)
-    }
+    },
+    "review": reviews.slice(0, 3).map(r => ({
+      "@type": "Review",
+      "author": { "@type": "Person", "name": r.author_name },
+      "datePublished": r.created_at,
+      "reviewBody": r.content,
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": String(r.rating || 5)
+      }
+    }))
+  }
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://clowand.com" },
+      { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://clowand.com/#bundles" },
+      { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://clowand.com/products/${product.id}` }
+    ]
   }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">
