@@ -94,19 +94,6 @@ export default function ProductDetailPage() {
 
   function handleBuyNow() {
     if (isOutOfStock) return
-    for (let i = 0; i < qty; i++) {
-      addItem({ id: product.id.toString(), name: product.name, price: product.price, image: product.image_url })
-    }
-    setIsCheckoutOpen(true)
-  }
-
-  function handleAddToCart() {
-    if (isOutOfStock) return
-    for (let i = 0; i < qty; i++) {
-      addItem({ id: product.id.toString(), name: product.name, price: product.price, image: product.image_url }
-
-  function handleBuyNow() {
-    if (isOutOfStock) return
     addItem({ 
       id: product.id.toString(), 
       name: product.name, 
@@ -116,8 +103,16 @@ export default function ProductDetailPage() {
     })
     setIsCheckoutOpen(true)
   }
-)
-    }
+
+  function handleAddToCart() {
+    if (isOutOfStock) return
+    addItem({ 
+      id: product.id.toString(), 
+      name: product.name, 
+      price: product.price, 
+      image: product.image_url,
+      quantity: qty
+    })
     
     // GA4 Ecommerce: add_to_cart
     if (typeof window !== 'undefined' && window.gtag) {
