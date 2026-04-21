@@ -594,7 +594,7 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
           <div className="flex-1 order-2 md:order-1">
-             <div className="relative group rounded-[4rem] border border-white/10 min-h-[450px] flex items-center">
+                           <div className="relative group rounded-[4rem] border border-white/10 min-h-[550px] flex items-center overflow-visible">
               <Image 
                 src="/images/home-promo-1.jpg" 
                 width={800} 
@@ -603,7 +603,7 @@ export default function Home() {
                 alt="Zero-touch hygiene technology" 
               />
               <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
-                                                     <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-[1.4] py-4">Designed for <br/> US Households</h2>
+                                                     <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-relaxed py-6">Designed for <br/> US Households</h2>
                  <p className="text-slate-400 text-lg mb-10 max-w-md leading-relaxed">Built to meet the highest sanitary standards. Professional-grade durability meets minimalist design.</p>
                  <ul className="space-y-6">
                    {[
