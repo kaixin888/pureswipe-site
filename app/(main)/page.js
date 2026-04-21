@@ -575,6 +575,8 @@ export default function Home() {
           autoPlay
           muted
           playsInline
+          preload="auto"
+          poster="/images/hero.jpg"
           className="absolute inset-0 w-full h-full object-cover"
           onEnded={() => setVideoIndex(v => (v + 1) % 2)}
         >
@@ -662,6 +664,8 @@ export default function Home() {
                 muted
                 loop={true}
                 playsInline
+                preload="auto"
+                poster="/images/hero.jpg"
                 className="w-full h-full object-cover"
                 onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
               >
@@ -786,6 +790,8 @@ export default function Home() {
                     height={800}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
+                    priority={i === 0}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
                 </a>

@@ -100,6 +100,7 @@ export default function Product360({ images = [], currentFrame: externalFrame, o
             fill
             className="object-contain p-8"
             priority={idx === 0}
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
       ))}

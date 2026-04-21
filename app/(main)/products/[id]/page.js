@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
                     selectedImage === idx ? 'border-blue-500' : 'border-slate-700 hover:border-slate-400'
                   }`}
                 >
-                  <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain p-1" />
+                  <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain p-1" sizes="64px" />
                 </button>
               ))}
             </div>
@@ -387,7 +387,7 @@ export default function ProductDetailPage() {
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="w-12 h-12 bg-slate-50 rounded-xl overflow-hidden shrink-0 border border-slate-100 p-1">
-                <Image src={product.image_url} alt={product.name} width={48} height={48} className="w-full h-full object-contain" />
+                <Image src={product.image_url} alt={product.name} width={48} height={48} className="w-full h-full object-contain" sizes="48px" />
               </div>
               <div className="min-w-0">
                 <h4 className="text-[10px] font-black uppercase tracking-tighter text-slate-900 truncate pr-2">{product.name}</h4>
