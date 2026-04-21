@@ -596,7 +596,7 @@ export default function Home() {
           <div className="flex-1 order-2 md:order-1">
              <div className="relative group rounded-[4rem] overflow-hidden border border-white/10 aspect-video">
               <Image 
-                src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800" 
+                src="/images/home-promo-1.jpg" 
                 width={800} 
                 height={450}
                 className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
@@ -882,7 +882,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-hidden relative group">
           <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
             <Image 
-              src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=800" 
+              src="/images/home-promo-2.jpg" 
               width={800} 
               height={600}
               className="w-full h-full object-cover grayscale" 

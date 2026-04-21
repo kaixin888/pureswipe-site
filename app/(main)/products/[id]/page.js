@@ -292,10 +292,10 @@ export default function ProductDetail() {
             <div className="flex flex-col items-center gap-3 mt-4">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Guaranteed Safe Checkout</p>
               <div className="flex items-center gap-4 opacity-70 grayscale hover:grayscale-0 transition-all">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
+                <img src="/images/trust/paypal.svg" alt="PayPal" className="h-5 brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" />
+                <img src="/images/trust/stripe.svg" alt="Stripe" className="h-6 brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" />
+                <img src="/images/trust/visa.svg" alt="Visa" className="h-4 brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" />
+                <img src="/images/trust/mastercard.svg" alt="Mastercard" className="h-8 brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" />
               </div>
             </div>
           </div>
