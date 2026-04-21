@@ -145,7 +145,22 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
             <p className="text-[10px] text-slate-400 text-center mb-3">Free shipping on orders over $30</p>
             <button
               className="w-full py-4 bg-blue-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95"
-              onClick={onCheckout}
+              onClick={() => {
+                // GA4 Ecommerce: begin_checkout
+                if (typeof window !== 'undefined' && window.gtag) {
+                  window.gtag('event', 'begin_checkout', {
+                    currency: 'USD',
+                    value: cartTotal,
+                    items: items.map(item => ({
+                      item_id: item.id.toString(),
+                      item_name: item.name,
+                      price: item.price,
+                      quantity: item.quantity
+                    }))
+                  });
+                }
+                onCheckout();
+              }}
             >
               Continue to Checkout
             </button>

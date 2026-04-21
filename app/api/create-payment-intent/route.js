@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// STRIPE_SECRET_KEY must be set in Vercel environment variables
-// Test key format: sk_test_...
-// Live key format: sk_live_...
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-12-18.acacia',
-});
-
 export async function POST(request) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
@@ -16,6 +9,10 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+
+  const stripe = new Stripe(secretKey, {
+    apiVersion: '2024-12-18.acacia',
+  });
 
   try {
     const { amount, currency = 'usd', metadata = {} } = await request.json();

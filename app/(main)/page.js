@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 import { useCart } from 'react-use-cart'
 import { useStore } from '../../components/Providers'
-import StripeCheckout from '../../components/StripeCheckout'
+
 
 import { 
   Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
@@ -199,10 +199,10 @@ function TrustBar() {
 
 export default function Home() {
   const { addItem, cartTotal, items, emptyCart } = useCart()
-  const { isCheckoutOpen, setIsCheckoutOpen } = useStore()
+  const { setIsCheckoutOpen } = useStore()
   const [lang, setLang] = useState('en')
-  const [paymentStatus, setPaymentStatus] = useState('idle')
-  const [paymentTab, setPaymentTab] = useState('card') // 'paypal' | 'card'
+
+
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
@@ -211,10 +211,10 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [bundles, setBundles] = useState(BUNDLES)
-  const [discountCode, setDiscountCode] = useState('')
-  const [discountInfo, setDiscountInfo] = useState(null) // {code, discountPercent, discount, finalTotal}
-  const [discountError, setDiscountError] = useState('')
-  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false)
+
+
+
+
   const [reviews, setReviews] = useState([])
   const [faqs, setFaqs] = useState([])
   const [siteSettings, setSiteSettings] = useState({})
@@ -296,48 +296,9 @@ export default function Home() {
     fetchSettings()
   }, [])
 
-  // Hide Chatwoot during checkout - Chatwoot z-index ~2147483000 cannot be overridden by CSS
-  useEffect(() => {
-    // Real Chatwoot DOM IDs: #cw-bubble-holder (bubble), #cw-widget-holder (panel)
-    const bubble = document.querySelector('#cw-bubble-holder');
-    const widget = document.querySelector('#cw-widget-holder');
-    if (isCheckoutOpen) {
-      if (bubble) bubble.style.setProperty('display', 'none', 'important');
-      if (widget) widget.style.setProperty('display', 'none', 'important');
-      window.$chatwoot?.toggleBubbleVisibility?.('hide');
-    } else {
-      if (bubble) bubble.style.removeProperty('display');
-      if (widget) widget.style.removeProperty('display');
-      window.$chatwoot?.toggleBubbleVisibility?.('show');
-    }
-  }, [isCheckoutOpen])
 
-  const handleApplyDiscount = async () => {
-    if (!discountCode.trim()) return
-    setIsApplyingDiscount(true)
-    setDiscountError('')
-    setDiscountInfo(null)
-    try {
-      const res = await fetch('/api/apply-discount', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: discountCode, cartTotal }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setDiscountError(data.error || 'Invalid code')
-      } else {
-        setDiscountInfo(data)
-      }
-    } catch {
-      setDiscountError('Failed to apply code. Try again.')
-    } finally {
-      setIsApplyingDiscount(false)
-    }
-  }
 
   // Reset discount when checkout closes
-  const finalTotal = discountInfo ? parseFloat(discountInfo.finalTotal) : cartTotal
 
   useEffect(() => {
     const trackVisitor = async () => {
@@ -348,96 +309,6 @@ export default function Home() {
     }
     trackVisitor()
   }, [])
-
-  useEffect(() => {
-    if (!isCheckoutOpen) return
-    const script = document.createElement('script')
-    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&disable-funding=credit,card`
-    script.addEventListener('load', () => {
-      if (window.paypal) {
-        window.paypal.Buttons({
-          createOrder: (data, actions) => {
-            return actions.order.create({
-              purchase_units: [{
-                amount: { 
-                  value: finalTotal.toFixed(2),
-                  breakdown: {
-                    item_total: {
-                      currency_code: 'USD',
-                      value: finalTotal.toFixed(2)
-                    }
-                  }
-                },
-                items: items.map(item => ({
-                  name: item.name,
-                  unit_amount: {
-                    currency_code: 'USD',
-                    value: item.price.toString()
-                  },
-                  quantity: item.quantity.toString()
-                }))
-              }]
-            })
-          },
-          onApprove: async (data, actions) => {
-            setPaymentStatus('processing')
-            const order = await actions.order.capture()
-            
-            const shipping = order.purchase_units[0].shipping
-            const address = shipping.address
-            const phone = order.payer.phone?.phone_number?.national_number || ''
-            
-            const res = await fetch('/api/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                order_id: `CW-${order.id.slice(-6)}`,
-                customer_name: order.payer.name.given_name + ' ' + order.payer.name.surname,
-                email: order.payer.email_address,
-                phone: phone,
-                amount: finalTotal,
-                bundle_id: items.map(i => i.id).join(', '),
-                product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
-                shipping_address: address.address_line_1 + (address.address_line_2 ? ', ' + address.address_line_2 : ''),
-                shipping_city: address.admin_area_2,
-                shipping_state: address.admin_area_1,
-                shipping_zip: address.postal_code,
-                shipping_country: address.country_code,
-                                discount_code: discountInfo ? discountInfo.code : null
-              })
-            })
-            
-            if (res.ok) {
-              setPaymentStatus('success')
-              // GTM purchase event
-              if (typeof window !== 'undefined' && window.dataLayer) {
-                window.dataLayer.push({
-                  event: 'purchase',
-                  value: finalTotal,
-                  currency: 'USD',
-                  transaction_id: `CW-${order.id.slice(-6)}`
-                })
-              }
-              setTimeout(() => {
-                emptyCart()
-                setIsCheckoutOpen(false)
-                setPaymentStatus('idle')
-              }, 5000)
-            } else {
-              setPaymentStatus('idle')
-              alert('Order processing failed. Please contact support.')
-            }
-          }
-        }).render('#paypal-button-container')
-      }
-    })
-    document.body.appendChild(script)
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script)
-      }
-    }
-  }, [isCheckoutOpen])
 
   useEffect(() => {
     const shown = localStorage.getItem('clowand_exit_popup_shown')
@@ -575,7 +446,7 @@ export default function Home() {
           autoPlay
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/images/hero.jpg"
           className="absolute inset-0 w-full h-full object-cover"
           onEnded={() => setVideoIndex(v => (v + 1) % 2)}
@@ -664,7 +535,7 @@ export default function Home() {
                 muted
                 loop={true}
                 playsInline
-                preload="auto"
+                preload="metadata"
                 poster="/images/hero.jpg"
                 className="w-full h-full object-cover"
                 onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
@@ -834,13 +705,22 @@ export default function Home() {
                       <span className="text-lg font-bold text-gray-900">${bundle.price.toFixed(2)}</span>
                       <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                     </div>
-                    <button
-                      onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } setIsCheckoutOpen(true); }}
-                      disabled={bundle.stock <= 0}
-                      className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 active:scale-[0.98]'}`}
-                    >
-                      {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } }}
+                        disabled={bundle.stock <= 0}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[0.98]'}`}
+                      >
+                        {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                      </button>
+                      <button
+                        onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); setIsCheckoutOpen(true); }}
+                        disabled={bundle.stock <= 0}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98]'}`}
+                      >
+                        {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
+                      </button>
+                    </div>
                     {bundle.id && (
                       <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
                         View Details →
@@ -1080,254 +960,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Checkout Modal */}
-      {isCheckoutOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-[130] animate-in fade-in duration-300"
-            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
-            onClick={() => setIsCheckoutOpen(false)}
-          />
-
-          {/* Mobile: bottom sheet */}
-          <div
-            className="md:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white rounded-t-3xl animate-in slide-in-from-bottom duration-300 flex flex-col overflow-hidden"
-            style={{ maxHeight: '92vh' }}
-          >
-            <div className="shrink-0 pt-3 pb-1 flex justify-center">
-              <div className="w-10 h-1 bg-slate-200 rounded-full" />
-            </div>
-            <button
-              onClick={() => setIsCheckoutOpen(false)}
-              className="absolute top-3 right-4 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
-            >
-              <X size={20} />
-            </button>
-            <div className="flex-1 overflow-y-auto px-5 py-3" style={{ paddingBottom: '96px' }}>
-              <div className="mb-5">
-                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
-                <h2 className="text-2xl font-black italic tracking-tighter uppercase mt-1 text-slate-950">Checkout</h2>
-              </div>
-              <div className="max-h-[180px] overflow-y-auto mb-4 space-y-2">
-                {items.map((item) => (
-                  <div key={item.id} className="bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex justify-between items-center">
-                    <div className="min-w-0 mr-3">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic mb-0.5">{item.quantity}x</p>
-                      <h4 className="text-sm font-black italic uppercase tracking-tight text-slate-900 line-clamp-1">{item.name}</h4>
-                    </div>
-                    <p className="text-base font-black italic tracking-tighter text-blue-600 shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mb-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={discountCode}
-                    onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
-                    placeholder="Discount code (e.g. CLOWAND10)"
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={handleApplyDiscount}
-                    disabled={isApplyingDiscount || !discountCode.trim()}
-                    className="px-4 py-2.5 bg-slate-950 text-white rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
-                  >
-                    {isApplyingDiscount ? '...' : 'Apply'}
-                  </button>
-                </div>
-                {discountError && <p className="mt-1.5 text-xs text-red-500 font-bold pl-1">{discountError}</p>}
-                {discountInfo && (
-                  <p className="mt-1.5 text-xs text-emerald-600 font-black pl-1 uppercase tracking-wider">
-                    {discountInfo.discountPercent}% OFF applied
-                  </p>
-                )}
-              </div>
-              <div className="flex justify-between items-center mb-4 px-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total</p>
-                <div className="text-right">
-                  {discountInfo && (
-                    <p className="text-sm font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
-                  )}
-                  <p className="text-2xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
-                </div>
-              </div>
-              {/* Payment method tabs */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setPaymentTab('paypal')}
-                  style={{ flex:1, padding:'10px 0', borderRadius:10, border: paymentTab==='paypal' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='paypal' ? '#0f172a' : '#fff', color: paymentTab==='paypal' ? '#fff' : '#64748b', fontWeight:900, fontSize:12, letterSpacing:'0.1em', cursor:'pointer' }}
-                >
-                  PayPal
-                </button>
-                <button
-                  onClick={() => setPaymentTab('card')}
-                  style={{ flex:1, padding:'10px 0', borderRadius:10, border: paymentTab==='card' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='card' ? '#0f172a' : '#fff', color: paymentTab==='card' ? '#fff' : '#64748b', fontWeight:900, fontSize:12, letterSpacing:'0.1em', cursor:'pointer' }}
-                >
-                  Credit Card
-                </button>
-              </div>
-              {paymentTab === 'paypal' && (
-                <div id="paypal-button-container" className="relative z-10"></div>
-              )}
-              {paymentTab === 'card' && (
-                <StripeCheckout
-                  amount={finalTotal}
-                  onSuccess={async (pi) => {
-                    setPaymentStatus('processing')
-                    await fetch('/api/orders', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        order_id: `CW-${pi.id.slice(-6)}`,
-                        customer_name: 'Stripe Customer',
-                        email: '',
-                        payment_method: 'stripe',
-                        amount: finalTotal,
-                        product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
-                        discount_code: discountInfo ? discountInfo.code : null
-                      })
-                    })
-                    setPaymentStatus('success')
-                    setTimeout(() => { emptyCart(); setIsCheckoutOpen(false); setPaymentStatus('idle') }, 5000)
-                  }}
-                  onError={(msg) => alert(msg)}
-                />
-              )}
-              {paymentStatus === 'processing' && (
-                <div className="mt-4 p-5 bg-slate-50 rounded-2xl text-center border border-slate-100 animate-pulse">
-                  <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
-                </div>
-              )}
-              {paymentStatus === 'success' && (
-                <div className="mt-4 p-5 bg-emerald-50 rounded-2xl text-center border border-emerald-100">
-                  <p className="text-lg font-black italic tracking-tighter text-emerald-600 uppercase mb-1">Success!</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
-                </div>
-              )}
-              <div className="h-6" />
-            </div>
-          </div>
-
-          {/* Desktop: centered modal */}
-          <div
-            className="hidden md:flex fixed top-1/2 left-1/2 z-[140] bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-95 fade-in duration-300 flex-col overflow-hidden"
-            style={{ maxHeight: '88vh' }}
-          >
-            <button
-              onClick={() => setIsCheckoutOpen(false)}
-              className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
-            >
-              <X size={22} />
-            </button>
-            <div className="overflow-y-auto p-10">
-              <div className="mb-8">
-                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Securing Order</span>
-                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-3 text-slate-950">Checkout</h2>
-              </div>
-              <div className="max-h-[240px] overflow-y-auto mb-8 space-y-3 pr-2">
-                {items.map((item) => (
-                  <div key={item.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex justify-between items-center">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic mb-1">{item.quantity}x</p>
-                      <h4 className="text-lg font-black italic uppercase tracking-tight text-slate-900 leading-none">{item.name}</h4>
-                    </div>
-                    <p className="text-lg font-black italic tracking-tighter text-blue-600">${(item.price * item.quantity).toFixed(2)}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mb-6 px-1">
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={discountCode}
-                    onChange={(e) => { setDiscountCode(e.target.value); setDiscountError(''); setDiscountInfo(null); }}
-                    placeholder="Discount code (e.g. CLOWAND10)"
-                    className="flex-1 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-700 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={handleApplyDiscount}
-                    disabled={isApplyingDiscount || !discountCode.trim()}
-                    className="px-5 py-3 bg-slate-950 text-white rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-40 hover:bg-blue-600 transition-colors"
-                  >
-                    {isApplyingDiscount ? '...' : 'Apply'}
-                  </button>
-                </div>
-                {discountError && <p className="mt-2 text-xs text-red-500 font-bold pl-2">{discountError}</p>}
-                {discountInfo && (
-                  <p className="mt-2 text-xs text-emerald-600 font-black pl-2 uppercase tracking-wider">
-                    {discountInfo.discountPercent}% OFF applied — saving ${discountInfo.discount}
-                  </p>
-                )}
-              </div>
-              <div className="flex justify-between items-center mb-8 px-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Total Amount</p>
-                <div className="text-right">
-                  {discountInfo && (
-                    <p className="text-lg font-black italic tracking-tighter text-slate-400 line-through">${cartTotal.toFixed(2)}</p>
-                  )}
-                  <p className="text-4xl font-black italic tracking-tighter text-slate-950">${finalTotal.toFixed(2)}</p>
-                </div>
-              </div>
-              {/* Payment method tabs */}
-              <div className="flex gap-3 mb-6">
-                <button
-                  onClick={() => setPaymentTab('paypal')}
-                  style={{ flex:1, padding:'13px 0', borderRadius:12, border: paymentTab==='paypal' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='paypal' ? '#0f172a' : '#fff', color: paymentTab==='paypal' ? '#fff' : '#64748b', fontWeight:900, fontSize:13, letterSpacing:'0.1em', cursor:'pointer' }}
-                >
-                  PayPal
-                </button>
-                <button
-                  onClick={() => setPaymentTab('card')}
-                  style={{ flex:1, padding:'13px 0', borderRadius:12, border: paymentTab==='card' ? '2px solid #0f172a' : '1.5px solid #e2e8f0', background: paymentTab==='card' ? '#0f172a' : '#fff', color: paymentTab==='card' ? '#fff' : '#64748b', fontWeight:900, fontSize:13, letterSpacing:'0.1em', cursor:'pointer' }}
-                >
-                  Credit Card
-                </button>
-              </div>
-              {paymentTab === 'paypal' && (
-                <div id="paypal-button-container" className="relative z-10"></div>
-              )}
-              {paymentTab === 'card' && (
-                <StripeCheckout
-                  amount={finalTotal}
-                  onSuccess={async (pi) => {
-                    setPaymentStatus('processing')
-                    await fetch('/api/orders', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        order_id: `CW-${pi.id.slice(-6)}`,
-                        customer_name: 'Stripe Customer',
-                        email: '',
-                        payment_method: 'stripe',
-                        amount: finalTotal,
-                        product_name: items.map(i => `${i.quantity}x ${i.name}`).join(' | '),
-                        discount_code: discountInfo ? discountInfo.code : null
-                      })
-                    })
-                    setPaymentStatus('success')
-                    setTimeout(() => { emptyCart(); setIsCheckoutOpen(false); setPaymentStatus('idle') }, 5000)
-                  }}
-                  onError={(msg) => alert(msg)}
-                />
-              )}
-              {paymentStatus === 'processing' && (
-                <div className="mt-8 p-8 bg-slate-50 rounded-3xl text-center border border-slate-100 animate-pulse">
-                  <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400">Authenticating with PayPal...</p>
-                </div>
-              )}
-              {paymentStatus === 'success' && (
-                <div className="mt-8 p-8 bg-emerald-50 rounded-3xl text-center border border-emerald-100">
-                  <p className="text-xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Success!</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic">Check your email for confirmation.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Exit Intent Popup */}
       {isExitPopupOpen && (

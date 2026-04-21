@@ -76,6 +76,13 @@ function CheckoutForm({ amount, onSuccess, onError, customerInfo }) {
     if (error) {
       setCardError(error.message)
       setLoading(false)
+      // GA4: exception
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'exception', {
+          description: error.message,
+          fatal: false
+        });
+      }
     } else if (paymentIntent?.status === 'succeeded') {
       onSuccess?.(paymentIntent)
     }

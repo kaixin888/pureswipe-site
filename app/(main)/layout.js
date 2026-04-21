@@ -6,6 +6,7 @@ import ChatWidget from '../../components/ChatWidget'
 import RecentSales from '../../components/RecentSales'
 import AnnouncementBar from '../../components/AnnouncementBar'
 import { Providers } from '../../components/Providers'
+import GlobalCheckout from '../../components/GlobalCheckout'
 
 export default function SiteLayout({ children }) {
   return (
@@ -17,6 +18,7 @@ export default function SiteLayout({ children }) {
       <Footer />
       <ChatWidget />
       <RecentSales />
+      <GlobalCheckout />
     </Providers>
   )
 }

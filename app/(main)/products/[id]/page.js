@@ -11,16 +11,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../../../../components/Providers'
 import { ShieldCheck, X } from 'lucide-react'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co', (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY')
 
 export default function ProductDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const { addItem } = useCart()
-  const { setIsCartOpen } = useStore()
+  const { setIsCartOpen, setIsCheckoutOpen } = useStore()
   const [showSticky, setShowSticky] = useState(false)
 
   const [product, setProduct] = useState(null)
@@ -95,11 +92,47 @@ export default function ProductDetailPage() {
 
   const isOutOfStock = product.stock <= 0
 
-  function handleAddToCart() {
+  function handleBuyNow() {
     if (isOutOfStock) return
     for (let i = 0; i < qty; i++) {
       addItem({ id: product.id.toString(), name: product.name, price: product.price, image: product.image_url })
     }
+    setIsCheckoutOpen(true)
+  }
+
+  function handleAddToCart() {
+    if (isOutOfStock) return
+    for (let i = 0; i < qty; i++) {
+      addItem({ id: product.id.toString(), name: product.name, price: product.price, image: product.image_url }
+
+  function handleBuyNow() {
+    if (isOutOfStock) return
+    addItem({ 
+      id: product.id.toString(), 
+      name: product.name, 
+      price: product.price, 
+      image: product.image_url,
+      quantity: qty
+    })
+    setIsCheckoutOpen(true)
+  }
+)
+    }
+    
+    // GA4 Ecommerce: add_to_cart
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'add_to_cart', {
+        currency: 'USD',
+        value: product.price * qty,
+        items: [{
+          item_id: product.id.toString(),
+          item_name: product.name,
+          price: product.price,
+          quantity: qty
+        }]
+      });
+    }
+
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
@@ -200,7 +233,8 @@ export default function ProductDetailPage() {
           {allImages.length > 1 && (
             <div className="flex gap-3 flex-wrap">
               {allImages.map((img, idx) => (
-                <button
+                <div className="flex gap-4 w-full">
+            <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
                   className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all bg-white ${
@@ -272,32 +306,57 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Qty + Add to Cart */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center border border-slate-700 rounded-full overflow-hidden">
+          {/* Qty + Actions */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center border border-slate-700 rounded-full overflow-hidden">
+                <button
+                  onClick={() => setQty(q => Math.max(1, q - 1))}
+                  className="px-4 py-3 text-white hover:bg-slate-800 transition-colors font-bold"
+                >-</button>
+                <span className="px-4 py-3 text-white font-bold min-w-[40px] text-center">{qty}</span>
+                <button
+                  onClick={() => setQty(q => q + 1)}
+                  className="px-4 py-3 text-white hover:bg-slate-800 transition-colors font-bold"
+                >+</button>
+              </div>
               <button
-                onClick={() => setQty(q => Math.max(1, q - 1))}
-                className="px-4 py-3 text-white hover:bg-slate-800 transition-colors font-bold"
-              >-</button>
-              <span className="px-4 py-3 text-white font-bold min-w-[40px] text-center">{qty}</span>
-              <button
-                onClick={() => setQty(q => q + 1)}
-                className="px-4 py-3 text-white hover:bg-slate-800 transition-colors font-bold"
-              >+</button>
+                onClick={handleAddToCart}
+                disabled={isOutOfStock}
+                className={`flex-1 py-4 rounded-full font-black tracking-widest text-sm transition-all ${
+                  isOutOfStock
+                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                    : added
+                    ? 'bg-green-600 text-white'
+                    : 'bg-slate-800 text-white hover:bg-slate-700 active:scale-95'
+                }`}
+              >
+                {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
+              </button>
             </div>
+            
             <button
-              onClick={handleAddToCart}
+              onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className={`flex-1 py-4 rounded-full font-black tracking-widest text-sm transition-all ${
+              className={`w-full py-4 rounded-full font-black tracking-widest text-sm transition-all shadow-xl shadow-blue-600/20 ${
                 isOutOfStock
                   ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                  : added
-                  ? 'bg-green-600 text-white'
                   : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-95'
               }`}
             >
-              {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
+              {isOutOfStock ? 'OUT OF STOCK' : 'BUY IT NOW'}
             </button>
+
+            {/* Payment Trust Badges */}
+            <div className="flex flex-col items-center gap-3 mt-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Guaranteed Safe Checkout</p>
+              <div className="flex items-center gap-4 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
+              </div>
+            </div>
           </div>
 
           {/* Trust badges */}
@@ -421,6 +480,16 @@ export default function ProductDetailPage() {
             >
               {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </button>
+            
+            <button
+              onClick={handleBuyNow}
+              disabled={isOutOfStock}
+              className="flex-1 py-4 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95 disabled:opacity-40"
+            >
+              Buy It Now
+            </button>
+
+          </div>
           </motion.div>
         )}
       </AnimatePresence>
