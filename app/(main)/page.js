@@ -501,7 +501,7 @@ export default function Home() {
       </div>
 
       {/* Desktop Hero */}
-      <section className="hidden md:block relative pt-44 pb-32 px-6 overflow-hidden">
+            <section className="hidden md:block relative pt-44 pb-32 px-6">
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-blue-50 rounded-full blur-[160px] opacity-60"></div>
         <div className="max-w-7xl mx-auto flex flex-row items-center gap-24 relative">
           <div className="flex-1 text-left">
@@ -567,7 +567,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Engineering Excellence</span>
-                        <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-tight py-2">Why clowand?</h2>
+                                    <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-relaxed py-6">Why clowand?</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
@@ -588,7 +588,7 @@ export default function Home() {
       </section>
 
       {/* Product Highlight */}
-      <section className="py-40 px-6 bg-slate-950 text-white overflow-hidden relative">
+            <section className="py-40 px-6 bg-slate-950 text-white relative">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-blue-600 rounded-full blur-[200px]"></div>
         </div>
@@ -621,7 +621,7 @@ export default function Home() {
           </div>
           <div className="flex-1 order-1 md:order-2 text-center md:text-left">
              <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">The Standard</span>
-                           <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-[1.3] py-4">American <br/> Hygiene.</h2>
+                                         <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-relaxed py-6">American <br/> Hygiene.</h2>
              <button 
                onClick={() => scrollIntoView('bundles')}
                className="px-12 py-6 bg-white text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-2xl shadow-white/5"
@@ -891,7 +891,7 @@ export default function Home() {
           </div>
           <div className="relative max-w-2xl">
             <span className="font-black uppercase tracking-[0.3em] text-[10px] italic">Our Mission</span>
-                                    <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-[1.4] py-4">Clean with Confidence.</h2>
+                                                <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-relaxed py-6">Clean with Confidence.</h2>
             <p className="text-xl text-blue-50 leading-relaxed mb-16 opacity-90">Started in Boston, clowand was born from a simple observation: cleaning tools shouldn't be the dirtiest thing in your house. We're reinventing bathroom hygiene with professional tools for every American home.</p>
             <div className="flex flex-col sm:flex-row gap-12">
               <div>
