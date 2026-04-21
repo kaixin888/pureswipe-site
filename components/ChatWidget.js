@@ -17,14 +17,9 @@ export default function ChatWidget() {
             g.onload=function(){
               window.chatwootSDK.run({
                 websiteToken: 'UgFhqRHCBAivmm5C4f3b3SJL',
-                baseUrl: BASE_URL
+                baseUrl: BASE_URL,
+                type: 'standard'
               })
-              // Proactive message after 15s
-              setTimeout(() => {
-                if (window.$chatwoot) {
-                  window.$chatwoot.toggle("open");
-                }
-              }, 15000);
             }
             s.parentNode.insertBefore(g,s);
           })(document,"script");

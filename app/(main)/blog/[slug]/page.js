@@ -79,8 +79,26 @@ export default async function BlogPostPage({ params }) {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      {/* Scoped Brute-Force Style Fix for Blog Contrast */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .blog-article h1, .blog-article h2, .blog-article h3 {
+          color: #ffffff !important;
+          font-weight: 900 !important;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .blog-article p, .blog-article li {
+          color: #f1f5f9 !important;
+          font-size: 1.125rem !important;
+          line-height: 1.8 !important;
+        }
+        .blog-article .prose-invert {
+          color: #f1f5f9 !important;
+        }
+      `}} />
+      
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-6 pt-8 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">
@@ -93,14 +111,14 @@ export default async function BlogPostPage({ params }) {
       </div>
 
       {/* Article */}
-      <article className="max-w-3xl mx-auto px-6 py-10">
+      <article className="blog-article max-w-3xl mx-auto px-6 py-10">
         {/* Meta */}
         <p className="text-xs text-blue-400 font-black tracking-widest uppercase mb-4">
           {formatDate(post.published_at)}
         </p>
 
         {/* Title */}
-        <h1 className="text-3xl lg:text-4xl font-black leading-tight mb-8">{post.title}</h1>
+        <h1 className="text-3xl lg:text-4xl font-black leading-tight mb-8 text-white">{post.title}</h1>
 
         {/* Cover image */}
         {post.cover_image && (
@@ -117,7 +135,7 @@ export default async function BlogPostPage({ params }) {
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="text-lg text-slate-300 leading-relaxed border-l-2 border-blue-500 pl-4 mb-10 italic">
+          <p className="text-lg text-slate-200 leading-relaxed border-l-2 border-blue-500 pl-4 mb-10 italic">
             {post.excerpt}
           </p>
         )}
