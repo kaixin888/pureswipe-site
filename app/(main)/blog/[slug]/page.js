@@ -106,7 +106,7 @@ export default async function BlogPostPage({ params }) {
           <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-10 bg-slate-800">
             <Image
               src={post.cover_image}
-              alt={post.title}
+              alt={post.alt_text || post.title}
               fill
               className="object-cover"
               priority

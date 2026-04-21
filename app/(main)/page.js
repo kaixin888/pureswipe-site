@@ -663,7 +663,7 @@ export default function Home() {
                     width={600}
                     height={800}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    alt={`${bundle.name} - Clowand Disposable Toilet Brush`}
+                    alt={bundle.alt_text || `${bundle.name} - Clowand Disposable Toilet Brush`}
                     priority={i === 0}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />

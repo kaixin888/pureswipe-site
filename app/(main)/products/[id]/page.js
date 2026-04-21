@@ -183,7 +183,7 @@ export default function ProductDetail() {
                     selectedImage === idx ? 'border-blue-500' : 'border-slate-700 hover:border-slate-400'
                   }`}
                 >
-                  <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain p-1" sizes="64px" />
+                  <Image src={img} alt={product.alt_text || `${product.name} View ${idx + 1}`} fill className="object-contain p-1" sizes="64px" />
                 </button>
               ))}
             </div>

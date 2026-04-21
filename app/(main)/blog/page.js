@@ -74,7 +74,7 @@ export default async function BlogPage() {
                   {post.cover_image ? (
                     <Image
                       src={post.cover_image}
-                      alt={post.title}
+                      alt={post.alt_text || post.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />

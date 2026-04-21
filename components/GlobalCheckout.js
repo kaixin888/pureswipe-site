@@ -208,7 +208,26 @@ export default function GlobalCheckout() {
                 {items.map((item) => (
                   <div key={item.id} className="bg-slate-50 px-5 py-4 rounded-2xl border border-slate-100 flex justify-between items-center group">
                     <div className="min-w-0 mr-3">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 italic mb-0.5">{item.quantity}x</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-1.5 bg-white rounded-lg border border-slate-200 p-0.5">
+                          <button 
+                            onClick={() => updateItemQuantity(item.id, Math.max(1, item.quantity - 1))}
+                            className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-50 rounded transition-colors text-[10px]"
+                          >
+                            -
+                          </button>
+                          <span className="text-[9px] font-black text-slate-950 w-3 text-center">{item.quantity}</span>
+                          <button 
+                            onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                            className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-50 rounded transition-colors text-[10px]"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button onClick={() => removeItem(item.id)} className="text-slate-300 hover:text-red-500 transition-colors ml-1">
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                       <h4 className="text-xs font-black italic uppercase tracking-tight text-slate-900 truncate">{item.name}</h4>
                     </div>
                     <p className="text-sm font-black italic tracking-tighter text-blue-600 shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
