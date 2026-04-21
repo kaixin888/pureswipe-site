@@ -29,7 +29,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 900 !important;
-  color: #0f172a !important;
+  color: #0f172a;
   line-height: 1.1;
   letter-spacing: -0.05em;
 }
