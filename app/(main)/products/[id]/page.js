@@ -9,6 +9,7 @@ import Image from 'next/image'
 import Product360 from '../../../../components/Product360'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../../../../components/Providers'
+import { ShieldCheck, X } from 'lucide-react'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -28,6 +29,7 @@ export default function ProductDetailPage() {
   const [added, setAdded] = useState(false)
   const [qty, setQty] = useState(1)
   const [reviews, setReviews] = useState([])
+  const [isReviewGuideOpen, setIsReviewGuideOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setShowSticky(window.scrollY > 500)
@@ -338,7 +340,15 @@ export default function ProductDetailPage() {
       {reviews.length > 0 && (
         <section className="max-w-6xl mx-auto px-6 pb-16">
           <div className="border-t border-slate-800 pt-10">
-            <h2 className="text-xl font-black tracking-widest text-white mb-8 uppercase">Customer Reviews</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <h2 className="text-xl font-black tracking-widest text-white uppercase">Customer Reviews</h2>
+              <button
+                onClick={() => setIsReviewGuideOpen(true)}
+                className="w-fit border border-slate-700 text-slate-300 px-6 py-2 rounded-lg hover:bg-white hover:text-slate-950 transition-all active:scale-95 text-xs font-black uppercase tracking-widest"
+              >
+                Write a customer review
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {reviews.map((review) => (
                 <div key={review.id} className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
@@ -410,6 +420,72 @@ export default function ProductDetailPage() {
         )}
       </AnimatePresence>
       </section>
+      {/* Review Guide Modal */}
+      <AnimatePresence>
+        {isReviewGuideOpen && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsReviewGuideOpen(false)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white text-slate-950 w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl"
+            >
+              <button
+                onClick={() => setIsReviewGuideOpen(false)}
+                className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-all text-slate-300 hover:text-slate-950"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="p-10 text-center">
+                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8">
+                  <ShieldCheck size={32} />
+                </div>
+                
+                <h2 className="text-2xl font-black italic tracking-tighter uppercase mb-4">Verified Reviews Only</h2>
+                
+                <div className="space-y-6 text-left">
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    To maintain the highest standards of authenticity, <strong>Clowand only accepts reviews from verified purchasers.</strong>
+                  </p>
+                  
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-3">How it works</h4>
+                    <ul className="space-y-3">
+                      <li className="flex gap-3 text-xs font-medium text-slate-600">
+                        <span className="text-blue-500 font-black">01</span>
+                        <span>You will receive an invitation link via email 7 days after your order is delivered.</span>
+                      </li>
+                      <li className="flex gap-3 text-xs font-medium text-slate-600">
+                        <span className="text-blue-500 font-black">02</span>
+                        <span>Click the link to share your experience and upload photos of your clean bathroom.</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 font-medium italic text-center">
+                    If you missed your link, please contact <span className="text-slate-600 font-black">support@clowand.com</span> with your order ID.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setIsReviewGuideOpen(false)}
+                  className="w-full mt-10 py-4 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-[0.98]"
+                >
+                  Got it
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
