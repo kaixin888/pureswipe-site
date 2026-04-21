@@ -508,7 +508,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
               {siteSettings.hero_badge || "2026 Hygiene Revolution"}
             </div>
-            <h1 className="text-8xl font-black italic tracking-tighter leading-[0.9] uppercase mb-10 text-slate-950">
+                        <h1 className="text-8xl font-black italic tracking-tighter leading-[1.15] uppercase mb-10 text-slate-950 py-2">
               {siteSettings.hero_title || t.heroTitle}
             </h1>
             <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
@@ -567,7 +567,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-32">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Engineering Excellence</span>
-            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">Why clowand?</h2>
+                        <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-tight py-2">Why clowand?</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
@@ -603,7 +603,7 @@ export default function Home() {
                 alt="Zero-touch hygiene technology" 
               />
               <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
-                                   <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-tight pt-4">Designed for <br/> US Households</h2>
+                                                     <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-[1.4] py-4">Designed for <br/> US Households</h2>
                  <p className="text-slate-400 text-lg mb-10 max-w-md leading-relaxed">Built to meet the highest sanitary standards. Professional-grade durability meets minimalist design.</p>
                  <ul className="space-y-6">
                    {[
@@ -621,7 +621,7 @@ export default function Home() {
           </div>
           <div className="flex-1 order-1 md:order-2 text-center md:text-left">
              <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">The Standard</span>
-             <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12">American <br/> Hygiene.</h2>
+                           <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-[1.3] py-4">American <br/> Hygiene.</h2>
              <button 
                onClick={() => scrollIntoView('bundles')}
                className="px-12 py-6 bg-white text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-2xl shadow-white/5"
@@ -891,7 +891,7 @@ export default function Home() {
           </div>
           <div className="relative max-w-2xl">
             <span className="font-black uppercase tracking-[0.3em] text-[10px] italic">Our Mission</span>
-                        <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-tight pt-4">Clean with Confidence.</h2>
+                                    <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-[1.4] py-4">Clean with Confidence.</h2>
             <p className="text-xl text-blue-50 leading-relaxed mb-16 opacity-90">Started in Boston, clowand was born from a simple observation: cleaning tools shouldn't be the dirtiest thing in your house. We're reinventing bathroom hygiene with professional tools for every American home.</p>
             <div className="flex flex-col sm:flex-row gap-12">
               <div>
@@ -979,7 +979,7 @@ export default function Home() {
             <div className="p-12 text-center">
               <div className="mb-8">
                 <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Offer</span>
-                                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-tight pt-2">WAIT! Don't leave your<br/>hygiene to chance.</h2>
+                                                                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-[1.4] py-4">WAIT! Don't leave your<br/>hygiene to chance.</h2>
               </div>
 
               {!isSubscribed ? (

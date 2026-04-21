@@ -29,7 +29,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 900 !important;
-  line-height: 1.1;
+  line-height: 1.25 !important;
   letter-spacing: -0.05em;
 }
 
@@ -56,6 +56,7 @@ h1, h2, h3, h4, h5, h6 {
   z-index: -1;
   top: -20vw;
   right: -20vw;
+  bottom: -20vw;
 }
 
 /* Fix Ant Design buttons visibility in Admin (Overriding Tailwind preflight) */
