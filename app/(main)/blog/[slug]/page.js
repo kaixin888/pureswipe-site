@@ -135,12 +135,6 @@ export default async function BlogPostPage({ params }) {
       { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://clowand.com/blog" },
       { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://clowand.com/blog/${params.slug}` }
     ]
-  },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Clowand",
-      "logo": { "@type": "ImageObject", "url": "https://clowand.com/logo.png" }
-    }
   }
 
   return (
