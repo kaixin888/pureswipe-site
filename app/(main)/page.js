@@ -603,7 +603,7 @@ export default function Home() {
                 alt="Zero-touch hygiene technology" 
               />
               <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
-                 <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-[0.95]">Designed for <br/> US Households</h2>
+                                   <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-tight pt-4">Designed for <br/> US Households</h2>
                  <p className="text-slate-400 text-lg mb-10 max-w-md leading-relaxed">Built to meet the highest sanitary standards. Professional-grade durability meets minimalist design.</p>
                  <ul className="space-y-6">
                    {[
@@ -891,7 +891,7 @@ export default function Home() {
           </div>
           <div className="relative max-w-2xl">
             <span className="font-black uppercase tracking-[0.3em] text-[10px] italic">Our Mission</span>
-            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-none">Clean with Confidence.</h2>
+                        <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-tight pt-4">Clean with Confidence.</h2>
             <p className="text-xl text-blue-50 leading-relaxed mb-16 opacity-90">Started in Boston, clowand was born from a simple observation: cleaning tools shouldn't be the dirtiest thing in your house. We're reinventing bathroom hygiene with professional tools for every American home.</p>
             <div className="flex flex-col sm:flex-row gap-12">
               <div>
@@ -979,7 +979,7 @@ export default function Home() {
             <div className="p-12 text-center">
               <div className="mb-8">
                 <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Offer</span>
-                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-none">WAIT! Don't leave your<br/>hygiene to chance.</h2>
+                                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-tight pt-2">WAIT! Don't leave your<br/>hygiene to chance.</h2>
               </div>
 
               {!isSubscribed ? (
