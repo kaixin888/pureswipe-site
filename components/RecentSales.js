@@ -81,7 +81,7 @@ export default function RecentSales() {
           <div className="pr-4">
             <p className="text-[14px] text-slate-400 font-black uppercase tracking-widest italic mb-0.5 leading-none">Verified Purchase</p>
             <p className="text-[16px] text-slate-900 font-bold leading-snug">
-              Someone in <span className="font-black italic text-slate-950">{city}</span> just purchased a <span className="font-black text-blue-600 italic uppercase tracking-tighter">{productName.slice(0, 40)}{productName.length > 40 ? '...' : ''}</span>
+              Someone in <span className="font-black italic text-slate-950">{city}</span> just purchased a <span className="font-black text-blue-600 italic uppercase tracking-tighter">{productName}</span>
             </p>
             <p className="text-[13px] text-slate-400 mt-1 uppercase font-bold tracking-widest">{timeText}</p>
           </div>

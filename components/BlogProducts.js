@@ -60,7 +60,7 @@ export default function BlogProducts() {
                 className="object-contain"
               />
             </div>
-            <h4 className="text-sm font-black text-center uppercase tracking-tight mb-2 h-10 overflow-hidden">{product.name}</h4>
+            <h4 className="text-sm font-black text-center uppercase tracking-tight mb-2 min-h-[2.5rem] flex items-center justify-center">{product.name}</h4>
             <p className="text-xl font-black text-blue-400 mb-6">${product.price}</p>
             <button
               onClick={() => handleBuyNow(product)}

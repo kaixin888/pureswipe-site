@@ -129,7 +129,7 @@ function BeforeAfterSlider() {
   const afterItems = ['Touch-free design', 'Disposable heads', '18-inch reach', 'No holder needed']
 
   return (
-    <div ref={sliderRef} className="relative overflow-hidden rounded-2xl h-72 md:h-80 select-none">
+    <div ref={sliderRef} className="relative rounded-2xl min-h-[20rem] md:min-h-[24rem] select-none">
       {/* Left: Before - content locked to left half */}
       <div className="absolute inset-0 bg-gray-100 flex items-center overflow-hidden">
         <div className="px-3 md:px-8 py-4" style={{ width: '50%' }}>
@@ -673,10 +673,10 @@ export default function Home() {
                 {/* Text */}
                 <div className="p-5 md:p-7 flex flex-col flex-1">
                   <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">{bundle.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1">{bundle.name}</h3>
                   </a>
                   {bundle.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-2">{bundle.description}</p>
+                    <p className="text-sm text-gray-500 mb-2">{bundle.description}</p>
                   )}
                   {(() => {
                     try {
@@ -688,7 +688,7 @@ export default function Home() {
                           {bts.map((b, i) => (
                             <li key={i} className="flex items-center gap-1.5 text-xs text-gray-600">
                               <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
-                              <span className="line-clamp-1">{b}</span>
+                              <span>{b}</span>
                             </li>
                           ))}
                         </ul>
