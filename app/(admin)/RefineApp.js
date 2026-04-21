@@ -15,6 +15,7 @@ import routerProvider, {
   NavigateToResource,
 } from '@refinedev/nextjs-router/app';
 import { createClient } from '@supabase/supabase-js';
+import { ConfigProvider, theme } from 'antd';
 import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2 } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
@@ -85,12 +86,20 @@ export default function RefineApp({ children }) {
   }
 
   return (
-    <Refine
-      dataProvider={dataProvider(supabaseClient)}
-      routerProvider={routerProvider}
-      authProvider={authProvider}
-      notificationProvider={notificationProvider}
-      resources={[
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#1677ff',
+          borderRadius: 8,
+        },
+      }}
+    >
+      <Refine
+        dataProvider={dataProvider(supabaseClient)}
+        routerProvider={routerProvider}
+        authProvider={authProvider}
+        notificationProvider={notificationProvider}
+        resources={[
         {
           name: 'products',
           list: '/admin/products',
@@ -167,5 +176,6 @@ export default function RefineApp({ children }) {
         </ThemedLayout>
       </Authenticated>
     </Refine>
+    </ConfigProvider>
   );
 }

@@ -34,3 +34,21 @@ body {
   top: -20vw;
   right: -20vw;
 }
+
+/* Fix Ant Design buttons visibility in Admin (Overriding Tailwind preflight) */
+.ant-btn:not(.ant-btn-primary):not(.ant-btn-danger):not(.ant-btn-link) {
+  background-color: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-btn-primary {
+  background-color: #1677ff !important;
+  border-color: #1677ff !important;
+  color: #fff !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #4096ff !important;
+  border-color: #4096ff !important;
+}
