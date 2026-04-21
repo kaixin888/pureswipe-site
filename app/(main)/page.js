@@ -671,7 +671,7 @@ export default function Home() {
                 </div>
                 </a>
                 {/* Text */}
-                <div className="p-5 md:p-7 flex flex-col flex-1">
+                <div className="p-5 md:p-7 flex flex-col flex-1 pb-4">
                   <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
                   <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1">{bundle.name}</h3>
                   </a>
@@ -1022,7 +1022,7 @@ export default function Home() {
             <X size={32} />
           </button>
           <div className="relative max-w-4xl max-h-full aspect-square w-full">
-            <Image src={previewImage} fill className="object-contain" alt="Customer Preview" unoptimized />
+            <Image src={previewImage} fill className="object-contain" alt="Customer Preview" />
           </div>
         </div>
       )}

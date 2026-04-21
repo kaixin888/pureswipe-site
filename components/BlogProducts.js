@@ -51,7 +51,7 @@ export default function BlogProducts() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col items-center">
+          <div key={product.id} className="bg-slate-950 p-6 pb-10 rounded-2xl border border-slate-800 flex flex-col items-center">
             <div className="w-full h-40 relative mb-4">
               <Image 
                 src={product.image_url} 
