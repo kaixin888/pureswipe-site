@@ -72,22 +72,22 @@ export default function RecentSales() {
           initial={{ opacity: 0, x: -50, scale: 0.8 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: -50, scale: 0.5, transition: { duration: 0.2 } }}
-          className="fixed bottom-24 left-6 z-[100] hidden md:flex items-center gap-4 bg-white rounded-2xl p-4 shadow-2xl border border-slate-100 max-w-[320px]"
+          className="fixed bottom-24 left-6 z-[100] hidden md:flex items-center gap-8 bg-white rounded-3xl p-8 shadow-2xl border border-slate-100 max-w-[420px]"
           style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}
         >
-          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
+          <div className="w-16 h-16 rounded-3xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
             <span className="text-xl">🛍️</span>
           </div>
           <div className="pr-4">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest italic mb-0.5 leading-none">Verified Purchase</p>
-            <p className="text-[11px] text-slate-900 leading-tight">
+            <p className="text-[14px] text-slate-400 font-black uppercase tracking-widest italic mb-0.5 leading-none">Verified Purchase</p>
+            <p className="text-[16px] text-slate-900 font-bold leading-snug">
               Someone in <span className="font-black italic text-slate-950">{city}</span> just purchased a <span className="font-black text-blue-600 italic uppercase tracking-tighter">{productName.slice(0, 40)}{productName.length > 40 ? '...' : ''}</span>
             </p>
-            <p className="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-widest">{timeText}</p>
+            <p className="text-[13px] text-slate-400 mt-1 uppercase font-bold tracking-widest">{timeText}</p>
           </div>
           <button 
             onClick={() => setVisible(false)}
-            className="absolute top-2 right-2 text-slate-300 hover:text-slate-950 transition-colors"
+            className="absolute top-8 right-2 text-slate-300 hover:text-slate-950 transition-colors"
           >
             ✕
           </button>
