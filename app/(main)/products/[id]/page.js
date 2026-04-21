@@ -413,7 +413,7 @@ export default function ProductDetail() {
                     className="relative w-full h-48 rounded-2xl overflow-hidden mb-6 bg-slate-800 cursor-zoom-in group/img"
                     onClick={() => setPreviewImage(review.image_url)}
                   >
-                    <Image src={review.image_url} fill className="object-cover group-hover/img:scale-105 transition-transform duration-700" alt="Customer Photo" unoptimized />
+                    <Image src={review.image_url} fill className="object-cover group-hover/img:scale-105 transition-transform duration-700" alt="Customer Photo" />
                     <div className="absolute inset-0 bg-black/20 group-hover/img:bg-transparent transition-all" />
                   </div>
                 )}
@@ -446,7 +446,7 @@ export default function ProductDetail() {
             <X size={32} />
           </button>
           <div className="relative max-w-4xl max-h-full aspect-square w-full">
-            <Image src={previewImage} fill className="object-contain" alt="Customer Preview" unoptimized />
+            <Image src={previewImage} fill className="object-contain" alt="Customer Preview" />
           </div>
         </div>
       )}
