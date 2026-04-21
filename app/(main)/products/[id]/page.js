@@ -114,20 +114,21 @@ export default function ProductDetailPage() {
   const seoDesc = product.seo_description || product.description || 'Premium disposable toilet brush system by Clowand.'
 
   // Update document title dynamically (client component)
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!product) return
     document.title = seoTitle
     const meta = document.querySelector('meta[name="description"]')
     if (meta) meta.setAttribute('content', seoDesc)
-  }, [seoTitle, seoDesc])
+  }, [seoTitle, seoDesc, product])
 
   // GEO: Enhanced Product and Breadcrumb Schema
-  const productSchema = {
+  const productSchema = product ? {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
     "image": product.image_url,
     "description": seoDesc,
-    "sku": product.id.toString(),
+    "sku": String(product.id),
     "brand": { "@type": "Brand", "name": "Clowand" },
     "offers": {
       "@type": "Offer",
@@ -143,19 +144,19 @@ export default function ProductDetailPage() {
       "ratingValue": String(product.rating || 4.8),
       "reviewCount": String(product.review_count || 127)
     },
-    "review": reviews.slice(0, 3).map(r => ({
+    "review": (reviews || []).slice(0, 3).map(r => ({
       "@type": "Review",
-      "author": { "@type": "Person", "name": r.author_name },
+      "author": { "@type": "Person", "name": r.author_name || 'Verified Buyer' },
       "datePublished": r.created_at,
-      "reviewBody": r.content,
+      "reviewBody": r.content || '',
       "reviewRating": {
         "@type": "Rating",
         "ratingValue": String(r.rating || 5)
       }
     }))
-  }
+  } : null
 
-  const breadcrumbSchema = {
+  const breadcrumbSchema = product ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
@@ -163,12 +164,16 @@ export default function ProductDetailPage() {
       { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://clowand.com/#bundles" },
       { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://clowand.com/products/${product.id}` }
     ]
-  }
+  } : null
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {productSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      )}
+      {breadcrumbSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      )}
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">
