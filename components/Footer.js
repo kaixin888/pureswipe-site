@@ -6,8 +6,11 @@ export default function Footer() {
     <footer className="bg-slate-950 py-24 text-white">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-12 text-center md:text-left">
         <div className="col-span-1 md:col-span-2">
-          <a href="/" className="inline-block group">
-            <h2 className="text-3xl font-black mb-6 italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors">clowand</h2>
+          <a href="/" className="inline-block group mb-6" style={{ filter: 'brightness(0) invert(1)' }}>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">C</div>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors">clowand</h2>
+            </div>
           </a>
           <p className="text-slate-400 max-w-sm mb-8 font-medium italic text-xs">Elevating American bathroom hygiene with smarter, cleaner, and better tools.</p>
           <div className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-500 italic">

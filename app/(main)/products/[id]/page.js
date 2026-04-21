@@ -6,7 +6,10 @@ import { useCart } from 'react-use-cart'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
-import { CheckCircle, ShieldCheck, X, Star, Zap, Shield, Camera } from 'lucide-react'
+import { 
+  CheckCircle, ShieldCheck, X, Star, Zap, Shield, Camera, 
+  Ruler, Truck, ChevronDown 
+} from 'lucide-react'
 import { useStore } from '../../../../components/Providers'
 import Product360 from '../../../../components/Product360'
 import DeliveryCountdown from '../../../../components/DeliveryCountdown'
@@ -27,6 +30,7 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [purchaseType, setPurchaseType] = useState('one-time') // 'one-time' | 'subscribe'
   const [previewImage, setPreviewImage] = useState(null)
+  const [openSection, setOpenSection] = useState(null)
   
   const { addItem } = useCart()
   const { setIsCheckoutOpen } = useStore()
@@ -65,7 +69,7 @@ export default function ProductDetail() {
 
   if (loading || !product) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
         <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -201,7 +205,7 @@ export default function ProductDetail() {
             <ShieldCheck size={14} className="text-blue-500" />
             <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">clowand premium</p>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black leading-tight uppercase italic tracking-tighter">{product.name}</h1>
+          <h1 className="text-3xl lg:text-4xl font-black leading-tight uppercase italic tracking-tighter text-white">{product.name}</h1>
 
           <div className="flex items-center gap-2">
             <div className="flex text-yellow-400">
@@ -230,7 +234,7 @@ export default function ProductDetail() {
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${purchaseType === 'one-time' ? 'border-blue-600' : 'border-slate-600'}`}>
                   {purchaseType === 'one-time' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
                 </div>
-                <span className="text-sm font-bold">One-time purchase</span>
+                <span className="text-sm font-bold text-white">One-time purchase</span>
               </div>
               <span className="text-sm font-black italic tracking-tighter text-slate-400">${product.price.toFixed(2)}</span>
             </button>
@@ -244,7 +248,7 @@ export default function ProductDetail() {
                   {purchaseType === 'subscribe' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
                 </div>
                 <div>
-                  <span className="text-sm font-bold block text-left">Subscribe & Save</span>
+                  <span className="text-sm font-bold block text-left text-white">Subscribe & Save</span>
                   <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest block text-left">Deliver every 3 months</span>
                 </div>
               </div>
@@ -302,6 +306,50 @@ export default function ProductDetail() {
               Product Description
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">{product.description}</p>
+          </div>
+
+          {/* Product Specs & Shipping Accordion */}
+          <div className="flex flex-col gap-4 mt-2 border-t border-slate-800 pt-8">
+            <div className="border-b border-slate-800 pb-4">
+              <button 
+                onClick={() => setOpenSection(openSection === 'specs' ? null : 'specs')}
+                className="w-full flex justify-between items-center group"
+              >
+                <div className="flex items-center gap-3">
+                  <Ruler size={18} className="text-blue-500" />
+                  <span className="text-sm font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">Product Specifications</span>
+                </div>
+                <ChevronDown size={18} className={`text-slate-500 transition-transform ${openSection === 'specs' ? 'rotate-180' : ''}`} />
+              </button>
+              {openSection === 'specs' && (
+                <div className="mt-4 text-sm text-slate-400 leading-relaxed space-y-2 animate-in slide-in-from-top-2 duration-200">
+                  <div className="flex justify-between border-b border-slate-800/50 pb-2"><span>Wand Length</span><span className="text-white font-bold">18 Inches</span></div>
+                  <div className="flex justify-between border-b border-slate-800/50 pb-2"><span>Material</span><span className="text-white font-bold">High-Grade ABS</span></div>
+                  <div className="flex justify-between border-b border-slate-800/50 pb-2"><span>Refill Mechanism</span><span className="text-white font-bold">Quick-Release Zero-Touch</span></div>
+                  <div className="flex justify-between pb-2"><span>Compatibility</span><span className="text-white font-bold">Clowand 3-Layer Pads Only</span></div>
+                </div>
+              )}
+            </div>
+
+            <div className="border-b border-slate-800 pb-4">
+              <button 
+                onClick={() => setOpenSection(openSection === 'shipping' ? null : 'shipping')}
+                className="w-full flex justify-between items-center group"
+              >
+                <div className="flex items-center gap-3">
+                  <Truck size={18} className="text-blue-500" />
+                  <span className="text-sm font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">Shipping & Returns</span>
+                </div>
+                <ChevronDown size={18} className={`text-slate-500 transition-transform ${openSection === 'shipping' ? 'rotate-180' : ''}`} />
+              </button>
+              {openSection === 'shipping' && (
+                <div className="mt-4 text-sm text-slate-400 leading-relaxed space-y-2 animate-in slide-in-from-top-2 duration-200">
+                  <p>🚀 <span className="text-white font-bold italic">FREE Standard Shipping</span> across the United States. Orders are processed within 24 hours.</p>
+                  <p>📦 <span className="text-white font-bold italic">3-5 Day Delivery</span> from our regional warehouses (CA, TX, NJ).</p>
+                  <p>🛡️ <span className="text-white font-bold italic">365-Day Satisfaction</span>: If you aren't happy, we'll make it right. No-hassle return policy.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

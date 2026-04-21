@@ -31,7 +31,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 900 !important;
   line-height: 1.1;
   letter-spacing: -0.05em;
-  color: #0f172a;
 }
 
 /* CRITICAL: Force headings inside .prose to inherit color so prose-invert works */
