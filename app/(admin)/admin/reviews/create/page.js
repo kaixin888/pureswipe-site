@@ -49,6 +49,9 @@ export default function ReviewCreatePage() {
         <Form.Item name="content" label="Review Content" rules={[{ required: true }]}>
           <Input.TextArea rows={5} placeholder="Review text..." />
         </Form.Item>
+        <Form.Item name="image_url" label="Customer Photo URL (optional)">
+          <Input placeholder="https://..." />
+        </Form.Item>
         <Form.Item name="product_id" label="Product (optional)">
           <Select allowClear placeholder="Select product">
             {products.map(p => (

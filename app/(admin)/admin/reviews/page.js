@@ -49,6 +49,12 @@ export default function ReviewsPage() {
       render: (r) => <Rate disabled defaultValue={r} style={{ fontSize: 12 }} />,
     },
     {
+      title: 'Photo',
+      dataIndex: 'image_url',
+      width: 80,
+      render: (url) => url ? <img src={url} alt="Review" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : '-',
+    },
+    {
       title: 'Content',
       dataIndex: 'content',
       render: (c) => (

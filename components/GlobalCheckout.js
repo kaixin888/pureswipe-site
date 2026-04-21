@@ -6,6 +6,7 @@ import { useCart } from 'react-use-cart'
 import { useStore } from './Providers'
 import StripeCheckout from './StripeCheckout'
 import { createClient } from '@supabase/supabase-js'
+import DeliveryCountdown from './DeliveryCountdown'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY')
 
@@ -276,6 +277,9 @@ export default function GlobalCheckout() {
                   <span className="text-sm font-black italic uppercase tracking-widest text-slate-950">Total</span>
                   <span className="text-2xl font-black italic tracking-tighter text-blue-600">${finalTotal.toFixed(2)}</span>
                 </div>
+              </div>
+              <div className="mt-8">
+                <DeliveryCountdown />
               </div>
             </div>
 

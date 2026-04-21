@@ -213,6 +213,7 @@ export default function Home() {
   const [subscriberEmail, setSubscriberEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [previewImage, setPreviewImage] = useState(null)
   const [bundles, setBundles] = useState(BUNDLES)
 
 
@@ -847,16 +848,16 @@ export default function Home() {
               return (
               <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
                 {/* UGC photo if available */}
-                {review.ugc_image_url && (
-                  <div className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-50">
-                    <Image src={review.ugc_image_url} width={400} height={128} className="w-full h-full object-cover" alt="Customer photo" unoptimized />
+                {(review.ugc_image_url || review.image_url) && (
+                  <div className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-50 cursor-zoom-in" onClick={() => setPreviewImage(review.ugc_image_url || review.image_url)}>
+                    <Image src={review.ugc_image_url || review.image_url} width={400} height={128} className="w-full h-full object-cover" alt="Customer photo" unoptimized />
                   </div>
                 )}
                 <div className="flex items-center gap-2 mb-6">
                   <div className="flex gap-1 text-blue-600">
                     {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={14} fill="currentColor" />)}
                   </div>
-                  {review.ugc_image_url && (
+                  {(review.ugc_image_url || review.image_url) && (
                     <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase" style={{color:'#2563eb',backgroundColor:'#eff6ff'}}>Verified Amazon Purchase</span>
                   )}
                 </div>
@@ -1011,6 +1012,17 @@ export default function Home() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+          {/* Image Preview Modal */}
+      {previewImage && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/95 animate-in fade-in duration-300">
+          <button onClick={() => setPreviewImage(null)} className="absolute top-6 right-6 text-white hover:text-blue-400 transition-colors">
+            <X size={32} />
+          </button>
+          <div className="relative max-w-4xl max-h-full aspect-square w-full">
+            <Image src={previewImage} fill className="object-contain" alt="Customer Preview" unoptimized />
           </div>
         </div>
       )}
