@@ -10,6 +10,9 @@ import { createClient } from '@supabase/supabase-js'
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '')
 
 export default function GlobalCheckout() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   const { items, cartTotal, emptyCart, updateItemQuantity, removeItem } = useCart()
   const { 
     isCheckoutOpen, setIsCheckoutOpen,
@@ -29,6 +32,7 @@ export default function GlobalCheckout() {
 
   // Hide Chatwoot during checkout
   useEffect(() => {
+    if (!mounted) return
     const bubble = document.querySelector('#cw-bubble-holder');
     const widget = document.querySelector('#cw-widget-holder');
     if (isCheckoutOpen) {
@@ -40,11 +44,11 @@ export default function GlobalCheckout() {
       if (widget) widget.style.removeProperty('display');
       window.$chatwoot?.toggleBubbleVisibility?.('show');
     }
-  }, [isCheckoutOpen])
+  }, [isCheckoutOpen, mounted])
 
   // PayPal SDK loading
   useEffect(() => {
-    if (!isCheckoutOpen) return
+    if (!mounted || !isCheckoutOpen) return
     const script = document.createElement('script')
     script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&disable-funding=credit,card`
     script.addEventListener('load', () => {
@@ -166,7 +170,7 @@ export default function GlobalCheckout() {
     }
   }
 
-  if (!isCheckoutOpen) return null
+  if (!mounted || !isCheckoutOpen) return null
 
   return (
     <>
