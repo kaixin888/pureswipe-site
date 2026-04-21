@@ -31,12 +31,12 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 900 !important;
   line-height: 1.1;
   letter-spacing: -0.05em;
-  color: #0f172a; /* Default color for standalone headings */
+  color: #0f172a;
 }
 
-/* Ensure headings inside .prose blocks respect the prose/prose-invert theme */
+/* CRITICAL: Force headings inside .prose to inherit color so prose-invert works */
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  color: inherit;
+  color: inherit !important;
 }
 
 .prose {
