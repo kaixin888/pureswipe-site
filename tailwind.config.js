@@ -28,7 +28,27 @@ module.exports = {
       },
       animation: {
         marquee: 'marquee 30s linear infinite',
-      }
+      },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.slate.800'),
+            fontSize: '16px',
+            lineHeight: '1.75',
+            h1: { color: theme('colors.slate.950'), fontWeight: '900' },
+            h2: { color: theme('colors.slate.900'), fontWeight: '900' },
+            h3: { color: theme('colors.slate.900'), fontWeight: '800' },
+            p: { marginBottom: '1.5em' },
+            a: { color: theme('colors.blue.600'), '&:hover': { color: theme('colors.blue.500') } },
+          },
+        },
+        lg: {
+          css: {
+            fontSize: '18px',
+            lineHeight: '1.8',
+          },
+        },
+      }),
     },
   },
   plugins: [

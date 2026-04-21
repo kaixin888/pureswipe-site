@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import BlogProducts from '../../../../components/BlogProducts'
 
 // Force dynamic rendering - always fetch latest content from DB
 export const dynamic = 'force-dynamic'
@@ -127,6 +128,8 @@ export default async function BlogPostPage({ params }) {
             {post.content}
           </ReactMarkdown>
         </div>
+
+        <BlogProducts />
 
         {/* CTA */}
         <div className="mt-16 p-8 bg-slate-900 rounded-2xl text-center">
