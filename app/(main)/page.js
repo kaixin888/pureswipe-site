@@ -1054,7 +1054,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-40 px-6 bg-slate-50">
+      <section id="faq" className="py-40 px-6 bg-slate-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Got Questions?</span>
