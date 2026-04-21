@@ -596,11 +596,11 @@ export default function Home() {
           <div className="flex-1 order-2 md:order-1">
                            <div className="relative group rounded-[4rem] border border-white/10 min-h-[550px] flex items-center overflow-visible">
               <Image 
-                src="/images/home-promo-1.jpg" 
+                src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/starter-kit-main.jpg" 
                 width={800} 
                 height={450}
                 className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
-                alt="Zero-touch hygiene technology" 
+                alt="Clowand Toilet Wand Starter Kit" 
               />
               <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
                                                      <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-relaxed py-6">Designed for <br/> US Households</h2>
@@ -882,11 +882,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-hidden relative group">
           <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
             <Image 
-              src="/images/home-promo-2.jpg" 
+              src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/auto-lid-main.jpg" 
               width={800} 
               height={600}
               className="w-full h-full object-cover grayscale" 
-              alt="clowand Brand Story and USA presence" 
+              alt="Clowand Auto Lid Kit" 
             />
           </div>
           <div className="relative max-w-2xl">
