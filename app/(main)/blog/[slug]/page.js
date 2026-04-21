@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 // Force dynamic rendering - always fetch latest content from DB
 export const dynamic = 'force-dynamic'
@@ -35,66 +37,6 @@ export async function generateMetadata({ params }) {
 function formatDate(iso) {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-}
-
-// Render markdown-like content (bold, headings, lists, links)
-function renderContent(text) {
-  if (!text) return null
-  const lines = text.split('\r\n')
-  const elements = []
-  let key = 0
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-
-    if (line.startsWith('## ')) {
-      elements.push(
-        <h2 key={key++} className="text-xl font-black mt-10 mb-4 text-white">
-          {line.replace('## ', '')}
-        </h2>
-      )
-    } else if (line.startsWith('### ')) {
-      elements.push(
-        <h3 key={key++} className="text-lg font-black mt-8 mb-3 text-white">
-          {line.replace('### ', '')}
-        </h3>
-      )
-    } else if (line.startsWith('- ')) {
-      elements.push(
-        <li key={key++} className="flex gap-2 items-start text-slate-300 text-sm leading-relaxed">
-          <span className="text-blue-400 mt-0.5 shrink-0">✓</span>
-          <span dangerouslySetInnerHTML={{ __html: line.replace('- ', '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
-        </li>
-      )
-    } else if (line.trim() === '') {
-      elements.push(<div key={key++} className="h-2" />)
-    } else {
-      const html = line
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-400 underline hover:text-blue-300">$1</a>')
-      elements.push(
-        <p key={key++} className="text-slate-300 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: html }} />
-      )
-    }
-  }
-
-  // Wrap consecutive <li> in <ul>
-  const wrapped = []
-  let liBuffer = []
-  for (const el of elements) {
-    if (el.type === 'li') {
-      liBuffer.push(el)
-    } else {
-      if (liBuffer.length) {
-        wrapped.push(<ul key={key++} className="flex flex-col gap-2 my-4 pl-2">{liBuffer}</ul>)
-        liBuffer = []
-      }
-      wrapped.push(el)
-    }
-  }
-  if (liBuffer.length) wrapped.push(<ul key={key++} className="flex flex-col gap-2 my-4 pl-2">{liBuffer}</ul>)
-
-  return wrapped
 }
 
 export default async function BlogPostPage({ params }) {
@@ -180,8 +122,10 @@ export default async function BlogPostPage({ params }) {
         )}
 
         {/* Content */}
-        <div className="prose-clowand">
-          {renderContent(post.content)}
+        <div className="prose prose-invert prose-slate lg:prose-lg max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {post.content}
+          </ReactMarkdown>
         </div>
 
         {/* CTA */}
