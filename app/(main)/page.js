@@ -1,4 +1,5 @@
 'use client'
+// VERSION: 6.4.1-HOTFIX-VIDEO-OPTIMIZATION
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
