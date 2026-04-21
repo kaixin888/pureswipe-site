@@ -640,7 +640,7 @@ export default function Home() {
           </div>
           {/* Mobile: single col gap-3 | Desktop: 2-col gap-8 */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
-            {bundles.map((bundle) => (
+            {bundles.map((bundle, i) => (
               <div
                 key={bundle.id}
                 className="group relative bg-white border border-slate-100 rounded-2xl md:rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col"
