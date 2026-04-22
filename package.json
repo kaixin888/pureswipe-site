@@ -1,6 +1,6 @@
 {
   "name": "clowand-independent-station",
-  "version": "6.4.3",
+  "version": "6.6.6",
   "private": true,
   "scripts": {
     "dev": "next dev",
