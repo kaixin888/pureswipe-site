@@ -28,6 +28,7 @@
 
 ## 3. 已知陷阱与禁令 (Anti-Patterns)
 
+- **[MANDATORY] Layout Audit**: 每次推送前必须运行 `npm run audit <preview_url>`。如果脚本报错 `SH > CH`，严禁部署。
 - **[BANNED] 外部图片直链**: 禁止使用 `upload.wikimedia.org` 等外部链接作为 UI 组件（如支付图标）。
 - **[BANNED] 文本容器固定高度**: 严禁在 `RecentSales`, `BlogProducts` 等动态内容组件上使用 `h-10`, `h-40` 等，防止文字“腰斩”。
 - **[BANNED] 顺色设计**: 背景与文字必须保持至少 4.5:1 的对比度。特别是页脚和博客详情页。
