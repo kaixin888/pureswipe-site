@@ -1,5 +1,5 @@
 'use client'
-// VERSION: 6.4.1-HOTFIX-VIDEO-OPTIMIZATION
+// VERSION: 6.6.13-PHASE-E-FINAL-POLISH
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
@@ -129,51 +129,51 @@ function BeforeAfterSlider() {
   const afterItems = ['Touch-free design', 'Disposable heads', '18-inch reach', 'No holder needed']
 
   return (
-    <div ref={sliderRef} className="relative rounded-2xl min-h-[20rem] md:min-h-[24rem] select-none">
-      {/* Left: Before - content locked to left half */}
-      <div className="absolute inset-0 bg-gray-100 flex items-center overflow-hidden">
-        <div className="px-3 md:px-8 py-4" style={{ width: '50%' }}>
-          <p className="text-xs font-black tracking-widest text-gray-400 uppercase mb-2">Before</p>
-          <p className="text-sm md:text-base font-black text-gray-800 mb-3">Traditional Brush</p>
-          <ul className="space-y-1">
-            {beforeItems.map(item => (
-              <li key={item} className="flex items-center gap-1.5 text-xs text-gray-600">
-                <span className="text-red-500 font-black flex-shrink-0">X</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+    <div ref={sliderRef} className="relative aspect-[4/5] md:aspect-video rounded-[2.5rem] md:rounded-[3rem] overflow-hidden group shadow-2xl">
+      {/* After Image (Top) */}
+      <div className="absolute inset-0 bg-blue-50">
+        <Image src="/images/hero.jpg" fill className="object-cover" alt="After" />
+        <div className="absolute top-8 right-8 bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">The clowand Way</div>
+        
+        {/* After Benefits */}
+        <div className="absolute bottom-8 right-8 space-y-2">
+          {afterItems.map((item, i) => (
+            <div key={i} className="flex items-center gap-2 justify-end">
+              <span className="text-white text-[10px] font-black uppercase tracking-widest drop-shadow-md">{item}</span>
+              <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                <CheckCircle size={10} className="text-white" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Right: After - full width layer clipped, content locked to right half */}
-      <div
-        className="absolute inset-0 bg-gray-900 flex items-center overflow-hidden"
-        style={{ clipPath: `inset(0 0 0 ${split}%)`, transition: animated ? 'clip-path 0.6s ease' : 'none' }}
-      >
-        <div className="w-full flex justify-end">
-          <div className="px-3 md:px-8 py-4" style={{ width: '50%' }}>
-            <p className="text-xs font-black tracking-widest text-blue-400 uppercase mb-2">After</p>
-            <p className="text-sm md:text-base font-black text-white mb-3">Clowand System</p>
-            <ul className="space-y-1">
-              {afterItems.map(item => (
-                <li key={item} className="flex items-center gap-1.5 text-xs text-gray-300 justify-end">
-                  <span>{item}</span>
-                  <span className="text-green-400 font-black flex-shrink-0">V</span>
-                </li>
-              ))}
-            </ul>
+      {/* Before Image (Bottom, clipped) */}
+      <div className="absolute inset-0 grayscale contrast-125" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }}>
+        <Image src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1200" fill className="object-cover" alt="Before" />
+        <div className="absolute top-8 left-8 bg-slate-900 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Traditional Method</div>
+        
+        {/* Before Issues */}
+        <div className="absolute bottom-8 left-8 space-y-2">
+          {beforeItems.map((item, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-slate-900 rounded-full flex items-center justify-center shadow-lg">
+                <AlertCircle size={10} className="text-red-500" />
+              </div>
+              <span className="text-white text-[10px] font-black uppercase tracking-widest drop-shadow-md">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Slider Handle */}
+      <div className="absolute inset-y-0" style={{ left: `${split}%`, zIndex: 10 }}>
+        <div className="absolute inset-y-0 w-1 bg-white shadow-2xl transform -translate-x-1/2" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-2xl flex items-center justify-center cursor-col-resize group-active:scale-90 transition-transform">
+          <div className="flex gap-1">
+            <div className="w-1 h-4 bg-slate-200 rounded-full" />
+            <div className="w-1 h-4 bg-slate-200 rounded-full" />
           </div>
-        </div>
-      </div>
-
-      {/* Divider + drag handle */}
-      <div
-        className="absolute top-0 bottom-0 w-0.5 bg-white z-10"
-        style={{ left: `${split}%`, transition: animated ? 'left 0.6s ease' : 'none' }}
-      >
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-700 font-black text-xs">
-          &lt;|&gt;
         </div>
       </div>
 
@@ -278,72 +278,47 @@ export default function Home() {
     const fetchFaqs = async () => {
       const { data, error } = await supabase
         .from('faqs')
-        .select('*')
+        .select('id,question,answer,is_published,created_at')
         .eq('is_published', true)
-        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true })
       if (!error && data && data.length > 0) setFaqs(data)
     }
     fetchFaqs()
   }, [])
 
-  // Fetch site settings (hero/announcement) from Supabase
+  // Fetch site settings from Supabase
   useEffect(() => {
     const fetchSettings = async () => {
       const { data, error } = await supabase
-        .from('site_settings')
-        .select('key, value')
-      if (!error && data && data.length > 0) {
-        const map = {}
-        data.forEach(row => { map[row.key] = row.value })
-        setSiteSettings(map)
+        .from('settings')
+        .select('key,value')
+      if (!error && data) {
+        const s = {}
+        data.forEach(item => s[item.key] = item.value)
+        setSiteSettings(s)
       }
     }
     fetchSettings()
   }, [])
 
-
-
-  // Reset discount when checkout closes
-
+  // Exit popup logic
   useEffect(() => {
-    const trackVisitor = async () => {
-      const sessionKey = 'clowand_visitor_active'
-      if (!sessionStorage.getItem(sessionKey)) {
-        sessionStorage.setItem(sessionKey, 'true')
-      }
-    }
-    trackVisitor()
-  }, [])
-
-  useEffect(() => {
-    const shown = localStorage.getItem('clowand_exit_popup_shown')
-    if (shown) return
-
     const handleMouseLeave = (e) => {
-      if (e.clientY <= 0) {
+      if (e.clientY <= 0 && !isExitPopupOpen && !isSubscribed) {
         setIsExitPopupOpen(true)
-        localStorage.setItem('clowand_exit_popup_shown', 'true')
-        window.removeEventListener('mouseleave', handleMouseLeave)
       }
     }
+    document.addEventListener('mouseleave', handleMouseLeave)
+    return () => document.removeEventListener('mouseleave', handleMouseLeave)
+  }, [isExitPopupOpen, isSubscribed])
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    if (isMobile) {
-      const timer = setTimeout(() => {
-        setIsExitPopupOpen(true)
-        localStorage.setItem('clowand_exit_popup_shown', 'true')
-      }, 30000)
-      return () => clearTimeout(timer)
-    } else {
-      window.addEventListener('mouseleave', handleMouseLeave)
-      return () => window.removeEventListener('mouseleave', handleMouseLeave)
-    }
-  }, [])
+  const scrollIntoView = (id) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const handleSubscribe = async (e) => {
     e.preventDefault()
-    if (!subscriberEmail || isSubmitting) return
-    
     setIsSubmitting(true)
     const { error } = await supabase
       .from('subscribers')
@@ -352,100 +327,26 @@ export default function Home() {
     setIsSubmitting(false)
     if (!error) {
       setIsSubscribed(true)
-      // Send welcome email with discount code (fire-and-forget)
-      fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'welcome', email: subscriberEmail }),
-      }).catch(() => {})
-      setTimeout(() => {
-        setIsExitPopupOpen(false)
-      }, 3000)
-    } else if (error.code === '23505') {
-      setIsSubscribed(true) // Already subscribed
-      setTimeout(() => {
-        setIsExitPopupOpen(false)
-      }, 3000)
+      setTimeout(() => setIsExitPopupOpen(false), 5000)
     }
   }
 
-  const handleTrack = async () => {
-    const { data } = await supabase
+  const handleTrack = async (e) => {
+    e.preventDefault()
+    if (!trackId) return
+    const { data, error } = await supabase
       .from('orders')
-      .select('*')
-      .eq('order_id', trackId.startsWith('CW-') ? trackId : `CW-${trackId}`)
+      .select('status,tracking_number,shipping_carrier')
+      .eq('id', trackId)
       .single()
-    
     if (data) setTrackResult(data)
-  }
-
-  const scrollIntoView = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  // GEO: FAQPage Schema
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": (faqs.length > 0 ? faqs : FAQ).map(faq => ({
-      "@type": "Question",
-      "name": faq.question || faq.q,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer || faq.a
-      }
-    }))
-  }
-
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Clowand",
-    "url": "https://clowand.com",
-    "logo": "https://clowand.com/logo.png",
-    "description": "Premium disposable toilet brush systems for American households"
+    else setTrackResult({ error: true })
   }
 
   return (
-    <main className="min-h-screen bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "clowand Disposable Toilet Brush System",
-            "image": "/images/hero.jpg",
-            "description": "The ultimate 18-inch reach bathroom hygiene system. Triple-action pads, zero-touch mechanism, and 365-day supply in one box. Designed for the modern US home.",
-            "brand": {
-              "@type": "Brand",
-              "name": "clowand"
-            },
-            "offers": {
-              "@type": "AggregateOffer",
-              "url": "https://clowand.com",
-              "priceCurrency": "USD",
-              "lowPrice": "19.99",
-              "highPrice": "34.99",
-              "offerCount": "3",
-              "availability": "https://schema.org/InStock"
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "reviewCount": "52300"
-            }
-          })
-        }}
-      />
-      {/* Hero — Mobile: full-bleed immersive video carousel; Desktop: original layout */}
+    <main className="min-h-screen bg-white font-sans selection:bg-blue-600 selection:text-white">
       {/* Mobile Hero */}
-      <section className="md:hidden relative w-full overflow-hidden" style={{ height: '70vh', minHeight: '480px' }}>
+      <section className="md:hidden relative w-full overflow-hidden min-h-[70vh] flex flex-col">
         <video
           key={videoIndex}
           autoPlay
@@ -469,542 +370,482 @@ export default function Home() {
             />
           ))}
         </div>
-        <div className="absolute inset-0 flex flex-col justify-end px-6 pb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
+        <div className="relative flex-1 flex flex-col justify-end px-6 pb-12 pt-32">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-6 w-fit border border-white/30">
             {siteSettings.hero_badge || "2026 Hygiene Revolution"}
           </div>
-          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mb-3 py-10 overflow-visible">
+          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mt-6 mb-8 py-2 overflow-visible">
             {siteSettings.hero_title || t.heroTitle}
           </h1>
-          <p className="text-sm text-white/80 mb-6 leading-relaxed">
+          <p className="text-sm text-white/80 mb-8 leading-relaxed max-w-[280px]">
             {siteSettings.hero_subtitle || t.heroSub}
           </p>
           <button
             onClick={() => scrollIntoView('bundles')}
-            className="w-full bg-black text-white rounded-full py-4 text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-transform"
+            className="w-full bg-black text-white rounded-full py-5 text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-transform shadow-xl"
           >
             {t.shopBundles}
           </button>
         </div>
       </section>
 
-      {/* Mobile Category Tags */}
-      <div className="md:hidden overflow-x-auto flex gap-2 px-4 py-4 border-b border-gray-100 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-        {['All', 'Starter Kit', 'Refill Pack', 'Bundle', 'Best Seller'].map((tag) => (
-          <button
-            key={tag}
-            onClick={() => scrollIntoView('bundles')}
-            className="border border-gray-300 rounded-full px-4 py-1.5 text-sm whitespace-nowrap text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
-
       {/* Desktop Hero */}
-            <section className="hidden md:block relative pt-44 pb-32 px-6">
-        <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-blue-50 rounded-full blur-[160px] opacity-60"></div>
-        <div className="max-w-7xl mx-auto flex flex-row items-center gap-24 relative">
-          <div className="flex-1 text-left">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
-              {siteSettings.hero_badge || "2026 Hygiene Revolution"}
-            </div>
-                        <h1 className="text-8xl font-black italic tracking-tighter leading-[1.15] uppercase mb-10 text-slate-950 py-10 overflow-visible">
-              {siteSettings.hero_title || t.heroTitle}
-            </h1>
-            <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
-              {siteSettings.hero_subtitle || t.heroSub}
-            </p>
-            <div className="flex flex-row items-center gap-6">
-              <button
-                onClick={() => scrollIntoView('bundles')}
-                className="px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-slate-950/20"
-              >
-                {t.shopBundles}
-              </button>
-              <div className="flex -space-x-4">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden relative">
-                    <div className="w-full h-full flex items-center justify-center bg-blue-600 text-white text-[10px] font-black italic">{['S', 'M', 'K', 'R'][i-1]}</div>
+      <section className="hidden md:block relative h-screen w-full overflow-hidden">
+        <video
+          key={videoIndex + "-desktop"}
+          autoPlay
+          muted
+          loop={false}
+          playsInline
+          preload="metadata"
+          poster="/images/hero.jpg"
+          className="absolute inset-0 w-full h-full object-cover"
+          onEnded={() => setVideoIndex(v => (v + 1) % 2)}
+        >
+          <source src={videoIndex === 0 ? "https://media.clowand.com/videos/product-wand.mp4" : "https://media.clowand.com/videos/product-lid.mp4"} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/40 to-transparent" />
+        <div className="relative h-full container mx-auto px-12 flex flex-col justify-center max-w-7xl">
+          <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-blue-600/10 border border-blue-600/20 text-blue-600 rounded-full text-[11px] font-black uppercase tracking-[0.2em] mb-10 w-fit backdrop-blur-md">
+            <Sparkles size={14} className="animate-pulse" />
+            {siteSettings.hero_badge || "2026 Hygiene Revolution"}
+          </div>
+          <h1 className="text-6xl lg:text-8xl font-black italic tracking-tighter leading-[0.85] uppercase text-slate-950 mt-12 mb-8 py-2 overflow-visible">
+            {siteSettings.hero_title || t.heroTitle}
+          </h1>
+          <p className="text-xl text-slate-600 mb-12 max-w-xl leading-relaxed font-medium">
+            {siteSettings.hero_subtitle || t.heroSub}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6">
+            <button
+              onClick={() => scrollIntoView('bundles')}
+              className="bg-slate-950 text-white px-12 py-6 rounded-full text-sm font-black uppercase tracking-widest hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-600/30 transition-all active:scale-95 flex items-center gap-3 group"
+            >
+              {t.shopBundles}
+              <Zap size={18} className="text-blue-400 group-hover:animate-bounce" />
+            </button>
+            <div className="flex items-center gap-4 px-6">
+              <div className="flex -space-x-3">
+                {[1,2,3].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-slate-100">
+                    <Image src={`https://i.pravatar.cc/100?img=${i+10}`} width={40} height={40} alt="User" />
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">50k+ Happy Homes</p>
-            </div>
-          </div>
-          <div className="flex-1 relative group">
-            <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
-            <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-black aspect-square group-hover:-rotate-1 transition-all duration-700">
-              <video
-                autoPlay
-                muted
-                loop={true}
-                playsInline
-                preload="metadata"
-                poster="/images/hero.jpg"
-                className="w-full h-full object-cover"
-                onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
-              >
-                <source src="https://media.clowand.com/videos/product-wand.mp4" type="video/mp4" />
-              </video>
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
-              <div className="absolute bottom-12 left-12">
-                <div className="flex items-center gap-4 text-white">
-                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
-                    <Play size={20} fill="currentColor" />
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest">Watch 10s Demo</span>
-                </div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 leading-tight">
+                Trusted by<br/><span className="text-slate-900">50,000+ Houses</span>
               </div>
             </div>
           </div>
+        </div>
+        {/* Video switcher */}
+        <div className="absolute bottom-12 right-12 flex gap-3">
+          {[0,1].map(i => (
+            <button
+              key={i}
+              onClick={() => setVideoIndex(i)}
+              className={"w-16 h-1 rounded-full transition-all " + (videoIndex === i ? "bg-blue-600" : "bg-slate-300")}
+            />
+          ))}
         </div>
       </section>
 
       <TrustBar />
 
-      {/* Features */}
-      <section id="features" className="py-40 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-32">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Engineering Excellence</span>
-                                    <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 leading-relaxed py-10 overflow-visible">Why clowand?</h2>
+      {/* Core Features - Bento Style */}
+      <section className="py-24 md:py-32 bg-slate-50">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center mb-20">
+            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[11px] italic">Engineering Excellence</span>
+            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-[0.85] py-10 overflow-visible">Built for the <br/>Modern Bathroom</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              { icon: ShieldCheck, title: t.zeroTouchTitle, desc: t.zeroTouchDesc, color: 'bg-emerald-50 text-emerald-600' },
-              { icon: Ruler, title: t.handleTitle, desc: t.handleDesc, color: 'bg-blue-50 text-blue-600' },
-              { icon: Droplets, title: t.padTitle, desc: t.padDesc, color: 'bg-purple-50 text-purple-600' }
-            ].map((feature, i) => (
-              <div key={i} className="group p-8 md:p-12 bg-slate-50 rounded-[4rem] border border-slate-100 hover:bg-white hover:shadow-3xl transition-all duration-500 hover:-translate-y-4">
-                <div className={`w-16 h-16 ${feature.color} rounded-3xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform`}>
-                  <feature.icon size={32} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[280px]">
+            {/* Feature 1: Large Reach */}
+            <div className="md:col-span-8 bg-white rounded-[2.5rem] md:rounded-[3rem] p-10 md:p-16 flex flex-col justify-between group hover:shadow-2xl transition-all border border-slate-100 relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-600/20 group-hover:scale-110 transition-transform">
+                  <Ruler size={28} />
                 </div>
-                <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6 text-slate-900 py-4 overflow-visible">{feature.title}</h3>
-                <p className="text-slate-500 leading-relaxed font-medium">{feature.desc}</p>
+                <h3 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-slate-950 mb-6 py-4 overflow-visible">{t.handleTitle}</h3>
+                <p className="text-slate-500 text-lg max-w-md leading-relaxed">{t.handleDesc}</p>
               </div>
-            ))}
+              <div className="absolute right-0 bottom-0 w-1/2 h-full opacity-5 pointer-events-none">
+                <Ruler size={400} className="rotate-12 transform translate-x-20 translate-y-20" />
+              </div>
+            </div>
+
+            {/* Feature 2: Zero Touch */}
+            <div className="md:col-span-4 bg-slate-900 rounded-[2.5rem] md:rounded-[3rem] p-10 flex flex-col justify-between group hover:shadow-2xl transition-all relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-blue-500 text-white rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-500/20 group-hover:rotate-12 transition-transform">
+                  <Zap size={28} />
+                </div>
+                <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white mb-4 py-4 overflow-visible">{t.zeroTouchTitle}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{t.zeroTouchDesc}</p>
+              </div>
+            </div>
+
+            {/* Feature 3: Power Pad */}
+            <div className="md:col-span-4 bg-blue-600 rounded-[2.5rem] md:rounded-[3rem] p-10 flex flex-col justify-between group hover:shadow-2xl transition-all relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-white text-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform">
+                  <Droplets size={28} />
+                </div>
+                <h3 className="text-3xl font-black italic tracking-tighter uppercase text-white mb-4 py-4 overflow-visible">{t.padTitle}</h3>
+                <p className="text-blue-100 text-sm leading-relaxed">{t.padDesc}</p>
+              </div>
+            </div>
+
+            {/* Feature 4: Hybrid Info */}
+            <div className="md:col-span-8 bg-white rounded-[2.5rem] md:rounded-[3rem] p-10 flex items-center gap-12 group hover:shadow-2xl transition-all border border-slate-100">
+              <div className="flex-1">
+                <div className="flex gap-2 mb-6">
+                  {[1,2,3,4,5].map(i => <Star key={i} size={16} className="fill-blue-600 text-blue-600" />)}
+                </div>
+                <h3 className="text-3xl md:text-4xl font-black italic tracking-tighter uppercase text-slate-950 mb-4 py-4 overflow-visible">Verified Hygiene</h3>
+                <p className="text-slate-500 leading-relaxed">99.9% of users report feeling significantly more hygienic compared to traditional brushes.</p>
+              </div>
+              <div className="hidden md:flex flex-1 gap-4">
+                <div className="flex-1 aspect-square bg-slate-50 rounded-3xl flex items-center justify-center p-8">
+                  <ShieldCheck size={48} className="text-blue-600" />
+                </div>
+                <div className="flex-1 aspect-square bg-slate-50 rounded-3xl flex items-center justify-center p-8">
+                  <ThumbsUp size={48} className="text-blue-600" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Product Highlight */}
-            <section className="py-40 px-6 bg-slate-950 text-white relative">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-blue-600 rounded-full blur-[200px]"></div>
-        </div>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-24 relative">
-          <div className="flex-1 order-2 md:order-1">
-                           <div className="relative group rounded-[4rem] border border-white/10 min-h-[550px] flex items-center overflow-visible">
-              <Image 
-                src="/images/products/starter-kit-main.jpg" 
-                width={800} 
-                height={450}
-                className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
-                alt="Clowand Toilet Wand Starter Kit" 
-              />
-              <div className="relative md:absolute md:inset-0 p-10 md:p-16 flex flex-col justify-center">
-                                                     <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-8 leading-relaxed py-10 overflow-visible">Designed for <br/> US Households</h2>
-                 <p className="text-slate-400 text-lg mb-10 max-w-md leading-relaxed">Built to meet the highest sanitary standards. Professional-grade durability meets minimalist design.</p>
-                 <ul className="space-y-6">
-                   {[
-                     { icon: CheckCircle, text: 'ASTM Certified Materials' },
-                     { icon: CheckCircle, text: 'Compatible with Septic Systems' },
-                     { icon: CheckCircle, text: 'Ergonomic Non-Slip Grip' }
-                   ].map((item, i) => (
-                     <li key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-blue-400">
-                       <item.icon size={18} /> {item.text}
-                     </li>
-                   ))}
-                 </ul>
+      {/* Experience Section */}
+      <section className="py-24 md:py-32 bg-white">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
+            <BeforeAfterSlider />
+            <div className="space-y-10">
+              <div>
+                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[11px] italic">The Problem & The Solution</span>
+                <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-[0.85] py-10 overflow-visible">Why households <br/>are switching.</h2>
               </div>
-             </div>
-          </div>
-          <div className="flex-1 order-1 md:order-2 text-center md:text-left">
-             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">The Standard</span>
-                                         <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-relaxed py-10 overflow-visible">American <br/> Hygiene.</h2>
-             <button 
-               onClick={() => scrollIntoView('bundles')}
-               className="px-12 py-6 bg-white text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-2xl shadow-white/5"
-             >
-               View Specs
-             </button>
+              <p className="text-slate-600 text-lg leading-relaxed max-w-md">
+                Traditional toilet brushes are bacterial breeding grounds. They stay wet, drip on your floors, and require you to get uncomfortably close to the waste.
+              </p>
+              <div className="space-y-6">
+                {[
+                  { icon: <Shield size={20} />, title: "Antimicrobial Storage", desc: "Ventilated caddy prevents bacterial growth." },
+                  { icon: <Droplet size={20} />, title: "Pre-Loaded Cleaner", desc: "Pads contain heavy-duty disinfecting agents." },
+                  { icon: <Recycle size={20} />, title: "Eco-Conscious", desc: "Biodegradable heads and recyclable wands." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-6 group">
+                    <div className="w-12 h-12 shrink-0 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-black italic tracking-tighter uppercase text-slate-950 mb-1">{item.title}</h4>
+                      <p className="text-slate-500 text-sm">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Products */}
-      <section id="bundles" className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-b from-white via-slate-50 to-white overflow-hidden">
-        <div aria-hidden className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-blue-100/30 rounded-full blur-[160px] pointer-events-none"></div>
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
-            <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 py-10 overflow-visible">{t.saveUpTo}</h2>
+      {/* Select Your System - Bento Grid */}
+      <section id="bundles" className="py-24 md:py-32 bg-slate-950 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-600/20 via-slate-950/0 to-slate-950/0 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/2 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-6 max-w-7xl relative z-10">
+          <div className="text-center mb-20">
+            <span className="text-blue-400 font-black uppercase tracking-[0.3em] text-[11px] italic">Select Your System</span>
+            <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter uppercase mt-4 text-white leading-[0.85] py-10 overflow-visible">Ready for <br/>Better Hygiene?</h2>
+            <p className="text-slate-400 mt-8 font-medium tracking-wide">{t.saveUpTo}</p>
           </div>
-                    {/* Bento Grid: index-0 is large hero card (full-width on desktop), rest are small cards */}
-          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
+
+          <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
             {bundles.map((bundle, i) => (
-              <div
+              <div 
                 key={bundle.id}
                 className={
-                  "group relative rounded-[3rem] overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col border border-slate-100 " +
-                  (i === 0 ? "md:col-span-2 bg-slate-50" : (i % 2 === 0 ? "bg-white" : "bg-slate-50"))
+                  "group relative bg-white rounded-[2.5rem] md:rounded-[3rem] overflow-hidden flex flex-col hover:shadow-[0_0_80px_rgba(37,99,235,0.2)] transition-all duration-300 border border-white/10 " +
+                  (i === 0 ? "md:col-span-2 md:flex-row md:min-h-[600px]" : "md:col-span-1")
                 }
               >
+                {/* Popular Badge */}
                 {bundle.popular && (
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
-                    Best Seller
+                  <div className="absolute top-8 left-8 z-30 bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2">
+                    <Star size={12} className="fill-white" />
+                    {t.mostPopular}
                   </div>
                 )}
-                {bundle.tag && !bundle.popular && (
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                    {bundle.tag}
-                  </div>
-                )}
-                {/* Large card uses side-by-side layout on desktop */}
-                <div className={i === 0 ? "flex flex-col md:flex-row items-stretch" : "flex flex-col"}>
-                  <a
-                    href={`/products/${bundle.id}`}
-                    className={
-                      "block overflow-hidden flex-shrink-0 " +
-                      (i === 0
-                        ? "w-full md:w-5/12 [aspect-ratio:4/3] md:[aspect-ratio:auto] md:min-h-[400px]"
-                        : "w-full [aspect-ratio:4/3]")
-                    }
-                  >
-                    <div className="w-full h-full flex items-center justify-center p-4 bg-white/70">
-                      <Image
-                        src={bundle.image}
-                        width={i === 0 ? 800 : 600}
-                        height={i === 0 ? 600 : 450}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                        alt={bundle.alt_text || `${bundle.name} - Clowand Disposable Toilet Brush`}
-                        priority={i === 0}
-                        sizes={i === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 25vw"}
-                      />
+
+                {/* Image Container */}
+                <div className={"relative " + (i === 0 ? "md:w-3/5" : "aspect-[4/5]")}>
+                  <Image 
+                    src={bundle.image} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                    alt={bundle.name} 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent md:bg-gradient-to-r md:from-transparent md:to-white/10" />
+                  
+                  {/* Tag on Image for mobile/smaller cards */}
+                  {bundle.tag && i !== 0 && (
+                    <div className="absolute bottom-6 left-6 bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+                      {bundle.tag}
                     </div>
-                  </a>
-                  {/* Content panel */}
-                  <div className={
-                    "flex flex-col flex-1 " +
-                    (i === 0 ? "p-8 md:p-12 md:justify-center" : "p-5 md:p-6")
-                  }>
-                    <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                      <h3 className={
-                        "font-black italic tracking-tighter uppercase text-slate-900 py-4 overflow-visible " +
-                        (i === 0 ? "text-2xl md:text-4xl mb-3" : "text-xl mb-2")
-                      }>{bundle.name}</h3>
-                    </a>
-                    {bundle.description && (
-                      <p className="text-sm text-gray-500 mb-3 font-medium">{bundle.description}</p>
-                    )}
-                    {(() => {
-                      try {
-                        const bts = typeof bundle.bullets === 'string'
-                          ? JSON.parse(bundle.bullets || '[]').slice(0, i === 0 ? 4 : 3)
-                          : (Array.isArray(bundle.bullets) ? bundle.bullets.slice(0, i === 0 ? 4 : 3) : [])
-                        return bts.length > 0 ? (
-                          <ul className="space-y-1 mb-3">
-                            {bts.map((b, bi) => (
-                              <li key={bi} className="flex items-center gap-1.5 text-xs text-gray-600">
-                                <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
-                                <span>{b}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : null
-                      } catch { return null }
-                    })()}
-                    {bundle.items && bundle.items.length > 0 && (
-                      <ul className="space-y-1 mb-4">
-                        {bundle.items.slice(0, i === 0 ? 4 : 3).map((item, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
-                            <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="mt-auto space-y-3">
-                      {(() => {
-                        const sp = bundle.sale_price
-                        const onSale = sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)
-                        const display = onSale ? Number(sp) : Number(bundle.price)
-                        return (
-                          <div className="flex items-center justify-between gap-2 flex-wrap">
-                            <div className="flex items-baseline gap-2">
-                              {onSale && (
-                                <span className="text-sm text-gray-400 line-through">${Number(bundle.price).toFixed(2)}</span>
-                              )}
-                              <span className={onSale ? "text-lg font-bold text-red-600" : "text-lg font-bold text-gray-900"}>${display.toFixed(2)}</span>
-                              {onSale && (
-                                <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
-                              )}
-                            </div>
-                            <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
-                          </div>
-                        )
-                      })()}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } }}
-                          disabled={bundle.stock <= 0}
-                          className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[0.98]'}`}
-                        >
-                          {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                        </button>
-                        <button
-                          onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); setIsCheckoutOpen(true); }}
-                          disabled={bundle.stock <= 0}
-                          className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98]'}`}
-                        >
-                          {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
-                        </button>
-                      </div>
-                      {bundle.id && (
-                        <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
-                          View Details →
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Clowand — Comparison Table */}
-      <section className="py-20 px-6 bg-gray-900">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white py-10 overflow-visible">Why Choose Clowand?</h2>
-            <p className="text-gray-400 mt-3 text-sm">See the difference for yourself</p>
-          </div>
-
-          {/* Before/After Slider */}
-          <div className="mb-10">
-            <BeforeAfterSlider />
-          </div>
-
-          {/* Desktop table */}
-          <div className="hidden md:block overflow-hidden rounded-2xl border border-gray-700">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-800">
-                  <th className="py-4 px-6 text-left text-gray-400 font-semibold uppercase tracking-widest text-xs w-1/3"></th>
-                  <th className="py-4 px-6 text-center text-white font-bold text-base w-1/3">Clowand</th>
-                  <th className="py-4 px-6 text-center text-gray-500 font-semibold text-base w-1/3">Traditional Brush</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {[
-                  { label: 'Hygiene', clowand: 'Single-use, always sterile', traditional: 'Bacteria build up after each use' },
-                  { label: 'Touch-Free', clowand: '100% no-touch disposal', traditional: 'Must handle dirty brush' },
-                  { label: 'Freshness', clowand: 'Sealed individual packaging', traditional: 'Exposed, wet, smelly storage' },
-                  { label: 'Odor', clowand: 'Zero odor guaranteed', traditional: 'Mildew & unpleasant smell' },
-                  { label: 'Replacement', clowand: 'No maintenance needed', traditional: 'Replace brush & holder regularly' },
-                  { label: 'Value', clowand: '~$0.50 per clean', traditional: 'Hidden costs of replacement + cleaning' },
-                ].map((row) => (
-                  <tr key={row.label} className="bg-gray-900 hover:bg-gray-800/60 transition-colors">
-                    <td className="py-4 px-6 font-semibold text-gray-300 uppercase tracking-widest text-xs">{row.label}</td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center gap-2 text-green-400 font-medium">
-                        <span className="text-green-500 font-bold">✓</span> {row.clowand}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center gap-2 text-gray-500">
-                        <span className="text-red-500 font-bold">✗</span> {row.traditional}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile cards */}
-          <div className="md:hidden space-y-4">
-            {[
-              { label: 'Hygiene', clowand: 'Single-use, always sterile', traditional: 'Bacteria build up after each use' },
-              { label: 'Touch-Free', clowand: '100% no-touch disposal', traditional: 'Must handle dirty brush' },
-              { label: 'Freshness', clowand: 'Sealed individual packaging', traditional: 'Exposed, wet, smelly storage' },
-              { label: 'Odor', clowand: 'Zero odor guaranteed', traditional: 'Mildew & unpleasant smell' },
-              { label: 'Replacement', clowand: 'No maintenance needed', traditional: 'Replace brush & holder regularly' },
-              { label: 'Value', clowand: '~$0.50 per clean', traditional: 'Hidden costs of replacement + cleaning' },
-            ].map((row) => (
-              <div key={row.label} className="rounded-xl border border-gray-700 overflow-hidden">
-                <div className="bg-gray-800 px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-300">{row.label}</div>
-                <div className="grid grid-cols-2 divide-x divide-gray-700">
-                  <div className="p-4 bg-gray-900">
-                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Clowand</p>
-                    <p className="text-green-400 text-sm font-medium"><span className="text-green-500 mr-1">✓</span>{row.clowand}</p>
-                  </div>
-                  <div className="p-4 bg-gray-900">
-                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Traditional</p>
-                    <p className="text-gray-500 text-sm"><span className="text-red-500 mr-1">✗</span>{row.traditional}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Reviews */}
-      <section id="reviews" className="py-40 px-6 bg-slate-50/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-32">
-             <div className="flex-1 text-center md:text-left">
-               <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Voice of America</span>
-               <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 py-10 overflow-visible">Customer Love</h2>
-             </div>
-             <div className="flex items-center gap-12">
-                <div className="text-center">
-                  <p className="text-5xl font-black italic tracking-tighter text-slate-950 uppercase">4.9</p>
-                  <div className="flex gap-1 text-blue-600 mt-2">
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                    <Star size={16} fill="currentColor" />
-                  </div>
-                </div>
-                <div className="w-px h-16 bg-slate-200"></div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 max-w-[100px] leading-relaxed">Based on 50k+ Real Reviews</p>
-             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {(reviews.length > 0 ? reviews : REVIEWS).map((review, i) => {
-              const displayName = review.author_name || review.name || 'Anonymous'
-              const displayLocation = review.author_location || review.location || ''
-              const displayComment = review.content || review.comment || ''
-              const displayRating = review.rating || 5
-              return (
-              <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
-                {/* UGC photo if available */}
-                {(review.ugc_image_url || review.image_url) && (
-                  <div className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-50 cursor-zoom-in" onClick={() => setPreviewImage(review.ugc_image_url || review.image_url)}>
-                    <Image src={review.ugc_image_url || review.image_url} width={400} height={128} className="w-full h-full object-cover" alt="Customer photo" unoptimized />
-                  </div>
-                )}
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="flex gap-1 text-blue-600">
-                    {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={14} fill="currentColor" />)}
-                  </div>
-                  {(review.ugc_image_url || review.image_url) && (
-                    <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase" style={{color:'#2563eb',backgroundColor:'#eff6ff'}}>Verified Amazon Purchase</span>
                   )}
                 </div>
-                <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{displayComment}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-50 overflow-hidden relative">
-                    <div className="w-full h-full flex items-center justify-center bg-blue-600 text-white text-[10px] font-black italic">{displayName.charAt(0)}</div>
+
+                {/* Content Container */}
+                <div className={
+                  "relative z-10 flex flex-col flex-1 " + 
+                  (i === 0 ? "p-8 md:p-16 md:justify-center" : "p-8 md:p-10")
+                }>
+                  <div className="mb-auto">
+                    {bundle.tag && i === 0 && (
+                      <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic mb-4 block">
+                        {bundle.tag}
+                      </span>
+                    )}
+                    <h3 className={
+                      "font-black italic tracking-tighter uppercase text-slate-950 mt-2 mb-4 py-2 overflow-visible " +
+                      (i === 0 ? "text-4xl md:text-6xl" : "text-3xl")
+                    }>
+                      {bundle.name}
+                    </h3>
+                    <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+                      {bundle.description}
+                    </p>
+                    
+                    <ul className="space-y-3 mb-10">
+                      {(bundle.items || []).map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-slate-600 text-sm">
+                          <CheckCircle size={18} className="text-blue-600 shrink-0 mt-0.5" />
+                          <span className="font-medium">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div>
-                    <h4 className="text-[10px] font-black tracking-widest text-slate-900">{displayName}{displayLocation ? ` (${displayLocation})` : ''}</h4>
+
+                  <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="flex flex-col">
+                      <div className="flex items-baseline gap-2">
+                        {mounted ? (
+                          <>
+                            {(() => {
+                              const sp = bundle.sale_price
+                              const onSale = sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)
+                              const display = onSale ? Number(sp) : Number(bundle.price)
+                              return (
+                                <>
+                                  <span className="text-4xl font-black italic tracking-tighter text-slate-950">
+                                    ${display.toFixed(2)}
+                                  </span>
+                                  {onSale && (
+                                    <span className="text-lg font-bold text-slate-300 line-through decoration-slate-400">
+                                      ${Number(bundle.price).toFixed(2)}
+                                    </span>
+                                  )}
+                                </>
+                              )
+                            })()}
+                          </>
+                        ) : (
+                           <span className="text-4xl font-black italic tracking-tighter text-slate-950">
+                            ${Number(bundle.price).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Free USA Shipping Included</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        addItem(bundle)
+                        setIsCheckoutOpen(true)
+                      }}
+                      className="bg-blue-600 text-white px-10 py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-950 transition-all active:scale-95 shadow-xl shadow-blue-600/20"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               </div>
-              )
-            })}
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Brand Story */}
-      <section className="py-40 px-6">
-        <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-visible relative group">
-          <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
-            <Image 
-              src="/images/products/auto-lid-main.jpg" 
-              width={800} 
-              height={600}
-              className="w-full h-full object-cover grayscale" 
-              alt="Clowand Auto Lid Kit" 
-            />
-          </div>
-          <div className="relative max-w-2xl">
-            <span className="font-black uppercase tracking-[0.3em] text-[10px] italic">Our Mission</span>
-                                                <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 leading-relaxed py-10 overflow-visible">Clean with Confidence.</h2>
-            <p className="text-xl text-blue-50 leading-relaxed mb-16 opacity-90">Started in Boston, clowand was born from a simple observation: cleaning tools shouldn't be the dirtiest thing in your house. We're reinventing bathroom hygiene with professional tools for every American home.</p>
-            <div className="flex flex-col sm:flex-row gap-12">
-              <div>
-                <p className="text-4xl font-black italic tracking-tighter uppercase mb-2">2024</p>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Est. Boston, MA</p>
+      {/* Social Proof Section */}
+      <section className="py-24 md:py-32 bg-slate-50">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+            <div className="max-w-2xl">
+              <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[11px] italic">Wall of Hygiene</span>
+              <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-[0.85] py-10 overflow-visible">What the <br/>Hygiene Club says.</h2>
+            </div>
+            <div className="flex items-center gap-4 bg-white px-8 py-6 rounded-[2rem] shadow-xl border border-slate-100">
+              <div className="text-center">
+                <div className="text-2xl font-black italic tracking-tighter text-slate-950">4.9/5.0</div>
+                <div className="flex gap-1 justify-center mt-1">
+                  {[1,2,3,4,5].map(i => <Star key={i} size={12} className="fill-blue-600 text-blue-600" />)}
+                </div>
               </div>
-              <div className="w-px h-16 bg-white/20 hidden sm:block"></div>
-              <div>
-                <p className="text-4xl font-black italic tracking-tighter uppercase mb-2">50k+</p>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Homes Transformed</p>
-              </div>
+              <div className="w-px h-10 bg-slate-100 mx-4" />
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Based on 1,240+<br/>Verified Reviews</div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Track & FAQ */}
-      <section className="py-40 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">After Sales</span>
-          <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 mb-12 text-slate-950 py-10 overflow-visible">Support</h2>
-          <form 
-            onSubmit={(e) => { e.preventDefault(); handleTrack(); }}
-            className="flex flex-col sm:flex-row gap-4 mb-32"
-          >
-            <input 
-              type="text" 
-              placeholder={t.trackInput}
-              value={trackId}
-              onChange={(e) => setTrackId(e.target.value)}
-              className="flex-1 px-10 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
-            />
-            <button type="submit" className="px-10 py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
-              Track
-            </button>
-          </form>
-          {trackResult && (
-            <div className="mt-16 p-12 bg-white border border-slate-100 rounded-[3rem] text-left shadow-xl animate-in slide-in-from-bottom duration-500">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Order ID: #{trackResult.order_id}</span>
-              <p className="text-2xl font-black italic tracking-tighter text-blue-600 uppercase mt-4">{trackResult.status}</p>
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(reviews.length > 0 ? reviews : REVIEWS.slice(0, 6)).map((review, i) => (
+              <div key={i} className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-sm hover:shadow-xl transition-all border border-slate-100 flex flex-col justify-between">
+                <div>
+                  <div className="flex gap-1 mb-6">
+                    {[1,2,3,4,5].map(j => (
+                      <Star key={j} size={14} className={j <= review.rating ? "fill-blue-600 text-blue-600" : "text-slate-200"} />
+                    ))}
+                  </div>
+                  <p className="text-slate-600 leading-relaxed font-medium mb-8 italic">"{review.comment || review.content}"</p>
+                </div>
+                <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                  <div>
+                    <div className="font-black italic tracking-tighter uppercase text-slate-950 text-sm">{review.name || review.author_name}</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">{review.location || review.author_location}</div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                    <CheckCircle size={14} className="text-blue-600" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-40 px-6 bg-slate-50">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-24 md:py-32 bg-white">
+        <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center mb-20">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Got Questions?</span>
-            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 py-10 overflow-visible">FAQ</h2>
+            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[11px] italic">Common Questions</span>
+            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 py-10 overflow-visible">Everything else.</h2>
           </div>
+          
           <div className="space-y-4">
             {(faqs.length > 0 ? faqs : FAQ).map((faq, i) => (
-              <div key={i} className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden">
-                <button
+              <div 
+                key={i} 
+                className="group bg-slate-50 rounded-3xl overflow-hidden border border-transparent hover:border-blue-600/20 transition-all"
+              >
+                <button 
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                  className="w-full text-left px-10 py-8 flex justify-between items-center gap-4"
+                  className="w-full px-8 py-6 flex items-center justify-between text-left"
                 >
-                  <span className="font-black italic tracking-tighter text-xl text-slate-950">{faq.question || faq.q}</span>
-                  <span className="text-blue-600 text-2xl font-black flex-shrink-0">{activeFaq === i ? '-' : '+'}</span>
-                </button>
-                {activeFaq === i && (
-                  <div className="px-10 pb-8 text-slate-500 leading-relaxed text-sm font-medium animate-in slide-in-from-top duration-200">
-                    {faq.answer || faq.a}
+                  <span className="font-black italic tracking-tighter uppercase text-slate-950 text-lg">{faq.q || faq.question}</span>
+                  <div className={"w-8 h-8 rounded-full bg-white flex items-center justify-center transition-transform " + (activeFaq === i ? "rotate-180" : "")}>
+                    <ChevronDown size={18} className="text-slate-400" />
                   </div>
-                )}
+                </button>
+                <div className={"overflow-hidden transition-all duration-300 " + (activeFaq === i ? "max-h-96" : "max-h-0")}>
+                  <div className="px-8 pb-8 text-slate-500 leading-relaxed text-sm">
+                    {faq.a || faq.answer}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="bg-slate-950 text-white pt-24 pb-12">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
+            <div className="md:col-span-4 space-y-8">
+              <div className="text-2xl font-black italic tracking-tighter uppercase tracking-widest">CLOWAND</div>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+                Premium US bathroom hygiene system. Designed for distance, built for speed.
+              </p>
+              <div className="flex gap-4">
+                {[Mail, Phone].map((Icon, i) => (
+                  <div key={i} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-slate-950 transition-all cursor-pointer">
+                    <Icon size={18} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
+              <div>
+                <h5 className="font-black italic tracking-tighter uppercase text-xs mb-8 tracking-[0.2em] text-blue-400">Shop</h5>
+                <ul className="space-y-4 text-sm font-medium text-slate-400">
+                  <li className="hover:text-white cursor-pointer transition-colors" onClick={() => scrollIntoView('bundles')}>Starter Kits</li>
+                  <li className="hover:text-white cursor-pointer transition-colors" onClick={() => scrollIntoView('bundles')}>Refill Packs</li>
+                  <li className="hover:text-white cursor-pointer transition-colors" onClick={() => scrollIntoView('bundles')}>Family Sets</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-black italic tracking-tighter uppercase text-xs mb-8 tracking-[0.2em] text-blue-400">Support</h5>
+                <ul className="space-y-4 text-sm font-medium text-slate-400">
+                  <li className="hover:text-white cursor-pointer transition-colors">Shipping Policy</li>
+                  <li className="hover:text-white cursor-pointer transition-colors">Refund Policy</li>
+                  <li className="hover:text-white cursor-pointer transition-colors">Contact Us</li>
+                </ul>
+              </div>
+              <div className="col-span-2 md:col-span-1">
+                <h5 className="font-black italic tracking-tighter uppercase text-xs mb-8 tracking-[0.2em] text-blue-400">Track Order</h5>
+                <form onSubmit={handleTrack} className="space-y-4">
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="ORDER ID" 
+                      value={trackId}
+                      onChange={(e) => setTrackId(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-4 text-[10px] font-bold tracking-widest uppercase focus:outline-none focus:border-blue-600 transition-colors"
+                    />
+                    <button type="submit" className="absolute right-2 top-2 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
+                      <Search size={16} />
+                    </button>
+                  </div>
+                  {trackResult && (
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 animate-in fade-in slide-in-from-top-2">
+                      {trackResult.error ? (
+                        <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest">Order not found</p>
+                      ) : (
+                        <div>
+                          <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">{trackResult.status}</p>
+                          <p className="text-[8px] text-slate-500 font-medium">{trackResult.shipping_carrier}: {trackResult.tracking_number}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+              © 2026 CLOWAND. ALL RIGHTS RESERVED.
+            </p>
+            <div className="flex gap-6 grayscale opacity-40">
+              <CreditCard size={24} />
+              <Package size={24} />
+              <Shield size={24} />
+            </div>
+          </div>
+        </div>
+      </footer>
+
       {/* Exit Intent Popup */}
       {isExitPopupOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 backdrop-blur-2xl bg-slate-950/60 animate-in fade-in zoom-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={() => setIsExitPopupOpen(false)} />
+          <div className="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl overflow-hidden group">
             <button 
               onClick={() => setIsExitPopupOpen(false)}
               className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
