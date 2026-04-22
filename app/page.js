@@ -231,7 +231,7 @@ export default function Home() {
     const fetchProducts = async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, price, description, image_url, stock, status, tag, popular, bullets')
+        .select('id, name, price, sale_price, description, image_url, stock, status, tag, popular, bullets')
         .eq('status', 'active')
         .order('created_at', { ascending: true })
       
@@ -243,6 +243,7 @@ export default function Home() {
             id: String(p.id),
             name: p.name,
             price: Number(p.price),
+            sale_price: p.sale_price != null ? Number(p.sale_price) : null,
             description: p.description || '',
             image: p.image_url || '/images/hero.jpg',
             items: bullets,

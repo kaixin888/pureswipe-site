@@ -16,7 +16,6 @@ export default function ProductList() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('all');
 
-  // Build filters based on active tab
   const tabFilters = {
     all: [],
     active: [
@@ -43,7 +42,6 @@ export default function ProductList() {
 
   const { mutate: updateStatus } = useUpdate();
 
-  // Count badges from full dataset (approximate from current page data)
   const allData = tableQueryResult?.data?.data || [];
   const counts = {
     all: tableQueryResult?.data?.total || 0,
@@ -53,10 +51,10 @@ export default function ProductList() {
   };
 
   const tabItems = [
-    { key: 'all', label: <span>All <Badge count={counts.all} showZero style={{ backgroundColor: '#6b7280', marginLeft: 4 }} /></span> },
-    { key: 'active', label: <span>Active <Badge count={counts.active} showZero style={{ backgroundColor: '#22c55e', marginLeft: 4 }} /></span> },
-    { key: 'out_of_stock', label: <span>Out of Stock <Badge count={counts.out_of_stock} showZero style={{ backgroundColor: '#ef4444', marginLeft: 4 }} /></span> },
-    { key: 'draft', label: <span>Draft <Badge count={counts.draft} showZero style={{ backgroundColor: '#f59e0b', marginLeft: 4 }} /></span> },
+    { key: 'all', label: <span>全部 <Badge count={counts.all} showZero style={{ backgroundColor: '#6b7280', marginLeft: 4 }} /></span> },
+    { key: 'active', label: <span>上架中 <Badge count={counts.active} showZero style={{ backgroundColor: '#22c55e', marginLeft: 4 }} /></span> },
+    { key: 'out_of_stock', label: <span>缺货 <Badge count={counts.out_of_stock} showZero style={{ backgroundColor: '#ef4444', marginLeft: 4 }} /></span> },
+    { key: 'draft', label: <span>草稿 <Badge count={counts.draft} showZero style={{ backgroundColor: '#f59e0b', marginLeft: 4 }} /></span> },
   ];
 
   return (
@@ -64,11 +62,11 @@ export default function ProductList() {
       headerButtons={({ defaultButtons }) => (
         <>
           {defaultButtons}
-          <Button 
+          <Button
             type="primary"
             onClick={() => router.push('/admin/products/create')}
           >
-            Create Product
+            新建商品
           </Button>
         </>
       )}
@@ -82,7 +80,7 @@ export default function ProductList() {
       <Table {...tableProps} rowKey="id">
         <Table.Column
           dataIndex="image_url"
-          title="Image"
+          title="主图"
           render={(url) =>
             url ? (
               <img
@@ -92,25 +90,42 @@ export default function ProductList() {
               />
             ) : (
               <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
-                No img
+                无图
               </div>
             )
           }
         />
-        <Table.Column dataIndex="name" title="Name" />
-        <Table.Column dataIndex="price" title="Price" render={(v) => `$${v}`} />
+        <Table.Column dataIndex="name" title="商品名称" />
+        <Table.Column
+          dataIndex="price"
+          title="价格"
+          render={(v, record) => {
+            const sale = record.sale_price;
+            const onSale = sale != null && Number(sale) > 0 && Number(sale) < Number(v);
+            if (onSale) {
+              return (
+                <Space size={6}>
+                  <span style={{ textDecoration: 'line-through', color: '#999' }}>${Number(v).toFixed(2)}</span>
+                  <span style={{ color: '#ef4444', fontWeight: 600 }}>${Number(sale).toFixed(2)}</span>
+                  <Tag color="red" style={{ marginLeft: 0 }}>促销</Tag>
+                </Space>
+              );
+            }
+            return `$${Number(v).toFixed(2)}`;
+          }}
+        />
         <Table.Column
           dataIndex="stock"
-          title="Stock"
+          title="库存"
           render={(v) => {
-            if (v === 0) return <Tag color="red">OUT</Tag>;
-            if (v < 10) return <Tag color="orange">{v} Low</Tag>;
+            if (v === 0) return <Tag color="red">缺货</Tag>;
+            if (v < 10) return <Tag color="orange">{v} 偏低</Tag>;
             return <Tag color="green">{v}</Tag>;
           }}
         />
         <Table.Column
           dataIndex="status"
-          title="Status"
+          title="状态"
           render={(value, record) => (
             <Space>
               <Switch
@@ -125,21 +140,21 @@ export default function ProductList() {
                 }}
               />
               <Tag color={value === 'active' ? 'green' : value === 'draft' ? 'orange' : 'red'}>
-                {value ? value.toUpperCase() : 'UNKNOWN'}
+                {value === 'active' ? '上架' : value === 'inactive' ? '下架' : value === 'draft' ? '草稿' : '未知'}
               </Tag>
             </Space>
           )}
         />
         <Table.Column
-          title="Actions"
+          title="操作"
           dataIndex="actions"
           render={(_, record) => (
             <Space>
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 onClick={() => router.push(`/admin/products/edit/${record.id}`)}
               >
-                Edit
+                编辑
               </Button>
               <DeleteButton hideText size="small" recordItemId={record?.id} />
             </Space>

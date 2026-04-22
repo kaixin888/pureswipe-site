@@ -13,6 +13,7 @@ import {
 import { useStore } from '../../../components/Providers'
 import Product360 from '../../../components/Product360'
 import DeliveryCountdown from '../../../components/DeliveryCountdown'
+import { getEffectivePrice } from '../../../lib/getEffectivePrice'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -92,12 +93,19 @@ export default function ProductDetail() {
 
   const isOutOfStock = product.stock <= 0
 
+  // Phase E-2: unified effective price (sale_price-aware).
+  // Subscribe-and-save 15% stacks ON TOP of the base effective price.
+  const { price: effectivePrice, originalPrice: trueOriginalPrice, isOnSale } = getEffectivePrice(product)
+  const finalPrice = purchaseType === 'subscribe' ? effectivePrice * 0.85 : effectivePrice
+  // Strikethrough basis: real original on sale, otherwise legacy 1.3x marketing markup.
+  const strikethroughPrice = isOnSale ? trueOriginalPrice : effectivePrice * 1.3
+
   function handleBuyNow() {
     if (isOutOfStock) return
-    addItem({ 
-      id: product.id.toString(), 
-      name: product.name, 
-      price: purchaseType === 'subscribe' ? product.price * 0.85 : product.price, 
+    addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: finalPrice,
       image: product.image_url,
       quantity: qty,
       purchase_type: purchaseType
@@ -107,24 +115,24 @@ export default function ProductDetail() {
 
   function handleAddToCart() {
     if (isOutOfStock) return
-    addItem({ 
-      id: product.id.toString(), 
-      name: product.name, 
-      price: purchaseType === 'subscribe' ? product.price * 0.85 : product.price, 
+    addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: finalPrice,
       image: product.image_url,
       quantity: qty,
       purchase_type: purchaseType
     })
-    
+
     // GA4 Ecommerce: add_to_cart
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'add_to_cart', {
         currency: 'USD',
-        value: (purchaseType === 'subscribe' ? product.price * 0.85 : product.price) * qty,
+        value: finalPrice * qty,
         items: [{
           item_id: product.id.toString(),
           item_name: product.name,
-          price: purchaseType === 'subscribe' ? product.price * 0.85 : product.price,
+          price: finalPrice,
           quantity: qty
         }]
       });
@@ -153,7 +161,7 @@ export default function ProductDetail() {
       "@type": "Offer",
       "url": `https://clowand.com/products/${product.id}`,
       "priceCurrency": "USD",
-      "price": String(product.price),
+      "price": String(effectivePrice),
       "availability": "https://schema.org/InStock"
     }
   }
@@ -216,11 +224,14 @@ export default function ProductDetail() {
             <span className="text-sm text-slate-400 font-bold tracking-tight">{rating} ({product.review_count || 0} reviews)</span>
           </div>
 
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-baseline gap-3 flex-wrap">
             <span className="text-4xl font-black text-white italic tracking-tighter">
-              ${(purchaseType === 'subscribe' ? product.price * 0.85 : product.price).toFixed(2)}
+              ${finalPrice.toFixed(2)}
             </span>
-            <span className="text-sm text-slate-400 line-through">${(product.price * 1.3).toFixed(2)}</span>
+            <span className="text-sm text-slate-400 line-through">${strikethroughPrice.toFixed(2)}</span>
+            {isOnSale && (
+              <span className="text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded-md font-black italic tracking-tighter">SALE</span>
+            )}
             {purchaseType === 'subscribe' && <span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-md font-black italic tracking-tighter">SAVE 15%</span>}
           </div>
 
@@ -236,7 +247,7 @@ export default function ProductDetail() {
                 </div>
                 <span className="text-sm font-bold text-white">One-time purchase</span>
               </div>
-              <span className="text-sm font-black italic tracking-tighter text-slate-400">${product.price.toFixed(2)}</span>
+              <span className="text-sm font-black italic tracking-tighter text-slate-400">${effectivePrice.toFixed(2)}</span>
             </button>
 
             <button 
@@ -253,8 +264,8 @@ export default function ProductDetail() {
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-sm font-black italic tracking-tighter text-white">${(product.price * 0.85).toFixed(2)}</span>
-                <span className="text-[10px] text-slate-500 block line-through tracking-tighter">${product.price.toFixed(2)}</span>
+                <span className="text-sm font-black italic tracking-tighter text-white">${(effectivePrice * 0.85).toFixed(2)}</span>
+                <span className="text-[10px] text-slate-500 block line-through tracking-tighter">${effectivePrice.toFixed(2)}</span>
               </div>
             </button>
           </div>

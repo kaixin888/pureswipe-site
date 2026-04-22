@@ -24,7 +24,6 @@ export default function ProductEdit() {
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
 
-  // Sync initial data from Supabase
   useEffect(() => {
     if (productData) {
       if (productData.extra_images) {
@@ -49,7 +48,6 @@ export default function ProductEdit() {
     }
   }, [productData]);
 
-  // Sync state from form values when form loads
   const onFormValuesChange = (_, allValues) => {
     if (allValues.extra_images && typeof allValues.extra_images === 'string') {
       try {
@@ -67,7 +65,6 @@ export default function ProductEdit() {
     if (allValues.seo_description) setSeoDescLen(allValues.seo_description.length);
   };
 
-  // Sync extra_images + bullets JSON into hidden form fields on change
   const syncExtraImages = (imgs) => {
     setExtraImages(imgs);
     form.setFieldValue('extra_images', JSON.stringify(imgs));
@@ -78,7 +75,6 @@ export default function ProductEdit() {
     form.setFieldValue('bullets', JSON.stringify(bts.filter(b => b.trim())));
   };
 
-  // Upload main image
   const handleMainUpload = async ({ file, onSuccess, onError }) => {
     setUploading(true);
     try {
@@ -90,18 +86,17 @@ export default function ProductEdit() {
       form.setFieldValue('image_url', data.url);
       setMainPreview(data.url);
       onSuccess(data.url);
-      message.success(`Main image uploaded — saved ${data.savings ?? 0}% (WebP)`);
+      message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {
-      message.error('Upload failed: ' + err.message);
+      message.error('上传失败: ' + err.message);
       onError(err);
     } finally {
       setUploading(false);
     }
   };
 
-  // Upload extra image
   const handleExtraUpload = async ({ file, onSuccess, onError }) => {
-    if (extraImages.length >= 8) { message.warning('Max 8 extra images'); onError(new Error('max')); return; }
+    if (extraImages.length >= 8) { message.warning('最多 8 张附图'); onError(new Error('max')); return; }
     setExtraUploading(true);
     try {
       const fd = new FormData();
@@ -111,9 +106,9 @@ export default function ProductEdit() {
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       syncExtraImages([...extraImages, data.url]);
       onSuccess(data.url);
-      message.success('Extra image uploaded');
+      message.success('附图已上传');
     } catch (err) {
-      message.error('Upload failed: ' + err.message);
+      message.error('上传失败: ' + err.message);
       onError(err);
     } finally {
       setExtraUploading(false);
@@ -137,46 +132,66 @@ export default function ProductEdit() {
   };
   const removeBullet = (idx) => syncBullets(bullets.filter((_, i) => i !== idx));
 
+  // Phase E-2: validate sale_price < price
+  const validateSalePrice = (_, value) => {
+    if (value == null || value === '') return Promise.resolve();
+    const price = form.getFieldValue('price');
+    if (price != null && Number(value) >= Number(price)) {
+      return Promise.reject(new Error('促销价必须低于原价'));
+    }
+    if (Number(value) <= 0) {
+      return Promise.reject(new Error('促销价必须大于 0'));
+    }
+    return Promise.resolve();
+  };
+
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} form={form} layout="vertical" onValuesChange={onFormValuesChange}>
 
-        {/* ── Block 1: Basic Information ── */}
-        <Card title="Basic Information" style={{ marginBottom: 16 }}>
-          <Form.Item label="Product Name" name="name" rules={[{ required: true }]}>
-            <Input placeholder="Enter product name" />
+        {/* ── Block 1: 基本信息 ── */}
+        <Card title="基本信息" style={{ marginBottom: 16 }}>
+          <Form.Item label="商品名称" name="name" rules={[{ required: true, message: '请输入商品名称' }]}>
+            <Input placeholder="输入商品名称" />
           </Form.Item>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-            <Form.Item label="Price (USD)" name="price" rules={[{ required: true }]}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16 }}>
+            <Form.Item label="原价 (USD)" name="price" rules={[{ required: true, message: '请输入价格' }]}>
               <InputNumber prefix="$" min={0} step={0.01} style={{ width: '100%' }} />
             </Form.Item>
-            <Form.Item label="Stock" name="stock" rules={[{ required: true }]}>
+            <Form.Item
+              label="促销价 (USD, 可选)"
+              name="sale_price"
+              tooltip="留空表示无促销；必须小于原价"
+              rules={[{ validator: validateSalePrice }]}
+            >
+              <InputNumber prefix="$" min={0} step={0.01} style={{ width: '100%' }} placeholder="留空 = 无促销" />
+            </Form.Item>
+            <Form.Item label="库存" name="stock" rules={[{ required: true, message: '请输入库存' }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
-            <Form.Item label="Status" name="status">
+            <Form.Item label="状态" name="status">
               <Select options={[
-                { label: 'Active', value: 'active' },
-                { label: 'Inactive', value: 'inactive' },
+                { label: '上架', value: 'active' },
+                { label: '下架', value: 'inactive' },
               ]} />
             </Form.Item>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Form.Item label="Tag" name="tag">
-              <Input placeholder="e.g. bestseller, new, sale" />
+            <Form.Item label="标签" name="tag">
+              <Input placeholder="例如: bestseller, new, sale" />
             </Form.Item>
-            <Form.Item label="Rating" name="rating">
+            <Form.Item label="评分" name="rating">
               <InputNumber min={1} max={5} step={0.1} style={{ width: '100%' }} placeholder="4.8" />
             </Form.Item>
           </div>
           <Form.Item label="ASIN" name="asin">
-            <Input placeholder="Amazon ASIN (optional)" />
+            <Input placeholder="Amazon ASIN (可选)" />
           </Form.Item>
         </Card>
 
-        {/* ── Block 2: Images ── */}
-        <Card title="Images" style={{ marginBottom: 16 }}>
-          {/* Main image */}
-          <Text strong>Main Image ★ (Drag & Drop or Click)</Text>
+        {/* ── Block 2: 商品图片 ── */}
+        <Card title="商品图片" style={{ marginBottom: 16 }}>
+          <Text strong>主图 ★ (拖拽或点击替换)</Text>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, margin: '12px 0 20px' }}>
             {(mainPreview || form.getFieldValue('image_url')) && (
               <img
@@ -198,22 +213,21 @@ export default function ProductEdit() {
                   <InboxOutlined style={{ fontSize: 32, color: uploading ? '#999' : '#1677ff' }} />
                 </p>
                 <p className="ant-upload-text" style={{ fontSize: 13, marginBottom: 4 }}>
-                  {uploading ? 'Uploading to Cloudflare R2...' : 'Drop new image to replace, or click to browse'}
+                  {uploading ? '正在上传到 Cloudflare R2...' : '拖拽新图片以替换，或点击选择文件'}
                 </p>
                 <p className="ant-upload-hint" style={{ fontSize: 12, color: '#8c8c8c' }}>
-                  JPG / PNG / WebP / GIF — auto-compressed to WebP, uploaded to Cloudflare R2
+                  支持 JPG / PNG / WebP / GIF — 自动压缩为 WebP，上传至 Cloudflare R2
                 </p>
               </Dragger>
             </div>
           </div>
-          <Form.Item label="Main Image URL (auto-filled)" name="image_url">
-            <Input placeholder="Drop image above, or paste R2 URL manually" />
+          <Form.Item label="主图 URL (自动填入)" name="image_url">
+            <Input placeholder="拖拽上传后自动填入，或手动粘贴 R2 URL" />
           </Form.Item>
 
           <Divider />
 
-          {/* Extra images */}
-          <Text strong>Additional Images (max 8)</Text>
+          <Text strong>附图 (最多 8 张)</Text>
           <Form.Item name="extra_images" hidden><Input /></Form.Item>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 12 }}>
             {extraImages.map((url, idx) => (
@@ -234,10 +248,10 @@ export default function ProductEdit() {
                   cursor: 'pointer', color: '#1677ff', fontSize: 24, minHeight: 80,
                   background: extraUploading ? '#f0f5ff' : '#fafafa', transition: 'all 0.2s'
                 }}>
-                  {extraUploading ? <span style={{ fontSize: 12 }}>Uploading...</span> : (
+                  {extraUploading ? <span style={{ fontSize: 12 }}>上传中...</span> : (
                     <>
                       <PlusOutlined />
-                      <span style={{ fontSize: 11, marginTop: 4 }}>Add</span>
+                      <span style={{ fontSize: 11, marginTop: 4 }}>添加</span>
                     </>
                   )}
                 </div>
@@ -246,15 +260,15 @@ export default function ProductEdit() {
           </div>
         </Card>
 
-        {/* ── Block 3: Product Details (Bullets) ── */}
-        <Card title="Product Details — Bullet Points" style={{ marginBottom: 16 }}>
+        {/* ── Block 3: 卖点 ── */}
+        <Card title="商品卖点 (Bullet Points)" style={{ marginBottom: 16 }}>
           <Form.Item name="bullets" hidden><Input /></Form.Item>
           <Space direction="vertical" style={{ width: '100%' }}>
             {bullets.map((b, idx) => (
               <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <Input
                   value={b}
-                  placeholder={`e.g. Touch-free design`}
+                  placeholder="例如: 一次性免接触设计"
                   onChange={e => updateBullet(idx, e.target.value)}
                   prefix={<Text type="secondary" style={{ fontSize: 12 }}>{idx + 1}.</Text>}
                 />
@@ -264,41 +278,50 @@ export default function ProductEdit() {
           </Space>
           {bullets.length < 6 && (
             <Button type="dashed" icon={<PlusOutlined />} onClick={addBullet} style={{ marginTop: 12, width: '100%' }}>
-              Add bullet point
+              添加卖点
             </Button>
           )}
           <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
-            {bullets.filter(b => b.trim()).length} / 6 bullet points
+            {bullets.filter(b => b.trim()).length} / 6 条卖点
           </Text>
         </Card>
 
-        {/* ── Block 4: Description ── */}
-        <Card title="Description" style={{ marginBottom: 16 }}>
+        {/* ── Block 4: 商品描述 ── */}
+        <Card title="商品描述" style={{ marginBottom: 16 }}>
           <Form.Item name="description">
             <Input.TextArea
               rows={6}
               maxLength={2000}
               onChange={e => setDescLen(e.target.value.length)}
-              placeholder="Full product description..."
+              placeholder="完整商品描述..."
             />
           </Form.Item>
           <Text type="secondary" style={{ float: 'right', fontSize: 12 }}>{descLen} / 2000</Text>
         </Card>
 
-        {/* ── Block 5: SEO Settings ── */}
-        <Card title="SEO Settings" style={{ marginBottom: 16 }}>
-          <Form.Item label="SEO Title" name="seo_title">
-            <Input placeholder="Leave blank to use product name" maxLength={70} />
+        {/* ── Block 5: SEO 设置 ── */}
+        <Card title="SEO 设置" style={{ marginBottom: 16 }}>
+          <Form.Item label="SEO 标题" name="seo_title">
+            <Input placeholder="留空则使用商品名" maxLength={70} />
           </Form.Item>
-          <Form.Item label="SEO Description" name="seo_description">
+          <Form.Item label="SEO 描述" name="seo_description">
             <Input.TextArea
               rows={4}
               maxLength={160}
               onChange={e => setSeoDescLen(e.target.value.length)}
-              placeholder="Meta description shown in Google search results (max 160 chars)"
+              placeholder="Google 搜索结果中显示的描述 (最多 160 字符)"
             />
           </Form.Item>
           <Text type="secondary" style={{ float: 'right', fontSize: 12 }}>{seoDescLen} / 160</Text>
+          <Divider />
+          <Form.Item
+            label="主图 alt 文本 (SEO 必填)"
+            name="alt_text"
+            tooltip="供 Google 图片识别 + 屏幕阅读器使用，建议: '品牌 + 商品 + 关键属性'"
+            rules={[{ required: true, message: '请填写主图 alt 文本 (SEO 必填)' }]}
+          >
+            <Input placeholder="例如: clowand 18 inch disposable toilet brush with caddy" maxLength={120} />
+          </Form.Item>
         </Card>
 
       </Form>

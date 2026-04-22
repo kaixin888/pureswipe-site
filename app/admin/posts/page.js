@@ -34,20 +34,20 @@ export default function PostsAdminPage() {
   }
 
   async function deletePost(id) {
-    if (!confirm('Delete this article permanently?')) return
+    if (!confirm('确定永久删除这篇文章？')) return
     await supabase.from('posts').delete().eq('id', id)
     fetchPosts()
   }
 
   function formatDate(iso) {
     if (!iso) return '-'
-    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    return new Date(iso).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Blog Posts</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700 }}>博客文章</h1>
         <Link
           href="/admin/posts/create"
           style={{
@@ -55,17 +55,17 @@ export default function PostsAdminPage() {
             borderRadius: 6, fontWeight: 600, textDecoration: 'none', fontSize: 14
           }}
         >
-          + New Article
+          + 新建文章
         </Link>
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>加载中...</p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
-              {['Title', 'Slug', 'Status', 'Published', 'Actions'].map(h => (
+              {['标题', '别名 (Slug)', '状态', '发布时间', '操作'].map(h => (
                 <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 13 }}>{h}</th>
               ))}
             </tr>
@@ -88,7 +88,7 @@ export default function PostsAdminPage() {
                     color: post.is_published ? '#52c41a' : '#fa8c16',
                     border: `1px solid ${post.is_published ? '#b7eb8f' : '#ffd591'}`
                   }}>
-                    {post.is_published ? 'Published' : 'Draft'}
+                    {post.is_published ? '已发布' : '草稿'}
                   </span>
                 </td>
                 <td style={{ padding: '12px 16px', fontSize: 13, color: '#666' }}>
@@ -103,7 +103,7 @@ export default function PostsAdminPage() {
                         background: '#fff', cursor: 'pointer', fontSize: 13
                       }}
                     >
-                      {post.is_published ? 'Unpublish' : 'Publish'}
+                      {post.is_published ? '取消发布' : '发布'}
                     </button>
                     <Link
                       href={`/admin/posts/edit/${post.id}`}
@@ -112,7 +112,7 @@ export default function PostsAdminPage() {
                         color: '#1677ff', background: '#fff', fontSize: 13, textDecoration: 'none'
                       }}
                     >
-                      Edit
+                      编辑
                     </Link>
                     <button
                       onClick={() => deletePost(post.id)}
@@ -121,7 +121,7 @@ export default function PostsAdminPage() {
                         color: '#ff4d4f', background: '#fff', cursor: 'pointer', fontSize: 13
                       }}
                     >
-                      Delete
+                      删除
                     </button>
                   </div>
                 </td>

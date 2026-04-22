@@ -19,7 +19,6 @@ export default function OrderList() {
     },
   });
 
-  // Track which order IDs have had review requests sent this session
   const [sentIds, setSentIds] = useState({});
   const [loadingIds, setLoadingIds] = useState({});
 
@@ -42,7 +41,7 @@ export default function OrderList() {
   };
 
   const handleRequestReview = async (record) => {
-    if (!record.email) { message.warning('No email on record'); return; }
+    if (!record.email) { message.warning('该订单无邮箱地址'); return; }
     setLoadingIds(prev => ({ ...prev, [record.id]: true }));
     try {
       const res = await fetch('/api/send-review-request', {
@@ -53,12 +52,25 @@ export default function OrderList() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
       setSentIds(prev => ({ ...prev, [record.id]: true }));
-      message.success(`Review request sent to ${record.email}`);
+      message.success(`已向 ${record.email} 发送评价请求`);
     } catch (err) {
-      message.error('Send failed: ' + err.message);
+      message.error('发送失败: ' + err.message);
     } finally {
       setLoadingIds(prev => ({ ...prev, [record.id]: false }));
     }
+  };
+
+  // Phase E-4: localized status labels
+  const statusLabel = (s) => {
+    const map = {
+      Pending: '待支付',
+      Paid: '已支付',
+      Shipped: '已发货',
+      Delivered: '已送达',
+      Cancelled: '已取消',
+      Refunded: '已退款',
+    };
+    return map[s] || s;
   };
 
   return (
@@ -71,27 +83,28 @@ export default function OrderList() {
       )}
     >
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="order_id" title="Order ID" />
-        <Table.Column dataIndex="customer_name" title="Customer" />
-        <Table.Column dataIndex="email" title="Email" />
-        <Table.Column dataIndex="phone" title="Phone" />
-        <Table.Column dataIndex="amount" title="Amount" render={(v) => `$${v}`} />
-        <Table.Column dataIndex="product_name" title="Product" />
+        <Table.Column dataIndex="order_id" title="订单号" />
+        <Table.Column dataIndex="customer_name" title="客户姓名" />
+        <Table.Column dataIndex="email" title="邮箱" />
+        <Table.Column dataIndex="phone" title="电话" />
+        <Table.Column dataIndex="amount" title="金额" render={(v) => `$${v}`} />
+        <Table.Column dataIndex="product_name" title="商品" />
         <Table.Column
           dataIndex="status"
-          title="Status"
+          title="状态"
           render={(value) => {
             let color = 'blue';
             if (value === 'Paid') color = 'green';
             if (value === 'Shipped') color = 'orange';
             if (value === 'Delivered') color = 'cyan';
-            return <Tag color={color}>{value}</Tag>;
+            if (value === 'Cancelled' || value === 'Refunded') color = 'red';
+            return <Tag color={color}>{statusLabel(value)}</Tag>;
           }}
         />
-        <Table.Column dataIndex="shipping_city" title="City" />
-        <Table.Column dataIndex="shipping_state" title="State" />
+        <Table.Column dataIndex="shipping_city" title="城市" />
+        <Table.Column dataIndex="shipping_state" title="州" />
         <Table.Column
-          title="Actions"
+          title="操作"
           dataIndex="actions"
           render={(_, record) => {
             const alreadySent = sentIds[record.id] || !!record.review_requested_at;
@@ -102,7 +115,7 @@ export default function OrderList() {
                 <EditButton hideText size="small" recordItemId={record.id} />
                 <ShowButton hideText size="small" recordItemId={record.id} />
                 {canRequest && (
-                  <Tooltip title={alreadySent ? 'Review request already sent' : 'Send review request email'}>
+                  <Tooltip title={alreadySent ? '评价请求已发送' : '发送评价请求邮件'}>
                     <Button
                       size="small"
                       icon={alreadySent ? <CheckCircleOutlined /> : <MailOutlined />}
@@ -113,7 +126,7 @@ export default function OrderList() {
                       onClick={() => handleRequestReview(record)}
                       style={alreadySent ? { color: '#52c41a', borderColor: '#52c41a' } : {}}
                     >
-                      {alreadySent ? 'Sent' : 'Review'}
+                      {alreadySent ? '已发送' : '邀评'}
                     </Button>
                   </Tooltip>
                 )}

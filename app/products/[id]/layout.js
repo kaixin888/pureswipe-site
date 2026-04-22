@@ -55,6 +55,11 @@ export async function generateMetadata({ params }) {
   const imageUrl = abs(product.image_url)
   const canonical = `${SITE}/products/${product.id}`
 
+  // Phase E-2: meta tags reflect the price the user actually pays today.
+  const sale = Number(product.sale_price)
+  const base = Number(product.price)
+  const effectivePriceForMeta = (Number.isFinite(sale) && sale > 0 && sale < base) ? sale : base
+
   return {
     title,
     description,
@@ -83,7 +88,7 @@ export async function generateMetadata({ params }) {
     robots: { index: true, follow: true },
     other: {
       // Inline JSON-LD via <meta> is non-standard; the layout below injects a real <script>.
-      'product:price:amount': String(product.price ?? ''),
+      'product:price:amount': String(effectivePriceForMeta ?? ''),
       'product:price:currency': 'USD',
       'product:availability': product.stock > 0 ? 'in stock' : 'out of stock',
     },
@@ -108,7 +113,12 @@ export default async function ProductLayout({ children, params }) {
           '@type': 'Offer',
           url: `${SITE}/products/${product.id}`,
           priceCurrency: 'USD',
-          price: product.price,
+          // Phase E-2: JSON-LD reflects effective price (sale_price when on sale).
+          price: (() => {
+            const s = Number(product.sale_price)
+            const b = Number(product.price)
+            return (Number.isFinite(s) && s > 0 && s < b) ? s : b
+          })(),
           availability:
             product.stock > 0
               ? 'https://schema.org/InStock'
