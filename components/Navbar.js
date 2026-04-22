@@ -14,8 +14,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [mounted, setMounted] = useState(false);
   const { isCartOpen, setIsCartOpen, setIsCheckoutOpen } = useStore();
   const { totalItems } = useCart();
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -69,7 +72,7 @@ export default function Navbar() {
             className="text-slate-950 relative p-1"
           >
             <ShoppingCart size={22} />
-            {totalItems > 0 && (
+            {mounted && totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
                 {totalItems}
               </span>
@@ -118,7 +121,7 @@ export default function Navbar() {
           </a>
           <button onClick={() => setIsCartOpen(true)} className="text-slate-400 hover:text-blue-600 relative transition-all hover:scale-110 active:scale-90">
             <ShoppingCart size={20} />
-            {totalItems > 0 && (
+            {mounted && totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {totalItems}
               </span>

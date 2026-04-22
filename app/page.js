@@ -710,7 +710,6 @@ export default function Home() {
                               <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
                             )}
                           </div>
-                          <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
                         </div>
                       )
                     })()}
@@ -730,11 +729,6 @@ export default function Home() {
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
                       </button>
                     </div>
-                    {bundle.id && (
-                      <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
-                        View Details →
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>
