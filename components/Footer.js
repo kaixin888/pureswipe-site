@@ -9,7 +9,7 @@ export default function Footer() {
           <a href="/" className="inline-block group mb-6" style={{ filter: 'brightness(0) invert(1)' }}>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">C</div>
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors">clowand</h2>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter group-hover:text-blue-400 transition-colors py-10 overflow-visible">clowand</h2>
             </div>
           </a>
           <p className="text-slate-400 max-w-sm mb-8 font-medium italic text-xs">Elevating American bathroom hygiene with smarter, cleaner, and better tools.</p>

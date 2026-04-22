@@ -472,7 +472,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
             {siteSettings.hero_badge || "2026 Hygiene Revolution"}
           </div>
-          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mb-3">
+          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mb-3 py-10 overflow-visible">
             {siteSettings.hero_title || t.heroTitle}
           </h1>
           <p className="text-sm text-white/80 mb-6 leading-relaxed">
@@ -596,7 +596,7 @@ export default function Home() {
           <div className="flex-1 order-2 md:order-1">
                            <div className="relative group rounded-[4rem] border border-white/10 min-h-[550px] flex items-center overflow-visible">
               <Image 
-                src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/starter-kit-main.jpg" 
+                src="/images/products/starter-kit-main.jpg" 
                 width={800} 
                 height={450}
                 className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
@@ -637,7 +637,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10 md:mb-16">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
-            <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950">{t.saveUpTo}</h2>
+            <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 py-10 overflow-visible">{t.saveUpTo}</h2>
           </div>
           {/* Mobile: single col gap-3 | Desktop: 2-col gap-8 */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
@@ -742,7 +742,7 @@ export default function Home() {
       <section className="py-20 px-6 bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Why Choose Clowand?</h2>
+            <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white py-10 overflow-visible">Why Choose Clowand?</h2>
             <p className="text-gray-400 mt-3 text-sm">See the difference for yourself</p>
           </div>
 
@@ -879,10 +879,10 @@ export default function Home() {
 
       {/* Brand Story */}
       <section className="py-40 px-6">
-        <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-hidden relative group">
+        <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-visible relative group">
           <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
             <Image 
-              src="https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/auto-lid-main.jpg" 
+              src="/images/products/auto-lid-main.jpg" 
               width={800} 
               height={600}
               className="w-full h-full object-cover grayscale" 
