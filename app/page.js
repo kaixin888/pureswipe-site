@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
 import { useCart } from 'react-use-cart'
-import { useStore } from '../../components/Providers'
+import { useStore } from '../components/Providers'
 
 
 import { 
