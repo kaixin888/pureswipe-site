@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Create, useForm } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Card, Divider, Space, Typography } from 'antd';
-import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, InboxOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
+const { Dragger } = Upload;
 
 export default function ProductCreate() {
   const { formProps, saveButtonProps, form } = useForm({
@@ -126,23 +127,38 @@ export default function ProductCreate() {
 
         {/* ── Block 2: Images ── */}
         <Card title="Images" style={{ marginBottom: 16 }}>
-          <Text strong>Main Image ★</Text>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '12px 0 20px' }}>
+          <Text strong>Main Image ★ (Drag & Drop or Click)</Text>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, margin: '12px 0 20px' }}>
             {mainPreview && (
               <img
                 src={mainPreview}
                 alt="main"
-                style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 6, border: '1px solid #d9d9d9' }}
+                style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 6, border: '1px solid #d9d9d9', flexShrink: 0 }}
               />
             )}
-            <Upload customRequest={handleMainUpload} showUploadList={false} accept="image/*">
-              <Button icon={<UploadOutlined />} loading={uploading}>
-                {uploading ? 'Uploading...' : 'Upload Main Image'}
-              </Button>
-            </Upload>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Dragger
+                customRequest={handleMainUpload}
+                showUploadList={false}
+                accept="image/*"
+                multiple={false}
+                disabled={uploading}
+                style={{ padding: '12px 0' }}
+              >
+                <p className="ant-upload-drag-icon" style={{ marginBottom: 6 }}>
+                  <InboxOutlined style={{ fontSize: 32, color: uploading ? '#999' : '#1677ff' }} />
+                </p>
+                <p className="ant-upload-text" style={{ fontSize: 13, marginBottom: 4 }}>
+                  {uploading ? 'Uploading to Cloudflare R2...' : 'Drag image here or click to browse'}
+                </p>
+                <p className="ant-upload-hint" style={{ fontSize: 12, color: '#8c8c8c' }}>
+                  JPG / PNG / WebP / GIF — auto-compressed to WebP, uploaded to Cloudflare R2
+                </p>
+              </Dragger>
+            </div>
           </div>
-          <Form.Item label="Main Image URL" name="image_url">
-            <Input placeholder="Auto-filled after upload, or paste URL" />
+          <Form.Item label="Main Image URL (auto-filled)" name="image_url">
+            <Input placeholder="Drop image above, or paste R2 URL manually" />
           </Form.Item>
 
           <Divider />
@@ -161,13 +177,19 @@ export default function ProductCreate() {
               </div>
             ))}
             {extraImages.length < 8 && (
-              <Upload customRequest={handleExtraUpload} showUploadList={false} accept="image/*">
+              <Upload customRequest={handleExtraUpload} showUploadList={false} accept="image/*" multiple>
                 <div style={{
-                  border: '2px dashed #d9d9d9', borderRadius: 6, aspectRatio: '1',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', color: '#8c8c8c', fontSize: 24, minHeight: 80
+                  border: '2px dashed #1677ff', borderRadius: 6, aspectRatio: '1',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#1677ff', fontSize: 24, minHeight: 80,
+                  background: extraUploading ? '#f0f5ff' : '#fafafa', transition: 'all 0.2s'
                 }}>
-                  {extraUploading ? '...' : <PlusOutlined />}
+                  {extraUploading ? <span style={{ fontSize: 12 }}>Uploading...</span> : (
+                    <>
+                      <PlusOutlined />
+                      <span style={{ fontSize: 11, marginTop: 4 }}>Add</span>
+                    </>
+                  )}
                 </div>
               </Upload>
             )}
