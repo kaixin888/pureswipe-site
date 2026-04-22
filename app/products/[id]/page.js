@@ -10,9 +10,9 @@ import {
   CheckCircle, ShieldCheck, X, Star, Zap, Shield, Camera, 
   Ruler, Truck, ChevronDown 
 } from 'lucide-react'
-import { useStore } from '../../../../components/Providers'
-import Product360 from '../../../../components/Product360'
-import DeliveryCountdown from '../../../../components/DeliveryCountdown'
+import { useStore } from '../../../components/Providers'
+import Product360 from '../../../components/Product360'
+import DeliveryCountdown from '../../../components/DeliveryCountdown'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',

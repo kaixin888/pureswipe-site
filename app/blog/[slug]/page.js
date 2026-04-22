@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import BlogProducts from '../../../../components/BlogProducts'
+import BlogProducts from '../../../components/BlogProducts'
 
 // Force dynamic rendering - always fetch latest content from DB
 export const dynamic = 'force-dynamic'
