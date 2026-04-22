@@ -22,7 +22,7 @@ const supabase = createClient(
 
 const TRANSLATIONS = {
   en: {
-    heroTitle: "Clean Smarter, Not Harder.",
+    heroTitle: "The End of the Dirty Toilet Brush.",
     heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism. Hassle-Free No-Return Refund.",
     shopBundles: "Shop Bundles",
     freeShipping: "Free Shipping Across USA",
@@ -634,18 +634,19 @@ export default function Home() {
       </section>
 
       {/* Products */}
-      <section id="bundles" className="py-16 md:py-24 px-4 md:px-6 bg-white overflow-hidden">
+      <section id="bundles" className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-b from-white via-slate-50 to-white overflow-hidden">
+        <div aria-hidden className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-blue-100/30 rounded-full blur-[160px] pointer-events-none"></div>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10 md:mb-16">
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
             <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 py-10 overflow-visible">{t.saveUpTo}</h2>
           </div>
-          {/* Mobile: single col gap-3 | Desktop: 2-col gap-8 */}
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
+          {/* Mobile: single col gap-4 | Desktop: 2-col gap-10 (Bento spacing) */}
+          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10">
             {bundles.map((bundle, i) => (
               <div
                 key={bundle.id}
-                className="group relative bg-white border border-slate-100 rounded-2xl md:rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col"
+                className="group relative bg-white border border-slate-100 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col"
               >
                 {bundle.popular && (
                   <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
@@ -706,10 +707,25 @@ export default function Home() {
                     </ul>
                   )}
                   <div className="mt-auto space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-gray-900">${bundle.price.toFixed(2)}</span>
-                      <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
-                    </div>
+                    {(() => {
+                      const sp = bundle.sale_price
+                      const onSale = sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)
+                      const display = onSale ? Number(sp) : Number(bundle.price)
+                      return (
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-baseline gap-2">
+                            {onSale && (
+                              <span className="text-sm text-gray-400 line-through">${Number(bundle.price).toFixed(2)}</span>
+                            )}
+                            <span className={onSale ? "text-lg font-bold text-red-600" : "text-lg font-bold text-gray-900"}>${display.toFixed(2)}</span>
+                            {onSale && (
+                              <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
+                            )}
+                          </div>
+                          <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
+                        </div>
+                      )
+                    })()}
                     <div className="flex gap-2">
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } }}
