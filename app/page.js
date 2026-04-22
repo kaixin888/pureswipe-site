@@ -544,12 +544,13 @@ export default function Home() {
               <video
                 autoPlay
                 muted
-                loop={true}
+                loop
                 playsInline
                 preload="metadata"
                 poster="/images/hero.jpg"
                 className="w-full h-full object-cover"
                 onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
+                suppressHydrationWarning
               >
                 <source src="https://media.clowand.com/videos/product-wand.mp4" type="video/mp4" />
               </video>
