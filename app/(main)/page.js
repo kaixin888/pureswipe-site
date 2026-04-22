@@ -524,7 +524,7 @@ export default function Home() {
               <div className="flex -space-x-4">
                 {[1,2,3,4].map(i => (
                   <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 shadow-sm overflow-hidden relative">
-                    <Image src={`https://i.pravatar.cc/40?u=${i}`} width={40} height={40} alt="happy user" />
+                    <div className="w-full h-full flex items-center justify-center bg-blue-600 text-white text-[10px] font-black italic">{['S', 'M', 'K', 'R'][i-1]}</div>
                   </div>
                 ))}
               </div>
@@ -864,7 +864,7 @@ export default function Home() {
                 <p className="text-lg text-slate-600 leading-relaxed italic font-medium mb-10">"{displayComment}"</p>
                 <div className="flex items-center gap-4">
                   <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-50 overflow-hidden relative">
-                    <Image src={`https://i.pravatar.cc/32?u=${displayName}`} width={32} height={32} alt={displayName} />
+                    <div className="w-full h-full flex items-center justify-center bg-blue-600 text-white text-[10px] font-black italic">{displayName.charAt(0)}</div>
                   </div>
                   <div>
                     <h4 className="text-[10px] font-black tracking-widest text-slate-900">{displayName}{displayLocation ? ` (${displayLocation})` : ''}</h4>

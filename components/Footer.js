@@ -29,14 +29,14 @@ export default function Footer() {
           </div>
         </div>
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Shop</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic py-4 overflow-visible">Shop</h3>
           <ul className="space-y-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
             <li><a href="#bundles" className="hover:text-white transition-colors">Starter Kit</a></li>
             <li><a href="#bundles" className="hover:text-white transition-colors">Value Pack</a></li>
           </ul>
         </div>
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic">Company</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-blue-400 italic py-4 overflow-visible">Company</h3>
           <ul className="space-y-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
             <li><a href="/blog" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">Blog</a></li>
             <li><a href="/about" className="hover:text-white transition-colors underline decoration-blue-500/30 underline-offset-4">About Us</a></li>
