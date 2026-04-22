@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '../components/Providers'
+import SiteChrome from '../components/SiteChrome'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -58,7 +59,7 @@ export default function RootLayout({ children }) {
               gtag('config', 'G-JFTMBGD8EM');
             `}
           </Script>
-          {children}
+          <SiteChrome>{children}</SiteChrome>
         </Providers>
       </body>
     </html>
