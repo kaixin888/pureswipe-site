@@ -718,14 +718,14 @@ export default function Home() {
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined') { if (window.gtag) { window.gtag('event', 'add_to_cart', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } if (window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: _p }); } } }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy/10 text-walmart-navy hover:bg-walmart-navy hover:text-white active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy text-white hover:bg-walmart-navy/90 active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                       </button>
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 md:opacity-0 md:group-hover:opacity-100 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy text-white hover:bg-walmart-navy/90 active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-walmart-navy border border-walmart-navy hover:bg-walmart-navy hover:text-white active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
                       </button>
