@@ -648,9 +648,14 @@ export default function Home() {
                                     ${display.toFixed(2)}
                                   </span>
                                   {onSale && (
-                                    <span className="text-lg font-bold text-slate-300 line-through decoration-slate-400">
-                                      ${Number(bundle.price).toFixed(2)}
-                                    </span>
+                                    <div className="flex flex-col">
+                                      <span className="text-lg font-bold text-slate-300 line-through decoration-slate-400">
+                                        ${Number(bundle.price).toFixed(2)}
+                                      </span>
+                                      <span className="text-[10px] font-black uppercase text-red-600 bg-red-50 px-2 py-0.5 rounded-full w-fit">
+                                        Save ${(Number(bundle.price) - Number(sp)).toFixed(2)}
+                                      </span>
+                                    </div>
                                   )}
                                 </>
                               )
