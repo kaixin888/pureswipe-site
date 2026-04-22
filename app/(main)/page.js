@@ -579,7 +579,7 @@ export default function Home() {
                 <div className={`w-16 h-16 ${feature.color} rounded-3xl flex items-center justify-center mb-10 group-hover:scale-110 transition-transform`}>
                   <feature.icon size={32} />
                 </div>
-                <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6 text-slate-900">{feature.title}</h3>
+                <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6 text-slate-900 py-4 overflow-visible">{feature.title}</h3>
                 <p className="text-slate-500 leading-relaxed font-medium">{feature.desc}</p>
               </div>
             ))}
@@ -673,7 +673,7 @@ export default function Home() {
                 {/* Text */}
                 <div className="p-5 md:p-7 flex flex-col flex-1 pb-4">
                   <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1">{bundle.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 py-4 overflow-visible">{bundle.name}</h3>
                   </a>
                   {bundle.description && (
                     <p className="text-sm text-gray-500 mb-2">{bundle.description}</p>
