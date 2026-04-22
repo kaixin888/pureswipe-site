@@ -211,9 +211,9 @@ export default function ProductDetail() {
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <ShieldCheck size={14} className="text-blue-500" />
-            <p className="text-[10px] font-black tracking-widest text-blue-400 uppercase">clowand premium</p>
+            <p className="text-[11px] font-semibold tracking-[0.18em] text-walmart-sky uppercase">Clowand Premium</p>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black leading-tight uppercase italic tracking-tighter text-white">{product.name}</h1>
+          <h1 className="text-3xl lg:text-5xl font-medium leading-tight tracking-tight text-white">{product.name}</h1>
 
           <div className="flex items-center gap-2">
             <div className="flex text-yellow-400">
@@ -225,46 +225,46 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex items-baseline gap-3 flex-wrap">
-            <span className="text-4xl font-black text-white italic tracking-tighter">
+            <span className="text-4xl font-semibold text-white tracking-tight">
               ${finalPrice.toFixed(2)}
             </span>
             <span className="text-sm text-slate-400 line-through">${strikethroughPrice.toFixed(2)}</span>
             {isOnSale && (
-              <span className="text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded-md font-black italic tracking-tighter">SALE</span>
+              <span className="text-[10px] bg-red-600/15 text-red-300 px-2 py-1 rounded-md font-semibold tracking-wide uppercase">Sale</span>
             )}
-            {purchaseType === 'subscribe' && <span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-md font-black italic tracking-tighter">SAVE 15%</span>}
+            {purchaseType === 'subscribe' && <span className="text-[10px] bg-walmart-sky/15 text-walmart-sky px-2 py-1 rounded-md font-semibold tracking-wide uppercase">Save 15%</span>}
           </div>
 
           {/* Subscribe & Save UI */}
           <div className="flex flex-col gap-2 mt-2">
             <button 
               onClick={() => setPurchaseType('one-time')}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'one-time' ? 'border-blue-600 bg-blue-600/5' : 'border-slate-800 hover:border-slate-700'}`}
+              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'one-time' ? 'border-walmart-sky bg-walmart-sky/5' : 'border-slate-800 hover:border-slate-700'}`}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${purchaseType === 'one-time' ? 'border-blue-600' : 'border-slate-600'}`}>
-                  {purchaseType === 'one-time' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                  {purchaseType === 'one-time' && <div className="w-2 h-2 rounded-full bg-walmart-sky" />}
                 </div>
                 <span className="text-sm font-bold text-white">One-time purchase</span>
               </div>
-              <span className="text-sm font-black italic tracking-tighter text-slate-400">${effectivePrice.toFixed(2)}</span>
+              <span className="text-sm font-semibold tracking-tight text-slate-300">${effectivePrice.toFixed(2)}</span>
             </button>
 
             <button 
               onClick={() => setPurchaseType('subscribe')}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'subscribe' ? 'border-blue-600 bg-blue-600/5' : 'border-slate-800 hover:border-slate-700'}`}
+              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'subscribe' ? 'border-walmart-sky bg-walmart-sky/5' : 'border-slate-800 hover:border-slate-700'}`}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${purchaseType === 'subscribe' ? 'border-blue-600' : 'border-slate-600'}`}>
-                  {purchaseType === 'subscribe' && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                  {purchaseType === 'subscribe' && <div className="w-2 h-2 rounded-full bg-walmart-sky" />}
                 </div>
                 <div>
                   <span className="text-sm font-bold block text-left text-white">Subscribe & Save</span>
-                  <span className="text-[10px] text-blue-400 font-bold uppercase tracking-widest block text-left">Deliver every 3 months</span>
+                  <span className="text-[10px] text-walmart-sky font-semibold tracking-[0.18em] block text-left">Deliver every 3 months</span>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-sm font-black italic tracking-tighter text-white">${(effectivePrice * 0.85).toFixed(2)}</span>
+                <span className="text-sm font-semibold tracking-tight text-white">${(effectivePrice * 0.85).toFixed(2)}</span>
                 <span className="text-[10px] text-slate-500 block line-through tracking-tighter">${effectivePrice.toFixed(2)}</span>
               </div>
             </button>
@@ -284,7 +284,7 @@ export default function ProductDetail() {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
-                className={`flex-1 py-4 rounded-full font-black tracking-widest text-sm transition-all ${isOutOfStock ? 'bg-slate-700 text-slate-500' : added ? 'bg-green-600 text-white' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                className={`flex-1 py-4 rounded-full font-semibold tracking-wide text-sm transition-all ${isOutOfStock ? 'bg-slate-700 text-slate-500' : added ? 'bg-green-600 text-white' : 'bg-walmart-navy/20 text-white border border-walmart-navy/40 hover:bg-walmart-navy/40'}`}
               >
                 {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
               </button>
@@ -293,7 +293,7 @@ export default function ProductDetail() {
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className={`w-full py-4 rounded-full font-black tracking-widest text-sm transition-all bg-blue-600 text-white hover:bg-blue-500 flex items-center justify-center gap-2 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-4 rounded-full font-semibold tracking-wide text-sm transition-all bg-walmart-navy text-white hover:bg-walmart-navy/90 flex items-center justify-center gap-2 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <Zap size={16} fill="currentColor" />
               BUY IT NOW
@@ -369,7 +369,7 @@ export default function ProductDetail() {
         <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800">
           <div className="text-center mb-16">
             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">Premium Hygiene</span>
-            <h2 className="text-4xl font-black tracking-tighter text-white mt-4 uppercase italic">Advanced Cleaning Tech</h2>
+            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white mt-4">Advanced Cleaning Tech</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {bullets.map((b, i) => (
@@ -389,11 +389,11 @@ export default function ProductDetail() {
         <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20">
           <div>
             <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">Voice of America</span>
-            <h2 className="text-5xl font-black italic tracking-tighter uppercase mt-4 text-white">Customer Reviews</h2>
+            <h2 className="text-3xl md:text-5xl font-medium tracking-tight mt-4 text-white">Customer Reviews</h2>
           </div>
           <div className="flex items-center gap-10">
             <div className="text-center">
-              <p className="text-5xl font-black italic tracking-tighter text-white uppercase">{rating}</p>
+              <p className="text-5xl font-semibold tracking-tight text-white">{rating}</p>
               <div className="flex gap-1 text-yellow-400 mt-2 justify-center">
                 {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
               </div>

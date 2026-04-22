@@ -15,10 +15,16 @@ module.exports = {
           mint: '#E8F5F1',
           primary: '#2D5A4F',
           orange: '#FF6B35'
+        },
+        walmart: {
+          navy: '#1C2570',
+          sky: '#76C1E4',
+          ink: '#222222',
+          muted: 'rgba(51,51,51,0.75)'
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
       },
       keyframes: {
         marquee: {

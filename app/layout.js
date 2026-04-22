@@ -4,7 +4,12 @@ import { Providers } from '../components/Providers'
 import SiteChrome from '../components/SiteChrome'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '900'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'clowand | Professional 18" Disposable Toilet Brush - 365 Days of Hygiene',

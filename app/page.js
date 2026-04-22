@@ -214,7 +214,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [previewImage, setPreviewImage] = useState(null)
-  const [bundles, setBundles] = useState(BUNDLES)
+  const [bundles, setBundles] = useState([])
+  const [bundlesLoading, setBundlesLoading] = useState(true)
 
 
 
@@ -253,8 +254,10 @@ export default function Home() {
           }
         })
         setBundles(mapped)
+      } else {
+        setBundles(BUNDLES)
       }
-      // If table empty or error → keep BUNDLES fallback (no action needed)
+      setBundlesLoading(false)
     }
     fetchProducts()
   }, [])
@@ -286,17 +289,20 @@ export default function Home() {
     fetchFaqs()
   }, [])
 
-  // Fetch site settings (hero/announcement) from Supabase
+  // Fetch site settings (hero/announcement) from Supabase - silent if table missing
   useEffect(() => {
     const fetchSettings = async () => {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('key, value')
-      if (!error && data && data.length > 0) {
-        const map = {}
-        data.forEach(row => { map[row.key] = row.value })
-        setSiteSettings(map)
-      }
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('key, value')
+        if (error) return
+        if (data && data.length > 0) {
+          const map = {}
+          data.forEach(row => { map[row.key] = row.value })
+          setSiteSettings(map)
+        }
+      } catch (_) { /* table missing - fallback handled by JSX || */ }
     }
     fetchSettings()
   }, [])
@@ -473,7 +479,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
             {siteSettings.hero_badge || "2026 Hygiene Revolution"}
           </div>
-          <h1 className="text-4xl font-black italic tracking-tighter leading-tight uppercase text-white mb-3 py-10 overflow-visible">
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight leading-tight text-white mb-3 overflow-visible">
             {siteSettings.hero_title || t.heroTitle}
           </h1>
           <p className="text-sm text-white/80 mb-6 leading-relaxed">
@@ -481,7 +487,7 @@ export default function Home() {
           </p>
           <button
             onClick={() => scrollIntoView('bundles')}
-            className="w-full bg-black text-white rounded-full py-4 text-sm font-bold uppercase tracking-widest active:scale-[0.98] transition-transform"
+            className="w-full bg-walmart-navy text-white rounded-full py-4 text-sm font-semibold tracking-wide active:scale-[0.98] transition-transform hover:opacity-90"
           >
             {t.shopBundles}
           </button>
@@ -509,7 +515,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
               {siteSettings.hero_badge || "2026 Hygiene Revolution"}
             </div>
-                        <h1 className="text-8xl font-black italic tracking-tighter leading-[1.15] uppercase mb-10 text-slate-950 py-10 overflow-visible">
+                        <h1 className="text-6xl lg:text-7xl font-medium tracking-tight leading-[1.1] mb-10 text-walmart-navy overflow-visible">
               {siteSettings.hero_title || t.heroTitle}
             </h1>
             <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
@@ -518,7 +524,7 @@ export default function Home() {
             <div className="flex flex-row items-center gap-6">
               <button
                 onClick={() => scrollIntoView('bundles')}
-                className="px-12 py-6 bg-slate-950 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-slate-950/20"
+                className="px-10 py-5 bg-walmart-navy text-white rounded-full text-sm font-semibold tracking-wide hover:bg-walmart-navy/90 transition-all shadow-lg"
               >
                 {t.shopBundles}
               </button>
@@ -643,6 +649,16 @@ export default function Home() {
           </div>
           {/* Mobile: single col gap-4 | Desktop: 2-col gap-10 (Bento spacing) */}
           <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10">
+            {bundlesLoading && bundles.length === 0 && [0,1,2,3].map((k) => (
+              <div key={'sk-'+k} className="bg-slate-50 border border-slate-100 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden animate-pulse">
+                <div className="w-full bg-white [aspect-ratio:3/4] md:[aspect-ratio:4/3]"></div>
+                <div className="p-5 md:p-7 space-y-3">
+                  <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                  <div className="h-6 bg-slate-200 rounded w-1/2"></div>
+                  <div className="h-12 bg-slate-200 rounded-xl"></div>
+                </div>
+              </div>
+            ))}
             {bundles.map((bundle, i) => (
               <div
                 key={bundle.id}
@@ -675,37 +691,9 @@ export default function Home() {
                 {/* Text */}
                 <div className="p-5 md:p-7 flex flex-col flex-1 pb-4">
                   <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 py-4 overflow-visible">{bundle.name}</h3>
+                  <h3 className="text-base md:text-lg font-medium text-walmart-ink leading-snug mb-2 line-clamp-2 min-h-[2.6em]">{bundle.name}</h3>
                   </a>
-                  {bundle.description && (
-                    <p className="text-sm text-gray-500 mb-2">{bundle.description}</p>
-                  )}
-                  {(() => {
-                    try {
-                      const bts = typeof bundle.bullets === 'string'
-                        ? JSON.parse(bundle.bullets || '[]').slice(0, 3)
-                        : (Array.isArray(bundle.bullets) ? bundle.bullets.slice(0, 3) : [])
-                      return bts.length > 0 ? (
-                        <ul className="space-y-1 mb-3">
-                          {bts.map((b, i) => (
-                            <li key={i} className="flex items-center gap-1.5 text-xs text-gray-600">
-                              <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
-                              <span>{b}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null
-                    } catch { return null }
-                  })()} 
-                  {bundle.items && bundle.items.length > 0 && (
-                    <ul className="space-y-1 mb-4 hidden md:block">
-                      {bundle.items.slice(0, 3).map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
-                          <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {/* Bundle card minimal: description / bullets / items moved to detail page */}
                   <div className="mt-auto space-y-3">
                     {(() => {
                       const sp = bundle.sale_price
@@ -730,14 +718,14 @@ export default function Home() {
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined') { if (window.gtag) { window.gtag('event', 'add_to_cart', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } if (window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: _p }); } } }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy/10 text-walmart-navy hover:bg-walmart-navy hover:text-white active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                       </button>
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 md:opacity-0 md:group-hover:opacity-100 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy text-white hover:bg-walmart-navy/90 active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
                       </button>
