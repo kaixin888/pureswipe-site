@@ -23,8 +23,8 @@ const supabase = createClient(
 const TRANSLATIONS = {
   en: {
     heroTitle: "The End of the Dirty Toilet Brush.",
-    heroSub: "The 18-inch hygienic revolution for your bathroom. Triple action pads, zero-touch mechanism. Hassle-Free No-Return Refund.",
-    shopBundles: "Shop Bundles",
+    heroSub: "Never Touch the Mess Again.",
+    shopBundles: "Start My Clean Journey",
     freeShipping: "Free Shipping Across USA",
     features: "Features",
     bundles: "Select Your System",
@@ -641,112 +641,131 @@ export default function Home() {
             <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">{t.bundles}</span>
             <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 py-10 overflow-visible">{t.saveUpTo}</h2>
           </div>
-          {/* Mobile: single col gap-4 | Desktop: 2-col gap-10 (Bento spacing) */}
-          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-10">
+                    {/* Bento Grid: index-0 is large hero card (full-width on desktop), rest are small cards */}
+          <div className="relative grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
             {bundles.map((bundle, i) => (
               <div
                 key={bundle.id}
-                className="group relative bg-white border border-slate-100 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col"
+                className={
+                  "group relative rounded-[3rem] overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col border border-slate-100 " +
+                  (i === 0 ? "md:col-span-2 bg-slate-50" : (i % 2 === 0 ? "bg-white" : "bg-slate-50"))
+                }
               >
                 {bundle.popular && (
-                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
+                  <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow">
                     Best Seller
                   </div>
                 )}
                 {bundle.tag && !bundle.popular && (
-                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                  <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
                     {bundle.tag}
                   </div>
                 )}
-                {/* Image: mobile 3:4 portrait, desktop 4:3 landscape */}
-                <a href={`/products/${bundle.id}`} className="block">
-                <div className="w-full bg-white overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3] flex items-center justify-center p-3">
-                  <Image
-                    src={bundle.image}
-                    width={600}
-                    height={800}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                    alt={bundle.alt_text || `${bundle.name} - Clowand Disposable Toilet Brush`}
-                    priority={i === 0}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </div>
-                </a>
-                {/* Text */}
-                <div className="p-5 md:p-7 flex flex-col flex-1 pb-4">
-                  <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  <h3 className="text-lg font-semibold text-gray-900 leading-snug mb-1 py-4 overflow-visible">{bundle.name}</h3>
-                  </a>
-                  {bundle.description && (
-                    <p className="text-sm text-gray-500 mb-2">{bundle.description}</p>
-                  )}
-                  {(() => {
-                    try {
-                      const bts = typeof bundle.bullets === 'string'
-                        ? JSON.parse(bundle.bullets || '[]').slice(0, 3)
-                        : (Array.isArray(bundle.bullets) ? bundle.bullets.slice(0, 3) : [])
-                      return bts.length > 0 ? (
-                        <ul className="space-y-1 mb-3">
-                          {bts.map((b, i) => (
-                            <li key={i} className="flex items-center gap-1.5 text-xs text-gray-600">
-                              <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
-                              <span>{b}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null
-                    } catch { return null }
-                  })()} 
-                  {bundle.items && bundle.items.length > 0 && (
-                    <ul className="space-y-1 mb-4 hidden md:block">
-                      {bundle.items.slice(0, 3).map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
-                          <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <div className="mt-auto space-y-3">
-                    {(() => {
-                      const sp = bundle.sale_price
-                      const onSale = sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)
-                      const display = onSale ? Number(sp) : Number(bundle.price)
-                      return (
-                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <div className="flex items-baseline gap-2">
-                            {onSale && (
-                              <span className="text-sm text-gray-400 line-through">${Number(bundle.price).toFixed(2)}</span>
-                            )}
-                            <span className={onSale ? "text-lg font-bold text-red-600" : "text-lg font-bold text-gray-900"}>${display.toFixed(2)}</span>
-                            {onSale && (
-                              <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
-                            )}
-                          </div>
-                          <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
-                        </div>
-                      )
-                    })()}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } }}
-                        disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[0.98]'}`}
-                      >
-                        {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                      </button>
-                      <button
-                        onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); setIsCheckoutOpen(true); }}
-                        disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98]'}`}
-                      >
-                        {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
-                      </button>
+                {/* Large card uses side-by-side layout on desktop */}
+                <div className={i === 0 ? "flex flex-col md:flex-row items-stretch" : "flex flex-col"}>
+                  <a
+                    href={`/products/${bundle.id}`}
+                    className={
+                      "block overflow-hidden flex-shrink-0 " +
+                      (i === 0
+                        ? "w-full md:w-5/12 [aspect-ratio:4/3] md:[aspect-ratio:auto] md:min-h-[400px]"
+                        : "w-full [aspect-ratio:4/3]")
+                    }
+                  >
+                    <div className="w-full h-full flex items-center justify-center p-4 bg-white/70">
+                      <Image
+                        src={bundle.image}
+                        width={i === 0 ? 800 : 600}
+                        height={i === 0 ? 600 : 450}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        alt={bundle.alt_text || `${bundle.name} - Clowand Disposable Toilet Brush`}
+                        priority={i === 0}
+                        sizes={i === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 25vw"}
+                      />
                     </div>
-                    {bundle.id && (
-                      <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
-                        View Details →
-                      </a>
+                  </a>
+                  {/* Content panel */}
+                  <div className={
+                    "flex flex-col flex-1 " +
+                    (i === 0 ? "p-8 md:p-12 md:justify-center" : "p-5 md:p-6")
+                  }>
+                    <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
+                      <h3 className={
+                        "font-black italic tracking-tighter uppercase text-slate-900 py-4 overflow-visible " +
+                        (i === 0 ? "text-2xl md:text-4xl mb-3" : "text-xl mb-2")
+                      }>{bundle.name}</h3>
+                    </a>
+                    {bundle.description && (
+                      <p className="text-sm text-gray-500 mb-3 font-medium">{bundle.description}</p>
                     )}
+                    {(() => {
+                      try {
+                        const bts = typeof bundle.bullets === 'string'
+                          ? JSON.parse(bundle.bullets || '[]').slice(0, i === 0 ? 4 : 3)
+                          : (Array.isArray(bundle.bullets) ? bundle.bullets.slice(0, i === 0 ? 4 : 3) : [])
+                        return bts.length > 0 ? (
+                          <ul className="space-y-1 mb-3">
+                            {bts.map((b, bi) => (
+                              <li key={bi} className="flex items-center gap-1.5 text-xs text-gray-600">
+                                <span className="text-green-500 font-bold flex-shrink-0">&#10003;</span>
+                                <span>{b}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null
+                      } catch { return null }
+                    })()}
+                    {bundle.items && bundle.items.length > 0 && (
+                      <ul className="space-y-1 mb-4">
+                        {bundle.items.slice(0, i === 0 ? 4 : 3).map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-xs text-gray-500">
+                            <CheckCircle size={12} className="text-blue-600 shrink-0" /> {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="mt-auto space-y-3">
+                      {(() => {
+                        const sp = bundle.sale_price
+                        const onSale = sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)
+                        const display = onSale ? Number(sp) : Number(bundle.price)
+                        return (
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-baseline gap-2">
+                              {onSale && (
+                                <span className="text-sm text-gray-400 line-through">${Number(bundle.price).toFixed(2)}</span>
+                              )}
+                              <span className={onSale ? "text-lg font-bold text-red-600" : "text-lg font-bold text-gray-900"}>${display.toFixed(2)}</span>
+                              {onSale && (
+                                <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
+                              )}
+                            </div>
+                            <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">Free Ship</span>
+                          </div>
+                        )
+                      })()}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); if (typeof window !== 'undefined' && window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: bundle.price }); } }}
+                          disabled={bundle.stock <= 0}
+                          className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[0.98]'}`}
+                        >
+                          {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                        <button
+                          onClick={() => { if (bundle.stock <= 0) return; addItem({ id: bundle.id, name: bundle.name, price: bundle.price, image: bundle.image }); setIsCheckoutOpen(true); }}
+                          disabled={bundle.stock <= 0}
+                          className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-150 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-[0.98]'}`}
+                        >
+                          {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
+                        </button>
+                      </div>
+                      {bundle.id && (
+                        <a href={`/products/${bundle.id}`} className="block text-center text-xs text-gray-400 hover:text-gray-700 transition-colors">
+                          View Details →
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

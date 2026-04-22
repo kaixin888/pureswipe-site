@@ -98,7 +98,7 @@ export default function ProductList() {
         <Table.Column dataIndex="name" title="商品名称" />
         <Table.Column
           dataIndex="price"
-          title="价格"
+          title="售价 (USD)"
           render={(v, record) => {
             const sale = record.sale_price;
             const onSale = sale != null && Number(sale) > 0 && Number(sale) < Number(v);
@@ -116,7 +116,7 @@ export default function ProductList() {
         />
         <Table.Column
           dataIndex="stock"
-          title="库存"
+          title="库存数量"
           render={(v) => {
             if (v === 0) return <Tag color="red">缺货</Tag>;
             if (v < 10) return <Tag color="orange">{v} 偏低</Tag>;
@@ -125,7 +125,7 @@ export default function ProductList() {
         />
         <Table.Column
           dataIndex="status"
-          title="状态"
+          title="上架状态"
           render={(value, record) => (
             <Space>
               <Switch
@@ -146,7 +146,7 @@ export default function ProductList() {
           )}
         />
         <Table.Column
-          title="操作"
+          title="管理操作"
           dataIndex="actions"
           render={(_, record) => (
             <Space>

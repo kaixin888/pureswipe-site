@@ -65,7 +65,7 @@ export default function PostsAdminPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
-              {['标题', '别名 (Slug)', '状态', '发布时间', '操作'].map(h => (
+              {['文章标题', 'URL别名 (Slug)', '发布状态', '发布时间', '管理操作'].map(h => (
                 <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600, fontSize: 13 }}>{h}</th>
               ))}
             </tr>

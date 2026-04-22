@@ -88,10 +88,10 @@ export default function OrderList() {
         <Table.Column dataIndex="email" title="邮箱" />
         <Table.Column dataIndex="phone" title="电话" />
         <Table.Column dataIndex="amount" title="金额" render={(v) => `$${v}`} />
-        <Table.Column dataIndex="product_name" title="商品" />
+        <Table.Column dataIndex="product_name" title="商品名称" />
         <Table.Column
           dataIndex="status"
-          title="状态"
+          title="订单状态"
           render={(value) => {
             let color = 'blue';
             if (value === 'Paid') color = 'green';
@@ -101,8 +101,9 @@ export default function OrderList() {
             return <Tag color={color}>{statusLabel(value)}</Tag>;
           }}
         />
-        <Table.Column dataIndex="shipping_city" title="城市" />
-        <Table.Column dataIndex="shipping_state" title="州" />
+        <Table.Column dataIndex="created_at" title="下单时间" render={(v) => v ? new Date(v).toLocaleDateString('zh-CN') : '-'} />
+        <Table.Column dataIndex="shipping_city" title="收货城市" />
+        <Table.Column dataIndex="shipping_state" title="州/省" />
         <Table.Column
           title="操作"
           dataIndex="actions"
