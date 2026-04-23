@@ -26,3 +26,5 @@ yarn-error.log*
 !app/**/*
 !components/**/*
 !public/**/*
+.env*.local
+.env.production
