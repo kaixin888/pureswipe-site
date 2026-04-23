@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import AnnouncementBar from './AnnouncementBar';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import GlobalCheckout from './GlobalCheckout';
 
 /**
  * SiteChrome — public-site shell (AnnouncementBar + Navbar + Footer).
@@ -32,6 +33,7 @@ export default function SiteChrome({ children }) {
     <>
       <AnnouncementBar />
       <Navbar />
+      <GlobalCheckout />
       <main>{children}</main>
       <Footer />
     </>
