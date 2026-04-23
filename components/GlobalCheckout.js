@@ -14,7 +14,6 @@ export default function GlobalCheckout() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { 
     setMounted(true)
-    console.log('[GlobalCheckout] Mounted')
   }, [])
 
   const { items, cartTotal, emptyCart, updateItemQuantity, removeItem } = useCart()
@@ -25,10 +24,6 @@ export default function GlobalCheckout() {
     checkoutStep, setCheckoutStep,
     discountInfo, setDiscountInfo
   } = useStore()
-
-  useEffect(() => {
-    console.log('[GlobalCheckout] isCheckoutOpen:', isCheckoutOpen)
-  }, [isCheckoutOpen])
 
   const [paymentStatus, setPaymentStatus] = useState('idle')
   const [paymentTab, setPaymentTab] = useState('card') // 'paypal' | 'card'

@@ -151,7 +151,6 @@ export default function Navbar() {
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
         onCheckout={() => {
-          console.log('[Navbar] onCheckout triggered');
           setIsCartOpen(false);
           setIsCheckoutOpen(true);
         }}
