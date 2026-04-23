@@ -723,7 +723,7 @@ export default function Home() {
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                       </button>
                       <button
-                        onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
+                        onClick={() => { console.log('[Page] Buy Now clicked', bundle.id); if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
                         disabled={bundle.stock <= 0}
                         className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-walmart-navy border border-walmart-navy hover:bg-walmart-navy hover:text-white active:scale-[0.98]'}`}
                       >

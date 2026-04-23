@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '../components/Providers'
+import GlobalCheckout from '../components/GlobalCheckout'
 import SiteChrome from '../components/SiteChrome'
 import './globals.css'
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }) {
               gtag('config', 'G-JFTMBGD8EM');
             `}
           </Script>
+          <GlobalCheckout />
           <SiteChrome>{children}</SiteChrome>
         </Providers>
       </body>

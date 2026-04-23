@@ -12,7 +12,10 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://o
 
 export default function GlobalCheckout() {
   const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { 
+    setMounted(true)
+    console.log('[GlobalCheckout] Mounted')
+  }, [])
 
   const { items, cartTotal, emptyCart, updateItemQuantity, removeItem } = useCart()
   const { 
@@ -22,6 +25,10 @@ export default function GlobalCheckout() {
     checkoutStep, setCheckoutStep,
     discountInfo, setDiscountInfo
   } = useStore()
+
+  useEffect(() => {
+    console.log('[GlobalCheckout] isCheckoutOpen:', isCheckoutOpen)
+  }, [isCheckoutOpen])
 
   const [paymentStatus, setPaymentStatus] = useState('idle')
   const [paymentTab, setPaymentTab] = useState('card') // 'paypal' | 'card'
