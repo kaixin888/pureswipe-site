@@ -3,6 +3,7 @@
 import React from 'react';
 import { useCart } from "react-use-cart";
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
+import UpsellCards from './UpsellCards';
 
 export default function Cart({ isOpen, onClose, onCheckout }) {
   const {
@@ -11,17 +12,7 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
     cartTotal,
     updateItemQuantity,
     removeItem,
-    addItem,
   } = useCart();
-
-  const hasWand = items.some(i => i.id === '29d845e2-3908-41c6-8e0a-7ebdbed159bc');
-  const hasLid = items.some(i => i.id === 'd00dbb8b-c1fe-4996-9a69-736b1b6cfe5b');
-
-  const upsellProduct = (!hasLid && hasWand) 
-    ? { id: 'd00dbb8b-c1fe-4996-9a69-736b1b6cfe5b', name: '48 Refills Auto Lid Kit', price: 19.99, image: 'https://media.clowand.com/products/B0FH8XGG56/main.jpg' }
-    : (!hasWand && hasLid)
-    ? { id: '29d845e2-3908-41c6-8e0a-7ebdbed159bc', name: 'Wand Starter Kit', price: 24.99, image: 'https://media.clowand.com/products/B0FGV9BBFH/main.jpg' }
-    : null;
 
   if (!isOpen) return null;
 
@@ -112,27 +103,8 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
             </div>
           )}
 
-          {/* Upsell Section */}
-          {!isEmpty && upsellProduct && (
-            <div className="mt-8 pt-6 border-t border-slate-100">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">People also bought...</h4>
-              <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-100/50 flex items-center gap-4 group">
-                <div className="w-16 h-16 bg-white rounded-xl overflow-hidden border border-blue-100 shrink-0">
-                  <img src={upsellProduct.image} alt={upsellProduct.name} className="w-full h-full object-contain p-1" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h5 className="text-[11px] font-black uppercase tracking-tight text-slate-900 line-clamp-1 mb-1">{upsellProduct.name}</h5>
-                  <p className="text-blue-600 font-black italic tracking-tighter text-sm mb-0">${upsellProduct.price}</p>
-                </div>
-                <button
-                  onClick={() => addItem(upsellProduct)}
-                  className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-90"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Dynamic Upsell — Bundle Deal Cards */}
+          {!isEmpty && <UpsellCards />}
         </div>
 
         {/* Footer — checkout area, pb avoids Chatwoot bubble + iOS safe area */}
