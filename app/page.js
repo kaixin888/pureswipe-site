@@ -1036,50 +1036,99 @@ export default function Home() {
 
       {/* Exit Intent Popup */}
       {isExitPopupOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 backdrop-blur-2xl bg-slate-950/60 animate-in fade-in zoom-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl relative">
-            <button 
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 backdrop-blur-2xl bg-slate-950/70 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-[680px] rounded-[2rem] overflow-hidden shadow-2xl relative">
+            <button
               onClick={() => setIsExitPopupOpen(false)}
-              className="absolute top-6 right-6 p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950"
+              className="absolute top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
-            
-            <div className="p-12 text-center">
-              <div className="mb-8">
-                <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Exclusive Offer</span>
-                                                                <h2 className="text-4xl font-black italic tracking-tighter uppercase mt-4 text-slate-950 leading-[1.4] py-10 overflow-visible">WAIT! Don't leave your<br/>hygiene to chance.</h2>
+
+            <div className="flex flex-col md:flex-row">
+              {/* Left: Product hero image */}
+              <div className="hidden md:flex md:w-[45%] bg-gradient-to-br from-blue-50 to-slate-50 items-center justify-center p-8 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-transparent" />
+                <Image
+                  src="/images/products/starter-kit-main.jpg"
+                  width={320}
+                  height={320}
+                  className="object-contain drop-shadow-2xl rounded-2xl max-h-[280px] w-auto"
+                  alt="Clowand Toilet Wand Starter Kit"
+                  priority={false}
+                />
               </div>
 
-              {!isSubscribed ? (
-                <>
-                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest italic mb-2">Get 10% OFF your first clowand system today.</p>
-                  <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest italic mb-8">Join 5,000+ households choosing zero-touch cleaning.</p>
-                  <form onSubmit={handleSubscribe} className="space-y-4">
-                    <input 
-                      type="email" 
-                      required
-                      placeholder="ENTER YOUR EMAIL"
-                      value={subscriberEmail}
-                      onChange={(e) => setSubscriberEmail(e.target.value)}
-                      className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all text-center"
-                    />
-                    <button 
-                      type="submit" 
-                      disabled={isSubmitting}
-                      className="w-full py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50"
-                    >
-                      {isSubmitting ? 'Authenticating...' : 'Unlock 10% Off'}
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <div className="py-8 animate-in zoom-in duration-500">
-                  <p className="text-2xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">Welcome to the Club</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic mb-6">Your code: <span className="bg-emerald-100 px-3 py-1 rounded-full text-emerald-700">CLOWAND10</span></p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Check your inbox for details.</p>
+              {/* Mobile: compact product strip */}
+              <div className="md:hidden bg-gradient-to-br from-blue-50 to-slate-50 flex items-center justify-center py-4 px-6">
+                <Image
+                  src="/images/products/starter-kit-main.jpg"
+                  width={100}
+                  height={100}
+                  className="object-contain drop-shadow-xl max-h-[80px] w-auto"
+                  alt="Clowand Toilet Wand Starter Kit"
+                  priority={false}
+                />
+                <div className="ml-4">
+                  <span className="text-blue-600 font-black uppercase tracking-[0.15em] text-[8px] italic">Welcome to Cleaner Living</span>
+                  <p className="text-slate-900 font-black italic tracking-tight text-sm mt-1">10% OFF + Free Guide</p>
                 </div>
-              )}
+              </div>
+
+              {/* Right: Content area */}
+              <div className="md:w-[55%] p-6 md:p-10 flex flex-col items-center justify-center text-center">
+                {!isSubscribed ? (
+                  <>
+                    <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[9px] md:text-[10px] italic mb-3 md:mb-4">Welcome to Cleaner Living</span>
+                    <h2 className="text-xl md:text-3xl font-black italic tracking-tighter text-slate-950 leading-tight mb-3 md:mb-4">
+                      Get 10% OFF<br/>
+                      <span className="text-blue-600">+ A Free Hygiene Guide</span>
+                    </h2>
+                    <p className="text-slate-500 text-[10px] md:text-[11px] font-semibold leading-relaxed mb-6 md:mb-8">
+                      Join 5,000+ households choosing zero-touch cleaning. Your discount code &amp; guide arrive instantly.
+                    </p>
+                    <form onSubmit={handleSubscribe} className="space-y-3 md:space-y-4 w-full">
+                      <input
+                        type="email"
+                        required
+                        placeholder="your@email.com"
+                        value={subscriberEmail}
+                        onChange={(e) => setSubscriberEmail(e.target.value)}
+                        className="w-full px-6 py-4 md:py-5 bg-slate-50 border border-slate-100 rounded-full text-[12px] md:text-[13px] font-semibold tracking-wide focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all text-center placeholder:text-slate-400 placeholder:font-medium placeholder:tracking-normal"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full py-4 md:py-5 bg-blue-600 text-white rounded-full text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-[0.98] disabled:opacity-50"
+                      >
+                        {isSubmitting ? 'Sending...' : 'GET MY DISCOUNT →'}
+                      </button>
+                    </form>
+                    <p className="text-slate-400 text-[9px] md:text-[10px] font-medium mt-4 md:mt-6 tracking-wide">
+                      Email only. No spam ever. Unsubscribe anytime.
+                    </p>
+                  </>
+                ) : (
+                  <div className="animate-in zoom-in duration-500">
+                    <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                      <CheckCircle className="text-emerald-500" size={28} />
+                    </div>
+                    <p className="text-2xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">You're In!</p>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-emerald-500 italic mb-4">Your code: <span className="bg-emerald-100 px-3 py-1 rounded-full text-emerald-700">CLOWAND10</span></p>
+                    <p className="text-[10px] font-medium text-slate-400 mb-2">Check your inbox for the discount code + Bathroom Hygiene Guide.</p>
+                    <button
+                      onClick={() => setIsExitPopupOpen(false)}
+                      className="mt-4 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] italic border-b-2 border-blue-600/20 hover:border-blue-600 transition-all"
+                    >
+                      Start Shopping →
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
             </div>
           </div>
         </div>
