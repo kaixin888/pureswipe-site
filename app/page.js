@@ -222,6 +222,7 @@ export default function Home() {
 
   const [reviews, setReviews] = useState([])
   const [faqs, setFaqs] = useState([])
+  const [blogPosts, setBlogPosts] = useState([])
   const [siteSettings, setSiteSettings] = useState({})
   const [videoIndex, setVideoIndex] = useState(0)
 
@@ -274,6 +275,20 @@ export default function Home() {
       if (!error && data && data.length > 0) setReviews(data)
     }
     fetchReviews()
+  }, [])
+
+  // Fetch 3 latest blog posts for Insights section
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      const { data } = await supabase
+        .from('posts')
+        .select('id, title, slug, excerpt, cover_image, published_at')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+        .limit(3)
+      if (data) setBlogPosts(data)
+    }
+    fetchBlogPosts()
   }, [])
 
   // Fetch published FAQs from Supabase
@@ -934,6 +949,60 @@ export default function Home() {
               <p className="text-2xl font-black italic tracking-tighter text-blue-600 uppercase mt-4">{trackResult.status}</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Clowand Insights - Blog Section */}
+      <section id="insights" className="py-40 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
+            <div className="max-w-2xl">
+              <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Expert Knowledge</span>
+              <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mt-6 text-slate-950 py-10 overflow-visible">Clowand Insights</h2>
+              <p className="text-slate-500 text-lg font-medium leading-relaxed">
+                Stay informed with the latest research on bathroom hygiene, ergonomics, and home health from our experts.
+              </p>
+            </div>
+            <a href="/blog" className="px-10 py-5 border-2 border-slate-950 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-slate-950 hover:text-white transition-all">
+              View All Articles
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {blogPosts.map((post) => (
+              <a 
+                key={post.id} 
+                href={`/blog/${post.slug}`}
+                className="group flex flex-col bg-slate-50 rounded-[3rem] overflow-hidden border border-slate-100 hover:shadow-2xl hover:shadow-blue-600/5 transition-all duration-500"
+              >
+                <div className="relative h-64 overflow-hidden">
+                  {post.cover_image && (
+                    <Image 
+                      src={post.cover_image} 
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
+                </div>
+                <div className="p-10 flex-1 flex flex-col">
+                  <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">
+                    {new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  <h3 className="text-2xl font-black italic tracking-tighter uppercase text-slate-950 mb-4 group-hover:text-blue-600 transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-8">
+                    {post.excerpt}
+                  </p>
+                  <div className="mt-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-950 group-hover:gap-4 transition-all">
+                    Read Article <Play size={10} className="fill-current" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
