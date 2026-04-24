@@ -6,7 +6,7 @@ const supabase = createClient(
 );
 
 export default async function sitemap() {
-  const baseUrl = 'https://clowand.com';
+  const baseUrl = 'https://www.clowand.com';
 
   // Static routes
   const staticRoutes = [
