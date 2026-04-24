@@ -36,5 +36,18 @@ export default async function sitemap() {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...productRoutes];
+  // Dynamic blog routes
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('slug, published_at')
+    .eq('is_published', true);
+
+  const blogRoutes = (posts || []).map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.published_at),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...productRoutes, ...blogRoutes];
 }

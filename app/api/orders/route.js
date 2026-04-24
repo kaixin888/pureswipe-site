@@ -37,7 +37,6 @@ async function trackPurchaseGA4(data) {
       method: 'POST',
       body: JSON.stringify(payload)
     });
-    console.log(`[GA4] Tracked purchase for order ${data.order_id}`);
   } catch (err) {
     console.error('[GA4] Tracking failed:', err.message);
   }

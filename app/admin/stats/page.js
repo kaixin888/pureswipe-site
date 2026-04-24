@@ -89,9 +89,7 @@ export default function Dashboard() {
   }, [ordersData, cfData]);
 
   useEffect(() => {
-    if (!ordersLoading) {
-      console.log(`[Phase 3 Monitor] Admin Panel v2.6.2 Ready. Orders: ${stats.totalOrders}. Conversion: ${stats.conversionRate}%.`);
-    }
+    // Stats and Analytics ready for visualization
   }, [ordersLoading, stats]);
 
   if (ordersLoading) {
