@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
-import VideoModal from '../components/VideoModal'
+import VideoModal from '../components/VideoModal'
+
 import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
 
@@ -210,7 +211,8 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
-  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
+  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
+
   const [videoModal, setVideoModal] = useState(null) // { url, poster }
   const [subscriberEmail, setSubscriberEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -270,7 +272,7 @@ export default function Home() {
     const fetchReviews = async () => {
       const { data, error } = await supabase
         .from('reviews')
-        .select('id,author_name,author_location,rating,content,ugc_image_url,is_published,created_at')
+        .select('*')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(9)
