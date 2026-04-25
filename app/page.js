@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@supabase/supabase-js'
+import VideoModal from '../components/VideoModal'
 import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
 
@@ -209,7 +210,8 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
-  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
+  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
+  const [videoModal, setVideoModal] = useState(null) // { url, poster }
   const [subscriberEmail, setSubscriberEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -863,7 +865,34 @@ export default function Home() {
               return (
               <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
                 {/* UGC photo if available */}
-                {(review.ugc_image_url || review.image_url) && (
+                {/* Video review — click to open modal */}
+                {review.video_url && (
+                  <div
+                    className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-900 relative cursor-pointer group" 
+                    onClick={() => setVideoModal({ url: review.video_url, poster: review.video_poster_url })}
+                  >
+                    {review.video_poster_url ? (
+                      <Image
+                        src={review.video_poster_url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com')}
+                        width={400}
+                        height={128}
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
+                        alt="Video review thumbnail" 
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-900 to-slate-800" />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:bg-white group-hover:scale-110 transition-all">
+                        <Play size={20} fill="#1e40af" color="#1e40af" className="ml-1" />
+                      </div>
+                    </div>
+                    <span className="absolute bottom-2 right-2 text-[8px] font-black uppercase tracking-wider bg-white/80 text-blue-900 px-2 py-0.5 rounded-full">Video</span>
+                  </div>
+                )}
+                {/* UGC photo if available (hide if video exists) */}
+                {(review.ugc_image_url || review.image_url) && !review.video_url && (
                   <div className="w-full h-32 rounded-2xl overflow-hidden mb-6 bg-slate-50 cursor-zoom-in" onClick={() => setPreviewImage(review.ugc_image_url || review.image_url)}>
                     <Image src={review.ugc_image_url || review.image_url} width={400} height={128} className="w-full h-full object-cover" alt="Customer photo" unoptimized />
                   </div>
@@ -872,7 +901,10 @@ export default function Home() {
                   <div className="flex gap-1 text-blue-600">
                     {[...Array(displayRating)].map((_, idx) => <Star key={idx} size={14} fill="currentColor" />)}
                   </div>
-                  {(review.ugc_image_url || review.image_url) && (
+                  {review.video_url && (
+                    <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase" style={{color:'#2563eb',backgroundColor:'#eff6ff'}}>Video Review</span>
+                  )}
+                  {(review.ugc_image_url || review.image_url) && !review.video_url && (
                     <span className="text-[9px] font-black tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase" style={{color:'#2563eb',backgroundColor:'#eff6ff'}}>Verified Amazon Purchase</span>
                   )}
                 </div>
@@ -1134,6 +1166,14 @@ export default function Home() {
         </div>
       )}
           {/* Image Preview Modal */}
+      {/* Video Review Modal */}
+      {videoModal && (
+        <VideoModal
+          videoUrl={videoModal.url}
+          posterUrl={videoModal.poster}
+          onClose={() => setVideoModal(null)}
+        />
+      )}
       {previewImage && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/95 animate-in fade-in duration-300">
           <button onClick={() => setPreviewImage(null)} className="absolute top-6 right-6 text-white hover:text-blue-400 transition-colors">

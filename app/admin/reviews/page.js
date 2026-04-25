@@ -1,7 +1,7 @@
 'use client';
 
 import { useList, useUpdate, useDelete, useGo } from '@refinedev/core';
-import { Star, Plus, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Star, Plus, Eye, EyeOff, Trash2, Video } from 'lucide-react';
 import { Button, Table, Tag, Space, Popconfirm, Rate, message } from 'antd';
 
 export default function ReviewsPage() {
@@ -53,6 +53,15 @@ export default function ReviewsPage() {
       dataIndex: 'image_url',
       width: 80,
       render: (url) => url ? <img src={url} alt="Review" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : '-',
+    },
+    {
+      title: 'Video',
+      width: 80,
+      render: (_, rec) => rec.video_url ? (
+        <Tag color="blue" style={{ fontSize: 10 }}>
+          <Video size={12} style={{ marginRight: 4 }} />Video
+        </Tag>
+      ) : '-',
     },
     {
       title: 'Content',

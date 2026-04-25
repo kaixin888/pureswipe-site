@@ -52,6 +52,12 @@ export default function ReviewCreatePage() {
         <Form.Item name="image_url" label="Customer Photo URL (optional)">
           <Input placeholder="https://..." />
         </Form.Item>
+        <Form.Item name="video_url" label="Video Review URL (optional, MP4/WebM)">
+          <Input placeholder="https://media.clowand.com/videos/..." />
+        </Form.Item>
+        <Form.Item name="video_poster_url" label="Video Cover Image URL (optional)">
+          <Input placeholder="https://media.clowand.com/videos/poster/..." />
+        </Form.Item>
         <Form.Item name="product_id" label="Product (optional)">
           <Select allowClear placeholder="Select product">
             {products.map(p => (
