@@ -1163,10 +1163,6 @@ export default function Home() {
           </div>
         </div>
       )}
-            </div>
-          </div>
-        </div>
-      )}
           {/* Image Preview Modal */}
       {/* Video Review Modal */}
       {videoModal && (

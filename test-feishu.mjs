@@ -1,4 +1,4 @@
-import { sendAlert } from './lib/monitor.js';
+import { sendAlert } from './lib/monitor.mjs';
 
 async function test() {
   console.log('Testing Feishu Alert...');

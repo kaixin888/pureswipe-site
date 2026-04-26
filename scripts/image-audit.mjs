@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import fetch from 'node-fetch';
-import { sendAlert } from '../lib/monitor.js';
+import { sendAlert } from '../lib/monitor.mjs';
 
 async function scanImages() {
   const targetUrls = [
