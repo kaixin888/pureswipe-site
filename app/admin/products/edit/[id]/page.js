@@ -3,16 +3,49 @@
 import React, { useState, useEffect } from 'react';
 import { Edit, useForm } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Card, Divider, Space, Typography } from 'antd';
-import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, InboxOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, InboxOutlined } from '@ant-design/icons';
+import { createClient } from '@supabase/supabase-js';
 
 const { Text } = Typography;
 const { Dragger } = Upload;
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
+  (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY'
+);
+
+const normalizeUrl = (url) => {
+  if (!url) return '';
+  return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+};
 
 export default function ProductEdit() {
   const { formProps, saveButtonProps, form, queryResult } = useForm({
     resource: 'products',
     redirect: 'list',
-    onMutationSuccess: () => message.success('商品已保存'),
+    onMutationSuccess: (mutationResult) => {
+      // After Refine saves basic fields, separately save image fields via Supabase.
+      // This avoids form dirty-check issues entirely.
+      const productId = mutationResult?.data?.id;
+      if (productId) {
+        supabase
+          .from('products')
+          .update({
+            image_url: mainPreview,
+            extra_images: JSON.stringify(extraImages),
+            bullets: JSON.stringify(bullets.filter(b => b.trim())),
+          })
+          .eq('id', productId)
+          .then(({ error }) => {
+            if (error) {
+              console.error('Image save failed:', error);
+              message.error('图片保存失败: ' + error.message);
+            } else {
+              message.success('商品已保存');
+            }
+          });
+      }
+    },
   });
 
   const record = queryResult?.data?.data;
@@ -25,21 +58,13 @@ export default function ProductEdit() {
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
 
-  const normalizeUrl = (url) => {
-    if (!url) return '';
-    return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
-  };
-
-  // populate preview state from record once loaded
+  // Populate preview state from loaded record
   useEffect(() => {
     if (record) {
       setMainPreview(normalizeUrl(record.image_url || ''));
       try {
         const parsed = typeof record.extra_images === 'string' ? JSON.parse(record.extra_images) : (record.extra_images || []);
         setExtraImages(Array.isArray(parsed) ? parsed.map(normalizeUrl) : []);
-      } catch {
-        setExtraImages([]);
-      }
       } catch {
         setExtraImages([]);
       }
@@ -52,20 +77,10 @@ export default function ProductEdit() {
     }
   }, [record]);
 
-  // force-inject latest state on submit — safe inside onFinish, does not break upload UI
-  const origOnFinish = formProps.onFinish;
-  formProps.onFinish = (values) => {
-    values.extra_images = JSON.stringify(extraImages);
-    values.image_url = mainPreview || values.image_url;
-    values.bullets = JSON.stringify(bullets.filter(b => b.trim()));
-    if (origOnFinish) return origOnFinish(values);
-  };
-
-  const syncExtraImages = (imgs) => setExtraImages(imgs);
-  const addExtraImage = (url) => setExtraImages(prev => [...prev, url]);
-  const removeExtraImage = (idx) => setExtraImages(prev => prev.filter((_, i) => i !== idx));
+  const addExtraImage = (url) => setExtraImages((prev) => [...prev, url]);
+  const removeExtraImage = (idx) => setExtraImages((prev) => prev.filter((_, i) => i !== idx));
   const moveExtraImage = (idx, dir) => {
-    setExtraImages(prev => {
+    setExtraImages((prev) => {
       const imgs = [...prev];
       const t = idx + dir;
       if (t < 0 || t >= imgs.length) return prev;
@@ -80,7 +95,7 @@ export default function ProductEdit() {
     bts[idx] = val;
     setBullets(bts);
   };
-  const removeBullet = (idx) => setBullets(prev => prev.filter((_, i) => i !== idx));
+  const removeBullet = (idx) => setBullets((prev) => prev.filter((_, i) => i !== idx));
 
   const handleMainUpload = async ({ file, onSuccess, onError }) => {
     setUploading(true);
@@ -92,7 +107,6 @@ export default function ProductEdit() {
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       const resolvedUrl = normalizeUrl(data.url);
       setMainPreview(resolvedUrl);
-      form.setFieldsValue({ image_url: resolvedUrl });
       onSuccess(resolvedUrl);
       message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {
@@ -104,7 +118,11 @@ export default function ProductEdit() {
   };
 
   const handleExtraUpload = async ({ file, onSuccess, onError }) => {
-    if (extraImages.length >= 8) { message.warning('最多 8 张附图'); onError(new Error('max')); return; }
+    if (extraImages.length >= 8) {
+      message.warning('最多 8 张附图');
+      onError(new Error('max'));
+      return;
+    }
     setExtraUploading(true);
     try {
       const fd = new FormData();
@@ -152,10 +170,12 @@ export default function ProductEdit() {
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="状态" name="status" initialValue="active">
-              <Select options={[
-                { label: '上架', value: 'active' },
-                { label: '下架', value: 'inactive' },
-              ]} />
+              <Select
+                options={[
+                  { label: '上架', value: 'active' },
+                  { label: '下架', value: 'inactive' },
+                ]}
+              />
             </Form.Item>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -178,7 +198,10 @@ export default function ProductEdit() {
               <img
                 src={mainPreview}
                 alt="main"
-                style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 6, border: '1px solid #d9d9d9', flexShrink: 0 }}
+                style={{
+                  width: 120, height: 120, objectFit: 'cover', borderRadius: 6,
+                  border: '1px solid #d9d9d9', flexShrink: 0,
+                }}
               />
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -202,18 +225,28 @@ export default function ProductEdit() {
               </Dragger>
             </div>
           </div>
-          <Form.Item label="主图 URL (自动填入)" name="image_url">
-            <Input placeholder="拖拽上传后自动填入，或手动粘贴 R2 URL" />
-          </Form.Item>
 
           <Divider />
           <Text strong>附图 (最多 8 张)</Text>
-          <Form.Item name="extra_images" hidden><Input /></Form.Item>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 12 }}>
             {extraImages.map((url, idx) => (
-              <div key={idx} style={{ position: 'relative', border: '1px solid #d9d9d9', borderRadius: 6, overflow: 'hidden' }}>
-                <img src={url} alt={`extra-${idx}`} style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 6px', background: '#fafafa', borderTop: '1px solid #f0f0f0' }}>
+              <div
+                key={idx}
+                style={{
+                  position: 'relative', border: '1px solid #d9d9d9', borderRadius: 6, overflow: 'hidden',
+                }}
+              >
+                <img
+                  src={url}
+                  alt={`extra-${idx}`}
+                  style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }}
+                />
+                <div
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', padding: '4px 6px',
+                    background: '#fafafa', borderTop: '1px solid #f0f0f0',
+                  }}
+                >
                   <Button size="small" icon={<ArrowUpOutlined />} onClick={() => moveExtraImage(idx, -1)} disabled={idx === 0} />
                   <Button size="small" icon={<ArrowDownOutlined />} onClick={() => moveExtraImage(idx, 1)} disabled={idx === extraImages.length - 1} />
                   <Button size="small" danger icon={<DeleteOutlined />} onClick={() => removeExtraImage(idx)} />
@@ -222,14 +255,21 @@ export default function ProductEdit() {
             ))}
             {extraImages.length < 8 && (
               <Upload customRequest={handleExtraUpload} showUploadList={false} accept="image/*" multiple>
-                <div style={{
-                  border: '2px dashed #1677ff', borderRadius: 6, aspectRatio: '1',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', color: '#1677ff', fontSize: 24, minHeight: 80,
-                  background: extraUploading ? '#f0f5ff' : '#fafafa', transition: 'all 0.2s'
-                }}>
-                  {extraUploading ? <span style={{ fontSize: 12 }}>上传中...</span> : (
-                    <><PlusOutlined /><span style={{ fontSize: 11, marginTop: 4 }}>添加</span></>
+                <div
+                  style={{
+                    border: '2px dashed #1677ff', borderRadius: 6, aspectRatio: '1',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', color: '#1677ff', fontSize: 24, minHeight: 80,
+                    background: extraUploading ? '#f0f5ff' : '#fafafa', transition: 'all 0.2s',
+                  }}
+                >
+                  {extraUploading ? (
+                    <span style={{ fontSize: 12 }}>上传中...</span>
+                  ) : (
+                    <>
+                      <PlusOutlined />
+                      <span style={{ fontSize: 11, marginTop: 4 }}>添加</span>
+                    </>
                   )}
                 </div>
               </Upload>
@@ -238,14 +278,13 @@ export default function ProductEdit() {
         </Card>
 
         <Card title="商品卖点 (Bullet Points)" style={{ marginBottom: 16 }}>
-          <Form.Item name="bullets" hidden><Input /></Form.Item>
           <Space direction="vertical" style={{ width: '100%' }}>
             {bullets.map((b, idx) => (
               <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <Input
                   value={b}
                   placeholder="例如: 一次性免接触设计"
-                  onChange={e => updateBullet(idx, e.target.value)}
+                  onChange={(e) => updateBullet(idx, e.target.value)}
                   prefix={<Text type="secondary" style={{ fontSize: 12 }}>{idx + 1}.</Text>}
                 />
                 <Button danger icon={<DeleteOutlined />} onClick={() => removeBullet(idx)} disabled={bullets.length === 1} />
@@ -258,13 +297,18 @@ export default function ProductEdit() {
             </Button>
           )}
           <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
-            {bullets.filter(b => b.trim()).length} / 6 条卖点
+            {bullets.filter((b) => b.trim()).length} / 6 条卖点
           </Text>
         </Card>
 
         <Card title="商品描述" style={{ marginBottom: 16 }}>
           <Form.Item name="description">
-            <Input.TextArea rows={6} maxLength={2000} onChange={e => setDescLen(e.target.value.length)} placeholder="完整商品描述..." />
+            <Input.TextArea
+              rows={6}
+              maxLength={2000}
+              onChange={(e) => setDescLen(e.target.value.length)}
+              placeholder="完整商品描述..."
+            />
           </Form.Item>
           <Text type="secondary" style={{ float: 'right', fontSize: 12 }}>{descLen} / 2000</Text>
         </Card>
@@ -274,7 +318,12 @@ export default function ProductEdit() {
             <Input placeholder="留空则使用商品名" maxLength={70} />
           </Form.Item>
           <Form.Item label="SEO 描述" name="seo_description">
-            <Input.TextArea rows={4} maxLength={160} onChange={e => setSeoDescLen(e.target.value.length)} placeholder="Google 搜索结果中显示的描述 (最多 160 字符)" />
+            <Input.TextArea
+              rows={4}
+              maxLength={160}
+              onChange={(e) => setSeoDescLen(e.target.value.length)}
+              placeholder="Google 搜索结果中显示的描述 (最多 160 字符)"
+            />
           </Form.Item>
           <Text type="secondary" style={{ float: 'right', fontSize: 12 }}>{seoDescLen} / 160</Text>
           <Divider />
