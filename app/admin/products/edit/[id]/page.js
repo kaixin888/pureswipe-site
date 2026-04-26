@@ -25,13 +25,21 @@ export default function ProductEdit() {
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
 
+  const normalizeUrl = (url) => {
+    if (!url) return '';
+    return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+  };
+
   // populate preview state from record once loaded
   useEffect(() => {
     if (record) {
-      setMainPreview(record.image_url || '');
+      setMainPreview(normalizeUrl(record.image_url || ''));
       try {
         const parsed = typeof record.extra_images === 'string' ? JSON.parse(record.extra_images) : (record.extra_images || []);
-        setExtraImages(Array.isArray(parsed) ? parsed : []);
+        setExtraImages(Array.isArray(parsed) ? parsed.map(normalizeUrl) : []);
+      } catch {
+        setExtraImages([]);
+      }
       } catch {
         setExtraImages([]);
       }
@@ -82,9 +90,10 @@ export default function ProductEdit() {
       const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
-      setMainPreview(data.url);
-      form.setFieldsValue({ image_url: data.url });
-      onSuccess(data.url);
+      const resolvedUrl = normalizeUrl(data.url);
+      setMainPreview(resolvedUrl);
+      form.setFieldsValue({ image_url: resolvedUrl });
+      onSuccess(resolvedUrl);
       message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {
       message.error('上传失败: ' + err.message);
@@ -103,8 +112,9 @@ export default function ProductEdit() {
       const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
-      addExtraImage(data.url);
-      onSuccess(data.url);
+      const resolvedUrl = normalizeUrl(data.url);
+      addExtraImage(resolvedUrl);
+      onSuccess(resolvedUrl);
       message.success('附图已上传');
     } catch (err) {
       message.error('上传失败: ' + err.message);
