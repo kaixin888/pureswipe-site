@@ -2,13 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  List,
-  useTable,
-  EditButton,
-  DeleteButton,
-  CreateButton,
-} from '@refinedev/antd';
+import { List, useTable } from '@refinedev/antd';
 import { useUpdate } from '@refinedev/core';
 import { Table, Space, Tag, Switch, Tabs, Badge, Button } from 'antd';
 
@@ -22,22 +16,14 @@ export default function ProductList() {
       { field: 'status', operator: 'eq', value: 'active' },
       { field: 'stock', operator: 'gt', value: 0 },
     ],
-    out_of_stock: [
-      { field: 'stock', operator: 'eq', value: 0 },
-    ],
-    draft: [
-      { field: 'status', operator: 'eq', value: 'draft' },
-    ],
+    out_of_stock: [{ field: 'stock', operator: 'eq', value: 0 }],
+    draft: [{ field: 'status', operator: 'eq', value: 'draft' }],
   };
 
   const { tableProps, tableQueryResult } = useTable({
     resource: 'products',
-    filters: {
-      permanent: tabFilters[activeTab] || [],
-    },
-    sorters: {
-      initial: [{ field: 'created_at', order: 'desc' }],
-    },
+    filters: { permanent: tabFilters[activeTab] || [] },
+    sorters: { initial: [{ field: 'created_at', order: 'desc' }] },
   });
 
   const { mutate: updateStatus } = useUpdate();
@@ -59,43 +45,28 @@ export default function ProductList() {
 
   return (
     <List
-      headerButtons={({ defaultButtons }) => (
-        <>
-          {defaultButtons}
-          <Button
-            type="primary"
-            onClick={() => router.push('/admin/products/create')}
-          >
-            新建商品
-          </Button>
-        </>
+      headerButtons={() => (
+        <Button type="primary" onClick={() => router.push('/admin/products/create')}>
+          新建商品
+        </Button>
       )}
     >
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-        style={{ marginBottom: 16 }}
-      />
+      <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} style={{ marginBottom: 16 }} />
       <Table {...tableProps} rowKey="id">
-        <Table.Column
-          dataIndex="image_url"
-          title="主图"
-          render={(url) => <ImageCell url={url} />}
-        />
+        <Table.Column dataIndex="image_url" title="主图" render={(url) => <ThumbCell url={url} />} />
         <Table.Column dataIndex="name" title="商品名称" />
         <Table.Column
           dataIndex="price"
           title="售价 (USD)"
           render={(v, record) => {
-            const sale = record.sale_price;
-            const onSale = sale != null && Number(sale) > 0 && Number(sale) < Number(v);
-            if (onSale) {
+            const sale = Number(record.sale_price || 0);
+            const hasSale = sale > 0 && sale < Number(v);
+            if (hasSale) {
               return (
                 <Space size={6}>
                   <span style={{ textDecoration: 'line-through', color: '#999' }}>${Number(v).toFixed(2)}</span>
-                  <span style={{ color: '#ef4444', fontWeight: 600 }}>${Number(sale).toFixed(2)}</span>
-                  <Tag color="red" style={{ marginLeft: 0 }}>促销</Tag>
+                  <span style={{ color: '#ef4444', fontWeight: 600 }}>${sale.toFixed(2)}</span>
+                  <Tag color="red">促销</Tag>
                 </Space>
               );
             }
@@ -104,7 +75,7 @@ export default function ProductList() {
         />
         <Table.Column
           dataIndex="stock"
-          title="库存数量"
+          title="库存"
           render={(v) => {
             if (v === 0) return <Tag color="red">缺货</Tag>;
             if (v < 10) return <Tag color="orange">{v} 偏低</Tag>;
@@ -113,19 +84,17 @@ export default function ProductList() {
         />
         <Table.Column
           dataIndex="status"
-          title="上架状态"
+          title="状态"
           render={(value, record) => (
             <Space>
               <Switch
                 size="small"
                 checked={value === 'active'}
-                onChange={(checked) => {
-                  updateStatus({
-                    resource: 'products',
-                    id: record.id,
-                    values: { status: checked ? 'active' : 'inactive' },
-                  });
-                }}
+                onChange={(checked) => updateStatus({
+                  resource: 'products',
+                  id: record.id,
+                  values: { status: checked ? 'active' : 'inactive' },
+                })}
               />
               <Tag color={value === 'active' ? 'green' : value === 'draft' ? 'orange' : 'red'}>
                 {value === 'active' ? '上架' : value === 'inactive' ? '下架' : value === 'draft' ? '草稿' : '未知'}
@@ -134,17 +103,11 @@ export default function ProductList() {
           )}
         />
         <Table.Column
-          title="管理操作"
-          dataIndex="actions"
+          title="操作"
           render={(_, record) => (
             <Space>
-              <Button
-                size="small"
-                onClick={() => router.push(`/admin/products/edit/${record.id}`)}
-              >
-                编辑
-              </Button>
-              <DeleteButton hideText size="small" recordItemId={record?.id} />
+              <Button size="small" onClick={() => router.push(`/admin/products/edit/${record.id}`)}>编辑</Button>
+              <Button size="small" type="primary" ghost onClick={() => router.push(`/products/${record.id}`)}>预览</Button>
             </Space>
           )}
         />
@@ -153,19 +116,27 @@ export default function ProductList() {
   );
 }
 
-function ImageCell({ url }) {
+/* Independent component — safely uses useState inside a proper component boundary */
+function ThumbCell({ url }) {
   const [broken, setBroken] = useState(false);
   const resolved = url && url.startsWith('/') ? `https://www.clowand.com${url}` : url;
-  return resolved && !broken ? (
+  if (!resolved || broken) {
+    return (
+      <div style={{
+        width: 60, height: 60, background: '#f5f5f5', borderRadius: 4,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, color: '#999'
+      }}>
+        {resolved ? '裂开' : '无图'}
+      </div>
+    );
+  }
+  return (
     <img
       src={resolved}
-      alt="product"
+      alt=""
       style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
       onError={() => setBroken(true)}
     />
-  ) : (
-    <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
-      {resolved ? '裂开' : '无图'}
-    </div>
   );
 }
