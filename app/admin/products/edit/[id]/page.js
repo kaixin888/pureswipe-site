@@ -83,6 +83,7 @@ export default function ProductEdit() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       setMainPreview(data.url);
+      form.setFieldsValue({ image_url: data.url });
       onSuccess(data.url);
       message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {

@@ -119,7 +119,9 @@ export default function ProductList() {
 /* Independent component — safely uses useState inside a proper component boundary */
 function ThumbCell({ url }) {
   const [broken, setBroken] = useState(false);
-  const resolved = url && url.startsWith('/') ? `https://www.clowand.com${url}` : url;
+  // R2 images are stored with raw dev domain; replace with custom CDN domain
+  const normalized = url ? url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com') : url;
+  const resolved = normalized && normalized.startsWith('/') ? `https://media.clowand.com${normalized}` : normalized;
   if (!resolved || broken) {
     return (
       <div style={{
