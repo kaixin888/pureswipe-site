@@ -81,22 +81,7 @@ export default function ProductList() {
         <Table.Column
           dataIndex="image_url"
           title="主图"
-          render={(url) => {
-            const [broken, setBroken] = React.useState(false);
-            const resolved = url && url.startsWith('/') ? `https://www.clowand.com${url}` : url;
-            return resolved && !broken ? (
-              <img
-                src={resolved}
-                alt="product"
-                style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
-                onError={() => setBroken(true)}
-              />
-            ) : (
-              <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
-                {resolved ? '裂开' : '无图'}
-              </div>
-            );
-          }}
+          render={(url) => <ImageCell url={url} />}
         />
         <Table.Column dataIndex="name" title="商品名称" />
         <Table.Column
@@ -165,5 +150,22 @@ export default function ProductList() {
         />
       </Table>
     </List>
+  );
+}
+
+function ImageCell({ url }) {
+  const [broken, setBroken] = useState(false);
+  const resolved = url && url.startsWith('/') ? `https://www.clowand.com${url}` : url;
+  return resolved && !broken ? (
+    <img
+      src={resolved}
+      alt="product"
+      style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+      onError={() => setBroken(true)}
+    />
+  ) : (
+    <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
+      {resolved ? '裂开' : '无图'}
+    </div>
   );
 }
