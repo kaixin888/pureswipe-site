@@ -55,7 +55,7 @@ export default function Product360({ images = [], currentFrame: externalFrame, o
 
   return (
     <div 
-      className="relative w-full aspect-square bg-white rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing group select-none"
+      className="relative w-full aspect-square max-h-[50vh] md:max-h-none bg-white rounded-2xl overflow-hidden cursor-grab active:cursor-grabbing group select-none"
       onMouseDown={handleStart}
       onMouseMove={handleMove}
       onMouseUp={handleEnd}

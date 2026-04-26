@@ -12,7 +12,25 @@ export default function ProductEdit() {
   const { formProps, saveButtonProps, form, queryResult } = useForm({
     resource: 'products',
     redirect: 'list',
+    onMutationSuccess: () => {
+      message.success('商品已保存');
+    },
   });
+
+  // Bug #295: Override onFinish to inject current extra_images / image_url state
+  // before submission, because form.setFieldValue doesn't mark fields as dirty
+  // in Refine/Ant Design, causing PATCH to skip them.
+  const originalOnFinish = formProps.onFinish;
+  formProps.onFinish = async (values) => {
+    // Force-inject current state values so they are always submitted
+    values.extra_images = JSON.stringify(extraImages);
+    if (mainPreview) values.image_url = mainPreview;
+    values.bullets = JSON.stringify(bullets.filter(b => b.trim()));
+    // Call the original Refine mutation
+    if (originalOnFinish) {
+      return originalOnFinish(values);
+    }
+  };
 
   const productData = queryResult?.data?.data;
 

@@ -81,7 +81,7 @@ export default function ProductDetail() {
   try {
     const extras = JSON.parse(product.extra_images || '[]')
     if (Array.isArray(extras) && extras.length > 0) {
-      allImages = extras
+      allImages = [product.image_url, ...extras]
     }
   } catch {}
 
@@ -171,7 +171,7 @@ export default function ProductDetail() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       
       {/* Breadcrumb */}
-      <div className="max-w-6xl mx-auto px-6 pt-8 pb-2">
+      <div className="max-w-6xl mx-auto px-6 pt-24 pb-2">
         <nav className="text-xs text-slate-400 flex items-center gap-2">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
