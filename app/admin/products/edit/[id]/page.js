@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Edit, useForm } from '@refinedev/antd';
+import React, { useState, useEffect } from 'react';
+import { Edit, useForm, useUpdate } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Card, Divider, Space, Typography } from 'antd';
 import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, InboxOutlined } from '@ant-design/icons';
 
@@ -9,7 +9,7 @@ const { Text } = Typography;
 const { Dragger } = Upload;
 
 export default function ProductEdit() {
-  const { formProps, saveButtonProps, form, queryResult } = useForm({
+  const { formProps, saveButtonProps: rawSaveButtonProps, form, queryResult } = useForm({
     resource: 'products',
     redirect: 'list',
     onMutationSuccess: () => {
@@ -17,30 +17,29 @@ export default function ProductEdit() {
     },
   });
 
-  // Bug #295+300+303: Save images/bullets correctly without breaking upload UI.
-  // Approach: useRef to hold a stable wrapper around saveButtonProps.onClick.
-  // The wrapper always reads the latest state via refs to avoid stale closures.
-  const extraImagesRef = useRef(extraImages);
-  const bulletsRef = useRef(bullets);
-  const mainPreviewRef = useRef(mainPreview);
-  extraImagesRef.current = extraImages;
-  bulletsRef.current = bullets;
-  mainPreviewRef.current = mainPreview;
-  useEffect(() => {
-    if (saveButtonProps) {
-      const originalClick = saveButtonProps.onClick;
-      saveButtonProps.onClick = (e) => {
-        form.setFieldsValue({
-          extra_images: JSON.stringify(extraImagesRef.current),
-          bullets: JSON.stringify(bulletsRef.current.filter(b => b.trim())),
-        });
-        if (mainPreviewRef.current) {
-          form.setFieldValue('image_url', mainPreviewRef.current);
-        }
-        if (originalClick) originalClick(e);
-      };
-    }
-  }, [saveButtonProps, form]);
+  const { mutate: updateProduct } = useUpdate();
+
+  const saveButtonProps = rawSaveButtonProps && typeof rawSaveButtonProps === 'object'
+    ? { ...rawSaveButtonProps, onClick: () => handleSave() }
+    : { onClick: () => handleSave() };
+
+  const handleSave = () => {
+    const values = form.getFieldsValue();
+    updateProduct({
+      resource: 'products',
+      id: queryResult?.data?.data?.id,
+      values: {
+        ...values,
+        extra_images: JSON.stringify(extraImages.filter(i => i)),
+        bullets: JSON.stringify(bullets.filter(b => b.trim())),
+        image_url: mainPreview || values.image_url,
+      },
+    }, {
+      onSuccess: () => {
+        message.success('商品已保存');
+      },
+    });
+  };
 
   const productData = queryResult?.data?.data;
 

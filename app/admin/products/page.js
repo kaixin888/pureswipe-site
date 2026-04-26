@@ -83,16 +83,17 @@ export default function ProductList() {
           title="主图"
           render={(url) => {
             const [broken, setBroken] = React.useState(false);
-            return url && !broken ? (
+            const resolved = url && url.startsWith('/') ? `https://www.clowand.com${url}` : url;
+            return resolved && !broken ? (
               <img
-                src={url}
+                src={resolved}
                 alt="product"
                 style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
                 onError={() => setBroken(true)}
               />
             ) : (
               <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
-                {url ? '裂开' : '无图'}
+                {resolved ? '裂开' : '无图'}
               </div>
             );
           }}
