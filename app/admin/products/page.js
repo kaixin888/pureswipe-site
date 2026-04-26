@@ -81,19 +81,21 @@ export default function ProductList() {
         <Table.Column
           dataIndex="image_url"
           title="主图"
-          render={(url) =>
-            url ? (
+          render={(url) => {
+            const [broken, setBroken] = React.useState(false);
+            return url && !broken ? (
               <img
                 src={url}
                 alt="product"
                 style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+                onError={() => setBroken(true)}
               />
             ) : (
               <div style={{ width: 60, height: 60, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 11 }}>
-                无图
+                {url ? '裂开' : '无图'}
               </div>
-            )
-          }
+            );
+          }}
         />
         <Table.Column dataIndex="name" title="商品名称" />
         <Table.Column

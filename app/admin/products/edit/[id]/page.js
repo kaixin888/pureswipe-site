@@ -17,19 +17,24 @@ export default function ProductEdit() {
     },
   });
 
-  // Bug #295: Override onFinish to inject current extra_images / image_url state
-  // before submission, because form.setFieldValue doesn't mark fields as dirty
-  // in Refine/Ant Design, causing PATCH to skip them.
-  const originalOnFinish = formProps.onFinish;
-  formProps.onFinish = async (values) => {
-    // Force-inject current state values so they are always submitted
-    values.extra_images = JSON.stringify(extraImages);
-    if (mainPreview) values.image_url = mainPreview;
-    values.bullets = JSON.stringify(bullets.filter(b => b.trim()));
-    // Call the original Refine mutation
-    if (originalOnFinish) {
-      return originalOnFinish(values);
+  // Bug #295+300: Refine/Ant Design's form.setFieldValue does NOT mark fields as dirty,
+  // so PATCH silently ignores extra_images/image_url/bullets.
+  // Strategy: intercept saveButtonProps.onClick to force-mark fields dirty
+  // before Refine's internal submit runs. This preserves all upload/preview/delete
+  // UI interactions (unlike overriding formProps.onFinish which broke them).
+  const originalSaveOnClick = saveButtonProps?.onClick;
+  saveButtonProps.onClick = (e) => {
+    // Force-mark the JSON fields as dirty by setting them with value changes
+    form.setFieldsValue({
+      extra_images: JSON.stringify(extraImages),
+      bullets: JSON.stringify(bullets.filter(b => b.trim())),
+    });
+    // Ensure image_url is up-to-date
+    if (mainPreview) {
+      form.setFieldValue('image_url', mainPreview);
     }
+    // Trigger original Refine save
+    if (originalSaveOnClick) originalSaveOnClick(e);
   };
 
   const productData = queryResult?.data?.data;
