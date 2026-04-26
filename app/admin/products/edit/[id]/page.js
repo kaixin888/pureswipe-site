@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Edit, useForm } from '@refinedev/antd';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Card, Divider, Space, Typography } from 'antd';
 import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, InboxOutlined } from '@ant-design/icons';
@@ -17,25 +17,30 @@ export default function ProductEdit() {
     },
   });
 
-  // Bug #295+300: Refine/Ant Design's form.setFieldValue does NOT mark fields as dirty,
-  // so PATCH silently ignores extra_images/image_url/bullets.
-  // Strategy: intercept saveButtonProps.onClick to force-mark fields dirty
-  // before Refine's internal submit runs. This preserves all upload/preview/delete
-  // UI interactions (unlike overriding formProps.onFinish which broke them).
-  const originalSaveOnClick = saveButtonProps?.onClick;
-  saveButtonProps.onClick = (e) => {
-    // Force-mark the JSON fields as dirty by setting them with value changes
-    form.setFieldsValue({
-      extra_images: JSON.stringify(extraImages),
-      bullets: JSON.stringify(bullets.filter(b => b.trim())),
-    });
-    // Ensure image_url is up-to-date
-    if (mainPreview) {
-      form.setFieldValue('image_url', mainPreview);
+  // Bug #295+300+303: Save images/bullets correctly without breaking upload UI.
+  // Approach: useRef to hold a stable wrapper around saveButtonProps.onClick.
+  // The wrapper always reads the latest state via refs to avoid stale closures.
+  const extraImagesRef = useRef(extraImages);
+  const bulletsRef = useRef(bullets);
+  const mainPreviewRef = useRef(mainPreview);
+  extraImagesRef.current = extraImages;
+  bulletsRef.current = bullets;
+  mainPreviewRef.current = mainPreview;
+  useEffect(() => {
+    if (saveButtonProps) {
+      const originalClick = saveButtonProps.onClick;
+      saveButtonProps.onClick = (e) => {
+        form.setFieldsValue({
+          extra_images: JSON.stringify(extraImagesRef.current),
+          bullets: JSON.stringify(bulletsRef.current.filter(b => b.trim())),
+        });
+        if (mainPreviewRef.current) {
+          form.setFieldValue('image_url', mainPreviewRef.current);
+        }
+        if (originalClick) originalClick(e);
+      };
     }
-    // Trigger original Refine save
-    if (originalSaveOnClick) originalSaveOnClick(e);
-  };
+  }, [saveButtonProps, form]);
 
   const productData = queryResult?.data?.data;
 
