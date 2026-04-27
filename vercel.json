@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "clowand.com" }],
+      "destination": "https://www.clowand.com/$1",
+      "permanent": true
+    }
+  ]
+}

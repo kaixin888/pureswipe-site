@@ -14,14 +14,14 @@ const inter = Inter({
 export const metadata = {
   title: 'clowand | Professional 18" Disposable Toilet Brush - 365 Days of Hygiene',
   description: 'The ultimate 18-inch reach bathroom hygiene system. Triple-action pads, zero-touch mechanism, and 365-day supply in one box. Designed for the modern US home.',
-  metadataBase: new URL('https://clowand.com'),
+  metadataBase: new URL('https://www.clowand.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'clowand | Professional 18" Disposable Toilet Brush',
     description: 'The zero-touch hygienic revolution for your home.',
-    url: 'https://clowand.com',
+    url: 'https://www.clowand.com',
     siteName: 'clowand',
     images: [
       {

@@ -102,3 +102,19 @@ h1, h2, h3, h4, h5, h6 {
 .swiper-slide {
   overflow: hidden;
 }
+
+/* Mobile font size optimization */
+@media (max-width: 767px) {
+  body {
+    font-size: 0.9375rem;
+  }
+  h1, .text-h1 {
+    font-size: 1.75rem !important;
+  }
+  h2, .text-h2 {
+    font-size: 1.5rem !important;
+  }
+  h3, .text-h3 {
+    font-size: 1.25rem !important;
+  }
+}

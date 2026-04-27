@@ -48,32 +48,43 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-8 md:top-10 w-full z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+    <nav className="fixed top-0 z-50 w-full h-14 md:h-16 bg-white/75 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
       {/* Mobile Navbar: hamburger | logo center | search + cart */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3">
-        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="text-slate-950 p-1">
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
+      <div className="md:hidden flex items-center justify-between px-4 h-full">
+        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="text-slate-950 p-2.5" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            {isOpen ? (
+              <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+            ) : (
+              <><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></>
+            )}
+          </svg>
         </button>
         <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">C</div>
-          <span className="text-lg font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
+          <span className="text-lg md:text-xl font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
         </a>
         <div className="flex items-center gap-2">
           {/* Search icon — toggles search overlay */}
           <button
             onClick={() => { setSearchOpen(!searchOpen); setIsOpen(false); }}
-            className="text-slate-950 p-1"
+            className="text-slate-950 p-2.5"
             aria-label="Search"
           >
-            {searchOpen ? <X size={20} /> : <Search size={20} />}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
           </button>
           <button
             onClick={() => setIsCartOpen(true)}
-            className="text-slate-950 relative p-1"
+            className="text-slate-950 relative p-2.5"
           >
-            <ShoppingCart size={22} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
             {mounted && totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
+              <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
                 {totalItems}
               </span>
             )}
