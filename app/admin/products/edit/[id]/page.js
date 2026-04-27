@@ -58,26 +58,15 @@ export default function ProductEdit() {
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
 
-  // fileList for Ant Design Upload/Dragger — needed to show existing images as preview
-  const [mainFileList, setMainFileList] = useState([]);
-  const [extraFileList, setExtraFileList] = useState([]);
-
   // Populate preview state from loaded record
   useEffect(() => {
     if (record) {
-      const resolvedMain = normalizeUrl(record.image_url || '');
-      setMainPreview(resolvedMain);
-      if (resolvedMain) {
-        setMainFileList([{ uid: '-1', name: 'main-image', status: 'done', url: resolvedMain }]);
-      }
+      setMainPreview(normalizeUrl(record.image_url || ''));
       try {
         const parsed = typeof record.extra_images === 'string' ? JSON.parse(record.extra_images) : (record.extra_images || []);
-        const resolvedExtras = Array.isArray(parsed) ? parsed.map(normalizeUrl) : [];
-        setExtraImages(resolvedExtras);
-        setExtraFileList(resolvedExtras.map((url, i) => ({ uid: String(-2 - i), name: `extra-${i}`, status: 'done', url })));
+        setExtraImages(Array.isArray(parsed) ? parsed.map(normalizeUrl) : []);
       } catch {
         setExtraImages([]);
-        setExtraFileList([]);
       }
       try {
         const parsed = typeof record.bullets === 'string' ? JSON.parse(record.bullets) : (record.bullets || ['']);
@@ -118,7 +107,6 @@ export default function ProductEdit() {
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       const resolvedUrl = normalizeUrl(data.url);
       setMainPreview(resolvedUrl);
-      setMainFileList([{ uid: '-1', name: 'main-image', status: 'done', url: resolvedUrl }]);
       onSuccess(resolvedUrl);
       message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {
@@ -126,14 +114,6 @@ export default function ProductEdit() {
       onError(err);
     } finally {
       setUploading(false);
-    }
-  };
-
-  const handleMainChange = (info) => {
-    // When user removes the file via Upload UI, clear preview
-    if (!info.fileList || info.fileList.length === 0) {
-      setMainFileList([]);
-      setMainPreview('');
     }
   };
 
@@ -152,8 +132,6 @@ export default function ProductEdit() {
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       const resolvedUrl = normalizeUrl(data.url);
       addExtraImage(resolvedUrl);
-      const newEntry = { uid: String(Date.now()), name: 'extra', status: 'done', url: resolvedUrl };
-      setExtraFileList((prev) => [...prev, newEntry]);
       onSuccess(resolvedUrl);
       message.success('附图已上传');
     } catch (err) {
@@ -162,14 +140,6 @@ export default function ProductEdit() {
     } finally {
       setExtraUploading(false);
     }
-  };
-
-  const handleExtraChange = (info) => {
-    // Sync extraFileList with Ant Design Upload's internal file list (covers removal)
-    setExtraFileList(info.fileList);
-    // Remove from extraImages if file was removed
-    const remainingUrls = info.fileList.map((f) => f.url || f.thumbUrl).filter(Boolean);
-    setExtraImages((prev) => prev.filter((url) => remainingUrls.includes(url)));
   };
 
   const validateSalePrice = (_, value) => {
@@ -237,9 +207,7 @@ export default function ProductEdit() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <Dragger
                 customRequest={handleMainUpload}
-                onChange={handleMainChange}
-                fileList={mainFileList}
-                showUploadList={true}
+                showUploadList={false}
                 accept="image/*"
                 multiple={false}
                 disabled={uploading}
@@ -286,7 +254,7 @@ export default function ProductEdit() {
               </div>
             ))}
             {extraImages.length < 8 && (
-              <Upload customRequest={handleExtraUpload} onChange={handleExtraChange} fileList={extraFileList} showUploadList={true} accept="image/*" multiple>
+              <Upload customRequest={handleExtraUpload} showUploadList={false} accept="image/*" multiple>
                 <div
                   style={{
                     border: '2px dashed #1677ff', borderRadius: 6, aspectRatio: '1',
