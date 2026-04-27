@@ -103,6 +103,25 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
+/* Product gallery main: white pagination dots on dark overlay */
+.product-gallery-main .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.5);
+  width: 8px;
+  height: 8px;
+  opacity: 1;
+  transition: all 0.2s;
+}
+.product-gallery-main .swiper-pagination-bullet-active {
+  background: #fff;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Product gallery thumbnail: selected border */
+.product-gallery-thumbs .swiper-slide-thumb-active div {
+  border-color: #000 !important;
+}
+
 /* Mobile font size optimization */
 @media (max-width: 767px) {
   body {

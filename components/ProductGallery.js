@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Autoplay, Thumbs, FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
+import 'swiper/css/free-mode';
 import { X } from 'lucide-react';
 
 const normalizeUrl = (url) => {
@@ -14,6 +16,8 @@ const normalizeUrl = (url) => {
 };
 
 export default function ProductGallery({ images = [], tag, altText, productName }) {
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
   if (!images || images.length === 0) return null;
@@ -27,41 +31,87 @@ export default function ProductGallery({ images = [], tag, altText, productName 
 
   return (
     <>
-      {/* Mobile: Swiper carousel */}
+      {/* Mobile: Swiper carousel - Apple Store style */}
       <div className="block md:hidden">
-        <Swiper
-          modules={[Pagination]}
-          pagination={{ clickable: true, dynamicBullets: true }}
-          spaceBetween={0}
-          slidesPerView={1}
-          freeMode={{ enabled: true, sticky: false }}
-          grabCursor
-          className="product-swiper"
-          style={{ aspectRatio: '1' }}
-        >
-          {resolvedImages.map((src, idx) => (
-            <SwiperSlide key={idx}>
-              <div
-                className="relative w-full aspect-square bg-white rounded-2xl overflow-hidden cursor-pointer"
-                onClick={() => openLightbox(idx)}
-              >
-                {tag && idx === 0 && (
-                  <div className="absolute top-4 left-4 z-10 bg-blue-600 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-lg">
-                    {tag}
-                  </div>
-                )}
-                <Image
-                  src={src}
-                  alt={altText || `${productName || 'Product'} View ${idx + 1}`}
-                  fill
-                  className="object-contain p-6"
-                  priority={idx === 0}
-                  sizes="100vw"
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {/* Main carousel: slidesPerView=1, auto-play, pagination dots */}
+        <div className="relative">
+          <Swiper
+            modules={[Pagination, Autoplay, Thumbs]}
+            slidesPerView={1}
+            spaceBetween={0}
+            loop={true}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            thumbs={{
+              swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+            }}
+            onSlideChange={(s) => setActiveIndex(s.realIndex)}
+            className="product-gallery-main"
+            style={{ aspectRatio: '1' }}
+          >
+            {resolvedImages.map((src, idx) => (
+              <SwiperSlide key={idx}>
+                <div
+                  className="relative w-full aspect-square bg-white overflow-hidden cursor-pointer"
+                  onClick={() => openLightbox(idx)}
+                >
+                  {tag && idx === 0 && (
+                    <div className="absolute top-4 left-4 z-10 bg-blue-600 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-lg">
+                      {tag}
+                    </div>
+                  )}
+                  <Image
+                    src={src}
+                    alt={altText || `${productName || 'Product'} View ${idx + 1}`}
+                    fill
+                    className="object-contain p-6"
+                    priority={idx === 0}
+                    sizes="100vw"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Page number badge: bottom-right corner */}
+          <div className="absolute bottom-3 right-3 z-10 bg-black/60 text-white text-xs font-medium px-2 py-0.5 rounded-full pointer-events-none select-none">
+            {activeIndex + 1} / {resolvedImages.length}
+          </div>
+        </div>
+
+        {/* Thumbnail strip: 4.5 slides visible, clickable */}
+        {resolvedImages.length > 1 && (
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            modules={[FreeMode, Thumbs]}
+            spaceBetween={8}
+            slidesPerView={4.5}
+            freeMode={true}
+            watchSlidesProgress={true}
+            className="product-gallery-thumbs mt-3"
+          >
+            {resolvedImages.map((src, idx) => (
+              <SwiperSlide key={idx} className="cursor-pointer">
+                <div className="aspect-square rounded-lg overflow-hidden border-2 border-transparent bg-white">
+                  <Image
+                    src={src}
+                    alt={`${altText || productName || 'Product'} thumb ${idx + 1}`}
+                    width={80}
+                    height={80}
+                    className="w-full h-full object-contain p-1"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </div>
 
       {/* Desktop: Traditional grid + main image + thumbnails */}
