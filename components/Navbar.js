@@ -133,19 +133,42 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer — APP-style full-height side panel */}
+      {/* Backdrop */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 px-6 py-6 flex flex-col gap-5 text-sm font-bold uppercase tracking-widest text-slate-600 shadow-lg animate-in slide-in-from-top duration-200">
-          <button onClick={() => scrollTo('features')} className="text-left hover:text-blue-600">Features</button>
-          <button onClick={() => scrollTo('bundles')} className="text-left hover:text-blue-600">Shop</button>
-          <button onClick={() => scrollTo('reviews')} className="text-left hover:text-blue-600">Reviews</button>
-          <button onClick={() => scrollTo('faq')} className="text-left hover:text-blue-600">FAQ</button>
-          <a href="/blog" className="hover:text-blue-600">Blog</a>
-          <a href="/about" className="hover:text-blue-600">About</a>
-          <a href={user ? "/account" : "/login"} className="hover:text-blue-600">{user ? 'Account' : 'Login'}</a>
-          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-black text-white py-4 rounded-full text-center mt-2">Shop Now</button>
-        </div>
+        <div className="md:hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
       )}
+      {/* Side drawer */}
+      <div
+        className={`md:hidden fixed top-0 left-0 z-[70] h-full w-[80vw] max-w-[320px] bg-white shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        {/* Drawer header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">C</div>
+            <span className="text-lg font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
+          </div>
+          <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-950 p-1">
+            <X size={20} />
+          </button>
+        </div>
+        {/* Drawer body */}
+        <div className="flex flex-col px-6 py-6 gap-1">
+          <button onClick={() => scrollTo('features')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">FAQ</button>
+          <div className="border-t border-gray-100 my-2" />
+          <a href="/blog" onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Blog</a>
+          <a href="/about" onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">About</a>
+          <a href={user ? "/account" : "/login"} onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all flex items-center gap-2">
+            <User size={16} />
+            {user ? 'Account' : 'Login'}
+          </a>
+          <div className="border-t border-gray-100 my-2" />
+          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-blue-600 text-white py-4 rounded-full text-center text-sm font-bold uppercase tracking-widest mt-4 active:scale-[0.98] transition-transform">Shop Now</button>
+        </div>
+      </div>
 
       <Cart 
         isOpen={isCartOpen} 

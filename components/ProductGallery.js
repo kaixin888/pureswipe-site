@@ -1,0 +1,146 @@
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { X } from 'lucide-react';
+
+const normalizeUrl = (url) => {
+  if (!url) return '';
+  return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+};
+
+export default function ProductGallery({ images = [], tag, altText, productName }) {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  if (!images || images.length === 0) return null;
+
+  const resolvedImages = images.map(normalizeUrl);
+
+  const openLightbox = (idx) => setLightboxIndex(idx);
+  const closeLightbox = () => setLightboxIndex(null);
+  const prevLightbox = () => setLightboxIndex((i) => (i > 0 ? i - 1 : resolvedImages.length - 1));
+  const nextLightbox = () => setLightboxIndex((i) => (i < resolvedImages.length - 1 ? i + 1 : 0));
+
+  return (
+    <>
+      {/* Mobile: Swiper carousel */}
+      <div className="block md:hidden">
+        <Swiper
+          modules={[Pagination]}
+          pagination={{ clickable: true, dynamicBullets: true }}
+          spaceBetween={0}
+          slidesPerView={1}
+          freeMode={{ enabled: true, sticky: false }}
+          grabCursor
+          className="product-swiper"
+          style={{ aspectRatio: '1' }}
+        >
+          {resolvedImages.map((src, idx) => (
+            <SwiperSlide key={idx}>
+              <div
+                className="relative w-full aspect-square bg-white rounded-2xl overflow-hidden cursor-pointer"
+                onClick={() => openLightbox(idx)}
+              >
+                {tag && idx === 0 && (
+                  <div className="absolute top-4 left-4 z-10 bg-blue-600 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-lg">
+                    {tag}
+                  </div>
+                )}
+                <Image
+                  src={src}
+                  alt={altText || `${productName || 'Product'} View ${idx + 1}`}
+                  fill
+                  className="object-contain p-6"
+                  priority={idx === 0}
+                  sizes="100vw"
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Desktop: Traditional grid + main image + thumbnails */}
+      <div className="hidden md:flex flex-col gap-4">
+        <div
+          className="relative w-full aspect-square max-h-[50vh] md:max-h-none bg-white rounded-2xl overflow-hidden cursor-zoom-in group"
+          onClick={() => openLightbox(0)}
+        >
+          {tag && (
+            <div className="absolute top-4 left-4 z-10 bg-blue-600 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full shadow-lg">
+              {tag}
+            </div>
+          )}
+          <Image
+            src={resolvedImages[0]}
+            alt={altText || `${productName || 'Product'} Main`}
+            fill
+            className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+            priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all" />
+        </div>
+
+        {resolvedImages.length > 1 && (
+          <div className="flex gap-3 flex-wrap">
+            {resolvedImages.map((src, idx) => (
+              <button
+                key={idx}
+                onClick={() => openLightbox(idx)}
+                className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-slate-700 hover:border-blue-500 transition-all bg-white"
+              >
+                <Image src={src} alt={altText || `${productName} View ${idx + 1}`} fill className="object-contain p-1" sizes="64px" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox Modal (shared by mobile + desktop) */}
+      {lightboxIndex !== null && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95" onClick={closeLightbox}>
+          <button onClick={closeLightbox} className="absolute top-4 right-4 text-white hover:text-blue-400 transition-colors z-10">
+            <X size={32} />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white text-3xl font-bold z-10 px-4"
+          >
+            &#8249;
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white text-3xl font-bold z-10 px-4"
+          >
+            &#8250;
+          </button>
+          <div className="relative max-w-4xl max-h-full aspect-square w-full" onClick={(e) => e.stopPropagation()}>
+            <Image
+              src={resolvedImages[lightboxIndex]}
+              fill
+              className="object-contain"
+              alt={altText || `${productName} View ${lightboxIndex + 1}`}
+              sizes="(max-width: 768px) 100vw, 80vw"
+            />
+          </div>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {resolvedImages.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(idx); }}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  lightboxIndex === idx ? 'bg-blue-400 scale-1.5' : 'bg-white/40 hover:bg-white/60'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

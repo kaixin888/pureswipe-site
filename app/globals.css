@@ -76,3 +76,29 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #4096ff !important;
   border-color: #4096ff !important;
 }
+
+/* Swiper pagination styling — APP-style dynamic bullets */
+.swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  opacity: 0.3;
+  background: #94a3b8;
+  transition: all 0.2s;
+}
+.swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #1677ff;
+  width: 18px;
+  border-radius: 4px;
+}
+.product-swiper .swiper-pagination,
+.hero-swiper .swiper-pagination,
+.card-slider .swiper-pagination,
+.related-products-swiper .swiper-pagination {
+  position: relative;
+  margin-top: 12px;
+  bottom: auto;
+}
+.swiper-slide {
+  overflow: hidden;
+}

@@ -11,9 +11,11 @@ import {
   Ruler, Truck, ChevronDown 
 } from 'lucide-react'
 import { useStore } from '../../../components/Providers'
-import Product360 from '../../../components/Product360'
 import DeliveryCountdown from '../../../components/DeliveryCountdown'
 import { getEffectivePrice } from '../../../lib/getEffectivePrice'
+import dynamic from 'next/dynamic'
+const ProductGallery = dynamic(() => import('../../../components/ProductGallery'), { ssr: false })
+const RelatedProducts = dynamic(() => import('../../../components/RelatedProducts'), { ssr: false })
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -28,10 +30,11 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
-  const [selectedImage, setSelectedImage] = useState(0)
+  // selectedImage removed — ProductGallery handles it internally
   const [purchaseType, setPurchaseType] = useState('one-time') // 'one-time' | 'subscribe'
-  const [previewImage, setPreviewImage] = useState(null)
+const [previewImage, setPreviewImage] = useState(null)
   const [openSection, setOpenSection] = useState(null)
+  const [relatedProducts, setRelatedProducts] = useState([])
   
   const { addItem } = useCart()
   const { setIsCheckoutOpen } = useStore()
@@ -63,9 +66,23 @@ export default function ProductDetail() {
         .eq('product_id', id)
         .eq('is_published', true)
         .order('created_at', { ascending: false })
-      if (data) setReviews(data)
+if (data) setReviews(data)
     }
     fetchReviews()
+  }, [id])
+
+  useEffect(() => {
+    if (!id) return
+    async function fetchRelated() {
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, price, sale_price, image_url, alt_text, tag')
+        .neq('id', id)
+        .eq('status', 'active')
+        .limit(4)
+      if (data) setRelatedProducts(data)
+    }
+    fetchRelated()
   }, [id])
 
   if (loading || !product) {
@@ -182,30 +199,13 @@ export default function ProductDetail() {
       </div>
 
       <section className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-2 gap-14">
-        {/* Images */}
-        <div className="flex flex-col gap-4">
-          <Product360
-            images={allImages}
-            tag={product.tag}
-            currentFrame={selectedImage}
-            onFrameChange={setSelectedImage}
-          />
-          {allImages.length > 1 && (
-            <div className="flex gap-3 flex-wrap">
-              {allImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all bg-white ${
-                    selectedImage === idx ? 'border-blue-500' : 'border-slate-700 hover:border-slate-400'
-                  }`}
-                >
-                  <Image src={img} alt={product.alt_text || `${product.name} View ${idx + 1}`} fill className="object-contain p-1" sizes="64px" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+{/* Images — Swiper on mobile, grid on desktop */}
+        <ProductGallery
+          images={allImages}
+          tag={product.tag}
+          altText={product.alt_text}
+          productName={product.name}
+        />
 
         {/* Info */}
         <div className="flex flex-col gap-6">
@@ -449,6 +449,22 @@ export default function ProductDetail() {
           </div>
         )}
       </section>
+
+      {/* Related Products */}
+      {relatedProducts.length > 0 && (
+        <section className="py-20 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-4 mb-12">
+              <span className="text-blue-500 font-black uppercase tracking-[0.3em] text-[10px] italic">You Might Also Like</span>
+              <div className="flex-1 h-px bg-slate-800" />
+            </div>
+            <RelatedProducts
+              products={relatedProducts}
+              onProductClick={(pid) => router.push(`/products/${pid}`)}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Image Preview Modal */}
       {previewImage && (

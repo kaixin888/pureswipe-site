@@ -3,11 +3,15 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { createClient } from '@supabase/supabase-js'
 import VideoModal from '../components/VideoModal'
 
 import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
+
+const HeroBanner = dynamic(() => import('../components/HeroBanner'), { ssr: false })
+const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
 
 
 import { 
@@ -228,7 +232,7 @@ export default function Home() {
   const [faqs, setFaqs] = useState([])
   const [blogPosts, setBlogPosts] = useState([])
   const [siteSettings, setSiteSettings] = useState({})
-  const [videoIndex, setVideoIndex] = useState(0)
+  // videoIndex removed — HeroBanner Swiper handles carousel now
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
 
@@ -468,50 +472,19 @@ export default function Home() {
           })
         }}
       />
-      {/* Hero — Mobile: full-bleed immersive video carousel; Desktop: original layout */}
-      {/* Mobile Hero */}
-      <section className="md:hidden relative w-full overflow-hidden" style={{ height: '70vh', minHeight: '480px' }}>
-        <video
-          key={videoIndex}
-          autoPlay
-          muted
-          playsInline
-          preload="metadata"
-          poster="/images/hero.jpg"
-          className="absolute inset-0 w-full h-full object-cover"
-          onEnded={() => setVideoIndex(v => (v + 1) % 2)}
-        >
-          <source src={videoIndex === 0 ? "https://media.clowand.com/videos/product-wand.mp4" : "https://media.clowand.com/videos/product-lid.mp4"} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-black/40" />
-        {/* Video indicator dots */}
-        <div className="absolute top-4 right-4 flex gap-1.5">
-          {[0,1].map(i => (
-            <button
-              key={i}
-              onClick={() => setVideoIndex(i)}
-              className={"w-2 h-2 rounded-full transition-all " + (videoIndex === i ? "bg-white scale-125" : "bg-white/40")}
-            />
-          ))}
-        </div>
-        <div className="absolute inset-0 flex flex-col justify-end px-6 pb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-4 w-fit border border-white/30">
-            {siteSettings.hero_badge || "2026 Hygiene Revolution"}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tight leading-tight text-white mb-3 overflow-visible">
-            {siteSettings.hero_title || t.heroTitle}
-          </h1>
-          <p className="text-sm text-white/80 mb-6 leading-relaxed">
-            {siteSettings.hero_subtitle || t.heroSub}
-          </p>
-          <button
-            onClick={() => scrollIntoView('bundles')}
-            className="w-full bg-walmart-navy text-white rounded-full py-4 text-sm font-semibold tracking-wide active:scale-[0.98] transition-transform hover:opacity-90"
-          >
-            {t.shopBundles}
-          </button>
-        </div>
-      </section>
+{/* Hero — Mobile: Swiper carousel; Desktop: original layout */}
+      <HeroBanner
+        slides={[
+          { type: 'video', src: 'https://media.clowand.com/videos/product-wand.mp4', poster: '/images/hero.jpg', alt: 'Clowand Wand Demo' },
+          { type: 'video', src: 'https://media.clowand.com/videos/product-lid.mp4', poster: '/images/hero.jpg', alt: 'Clowand Caddy Demo' },
+          { type: 'image', src: '/images/hero.jpg', alt: 'Clowand Hero' },
+        ]}
+        heroTitle={siteSettings.hero_title || t.heroTitle}
+        heroSub={siteSettings.hero_subtitle || t.heroSub}
+        heroBadge={siteSettings.hero_badge || '2026 Hygiene Revolution'}
+        shopLabel={t.shopBundles}
+        onShopClick={() => scrollIntoView('bundles')}
+      />
 
       {/* Mobile Category Tags */}
       <div className="md:hidden overflow-x-auto flex gap-2 px-4 py-4 border-b border-gray-100 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -858,7 +831,10 @@ export default function Home() {
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 max-w-[100px] leading-relaxed">Based on 50k+ Real Reviews</p>
              </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Mobile: review card slider */}
+          <CardSlider cards={reviews.length > 0 ? reviews : REVIEWS} type="review" />
+          {/* Desktop: review grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {(reviews.length > 0 ? reviews : REVIEWS).map((review, i) => {
               const displayName = review.author_name || review.name || 'Anonymous'
               const displayLocation = review.author_location || review.location || ''
