@@ -8,7 +8,14 @@ import { UploadOutlined, PlusOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDow
 const { Text } = Typography;
 const { Dragger } = Upload;
 
+const normalizeUrl = (url) => {
+  if (!url) return '';
+  const normalized = url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+  return normalized.startsWith('/') ? `https://media.clowand.com${normalized}` : normalized;
+};
+
 export default function ProductCreate() {
+
   const { formProps, saveButtonProps, form } = useForm({
     resource: 'products',
     redirect: 'list',
@@ -40,11 +47,13 @@ export default function ProductCreate() {
       const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
-      form.setFieldValue('image_url', data.url);
-      setMainPreview(data.url);
-      onSuccess(data.url);
+      const resolvedUrl = normalizeUrl(data.url);
+      form.setFieldValue('image_url', resolvedUrl);
+      setMainPreview(resolvedUrl);
+      onSuccess(resolvedUrl);
       message.success(`主图已上传 — 节省 ${data.savings ?? 0}% (WebP)`);
     } catch (err) {
+
       message.error('上传失败: ' + err.message);
       onError(err);
     } finally {
@@ -61,10 +70,12 @@ export default function ProductCreate() {
       const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
-      syncExtraImages([...extraImages, data.url]);
-      onSuccess(data.url);
+      const resolvedUrl = normalizeUrl(data.url);
+      syncExtraImages([...extraImages, resolvedUrl]);
+      onSuccess(resolvedUrl);
       message.success('附图已上传');
     } catch (err) {
+
       message.error('上传失败: ' + err.message);
       onError(err);
     } finally {
