@@ -51,7 +51,7 @@ export default function Navbar() {
     <nav className="fixed z-50 w-full h-14 md:h-16 bg-white md:bg-white/75 md:backdrop-blur-xl md:supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200"
          style={{ top: 'calc(32px + env(safe-area-inset-top, 0px))' }}>
       {/* Mobile Navbar: hamburger absolute left, logo absolute center, actions absolute right */}
-      <div className="md:hidden relative flex items-center h-full">
+      <div className="md:hidden relative flex items-center h-full w-full">
         {/* Hamburger - absolute left */}
         <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-950 p-2" aria-label="Menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
