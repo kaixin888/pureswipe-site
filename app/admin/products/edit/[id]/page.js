@@ -16,7 +16,8 @@ const supabase = createClient(
 
 const normalizeUrl = (url) => {
   if (!url) return '';
-  return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+  const normalized = url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
+  return normalized.startsWith('/') ? `https://media.clowand.com${normalized}` : normalized;
 };
 
 export default function ProductEdit() {
@@ -48,7 +49,8 @@ export default function ProductEdit() {
     },
   });
 
-  const record = queryResult?.data?.data;
+  const rawRecord = queryResult?.data?.data;
+  const record = Array.isArray(rawRecord) ? rawRecord[0] : rawRecord;
 
   const [uploading, setUploading] = useState(false);
   const [mainPreview, setMainPreview] = useState('');
@@ -58,8 +60,8 @@ export default function ProductEdit() {
   const [seoDescLen, setSeoDescLen] = useState(0);
   const [extraUploading, setExtraUploading] = useState(false);
 
-  // Populate preview state from loaded record
   useEffect(() => {
+    console.log('AUDITOR_RECORD_DEBUG', record);
     if (record) {
       setMainPreview(normalizeUrl(record.image_url || ''));
       try {
@@ -74,8 +76,18 @@ export default function ProductEdit() {
       } catch {
         setBullets(['']);
       }
+      // Also update form with these values in case they were parsed
+      form.setFieldsValue({
+        image_url: record.image_url,
+        extra_images: record.extra_images,
+        bullets: record.bullets,
+        description: record.description,
+        seo_description: record.seo_description
+      });
+      if (record.description) setDescLen(record.description.length);
+      if (record.seo_description) setSeoDescLen(record.seo_description.length);
     }
-  }, [record]);
+  }, [record, form]);
 
   const addExtraImage = (url) => setExtraImages((prev) => [...prev, url]);
   const removeExtraImage = (idx) => setExtraImages((prev) => prev.filter((_, i) => i !== idx));
@@ -189,6 +201,9 @@ export default function ProductEdit() {
           <Form.Item label="ASIN" name="asin">
             <Input placeholder="Amazon ASIN (可选)" />
           </Form.Item>
+          <Form.Item name="image_url" hidden><Input /></Form.Item>
+          <Form.Item name="extra_images" hidden><Input /></Form.Item>
+          <Form.Item name="bullets" hidden><Input /></Form.Item>
         </Card>
 
         <Card title="商品图片" style={{ marginBottom: 16 }}>
