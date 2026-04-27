@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
@@ -13,10 +13,27 @@ const normalizeUrl = (url) => {
 };
 
 function HeroSlide({ slide, normalizeUrl, heroTitle, heroBadge, heroSub, shopLabel, onShopClick }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current && slide.type === 'video') {
+      const v = videoRef.current;
+      // Force-set preload and muted at runtime — Next.js SSR drops 'auto' to 'metadata'
+      v.preload = 'auto';
+      const playPromise = v.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          // Autoplay blocked by browser (e.g. iOS low power mode); wait for user interaction
+        });
+      }
+    }
+  }, [slide.src, slide.type]);
+
   return (
     <div className="relative w-full h-full">
       {slide.type === 'video' ? (
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
