@@ -51,7 +51,8 @@ export default function ProductEdit() {
 
   if (typeof window !== 'undefined') {
     window.DEBUG_QUERY_RESULT = queryResult;
-    console.log('AUDITOR_RAW_QUERY_DATA', queryResult?.data);
+    console.log('AUDITOR_FULL_QUERY_RESULT', queryResult);
+    if (queryResult?.data) console.log('AUDITOR_DATA_KEYS', Object.keys(queryResult.data));
   }
 
   const rawRecord = queryResult?.data?.data || queryResult?.data;
@@ -67,6 +68,9 @@ export default function ProductEdit() {
 
   useEffect(() => {
     console.log('AUDITOR_RECORD_DEBUG', record);
+    if (typeof window !== 'undefined') {
+      window.AUDITOR_RECORD_DEBUG = record;
+    }
     if (record) {
       setMainPreview(normalizeUrl(record.image_url || ''));
       try {
