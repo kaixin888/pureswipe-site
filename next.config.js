@@ -4,6 +4,7 @@ const nextConfig = {
     'antd',
     '@ant-design/icons',
     '@ant-design/nextjs-registry',
+    'swiper',
     'rc-util',
     'rc-pagination',
     'rc-picker',
