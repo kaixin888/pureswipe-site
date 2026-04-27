@@ -48,10 +48,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-8 z-50 w-full h-14 md:h-16 bg-white/75 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
-      {/* Mobile Navbar: hamburger | logo center | search + cart */}
-      <div className="md:hidden flex items-center justify-between px-4 h-full">
-        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="text-slate-950 p-2.5" aria-label="Menu">
+    <nav className="fixed top-8 z-50 w-full h-14 md:h-16 bg-white md:bg-white/75 md:backdrop-blur-xl md:supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
+      {/* Mobile Navbar: hamburger | logo center | search + cart — grid-cols-3 for true centering */}
+      <div className="md:hidden grid grid-cols-3 items-center px-3 h-full">
+        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="justify-self-start text-slate-950 p-2" aria-label="Menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             {isOpen ? (
               <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
@@ -60,15 +60,15 @@ export default function Navbar() {
             )}
           </svg>
         </button>
-        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">C</div>
-          <span className="text-lg md:text-xl font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
+        <a href="/" className="justify-self-center flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+          <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold text-[11px]">C</div>
+          <span className="text-base font-black tracking-tight uppercase italic text-slate-900 whitespace-nowrap">clowand</span>
         </a>
-        <div className="flex items-center gap-2">
+        <div className="justify-self-end flex items-center gap-0.5">
           {/* Search icon — toggles search overlay */}
           <button
             onClick={() => { setSearchOpen(!searchOpen); setIsOpen(false); }}
-            className="text-slate-950 p-2.5"
+            className="text-slate-950 p-1.5"
             aria-label="Search"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +77,7 @@ export default function Navbar() {
           </button>
           <button
             onClick={() => setIsCartOpen(true)}
-            className="text-slate-950 relative p-2.5"
+            className="text-slate-950 relative p-1.5"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
