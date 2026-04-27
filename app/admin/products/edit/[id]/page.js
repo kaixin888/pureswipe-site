@@ -54,7 +54,7 @@ export default function ProductEdit() {
     console.log('AUDITOR_RAW_QUERY_DATA', queryResult?.data);
   }
 
-  const rawRecord = queryResult?.data?.data;
+  const rawRecord = queryResult?.data?.data || queryResult?.data;
   const record = Array.isArray(rawRecord) ? rawRecord[0] : rawRecord;
 
   const [uploading, setUploading] = useState(false);
