@@ -48,7 +48,8 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-8 z-50 w-full h-14 md:h-16 bg-white md:bg-white/75 md:backdrop-blur-xl md:supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
+    <nav className="fixed z-50 w-full h-14 md:h-16 bg-white md:bg-white/75 md:backdrop-blur-xl md:supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200"
+         style={{ top: 'calc(32px + env(safe-area-inset-top, 0px))' }}>
       {/* Mobile Navbar: hamburger absolute left, logo absolute center, actions absolute right */}
       <div className="md:hidden relative flex items-center h-full">
         {/* Hamburger - absolute left */}

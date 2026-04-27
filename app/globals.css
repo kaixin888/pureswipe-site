@@ -91,6 +91,18 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #4096ff !important;
 }
 
+/* Mobile hero: dvh + safe-area for Safari toolbar + notch */
+.h-hero-mobile {
+  height: calc(100vh - 88px);
+  height: calc(100dvh - 88px);
+  min-height: 480px;
+}
+@supports (padding: max(0px)) {
+  .h-hero-mobile {
+    height: calc(100dvh - 88px - env(safe-area-inset-top, 0px));
+  }
+}
+
 /* Swiper pagination styling — APP-style dynamic bullets */
 .swiper-pagination-bullet {
   width: 6px;

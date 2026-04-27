@@ -24,8 +24,9 @@ export default function AnnouncementBar() {
   const segments = text.split('|').map(s => s.trim()).filter(Boolean);
 
   return (
-    // h-8 on mobile (32px), h-10 on desktop (40px) — fixed height prevents navbar overlap
-    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-4 text-center z-[60] fixed top-0 left-0 right-0 h-8 md:h-10 flex items-center justify-center">
+    // h-8 on mobile (32px), h-10 on desktop (40px) + safe-area notch padding
+    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-4 text-center z-[60] fixed top-0 left-0 right-0 flex items-center justify-center"
+         style={{ height: 'calc(32px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Mobile: show first segment only, truncate to single line */}
       <span className="md:hidden truncate max-w-full">
         {segments[0] || DEFAULT_TEXT.split('|')[0].trim()}

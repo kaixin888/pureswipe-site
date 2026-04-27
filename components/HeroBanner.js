@@ -82,7 +82,7 @@ export default function HeroBanner({ slides = [], heroTitle, heroSub, heroBadge,
   // Single slide (mobile Hero): render directly, no Swiper wrapper
   if (slides.length === 1) {
     return (
-      <div className="md:hidden relative w-full overflow-hidden" style={{ height: 'calc(100vh - 88px)', minHeight: '480px' }}>
+      <div className="md:hidden relative w-full overflow-hidden h-hero-mobile">
         <HeroSlide slide={slides[0]} normalizeUrl={normalizeUrl} heroTitle={heroTitle} heroBadge={heroBadge} heroSub={heroSub} shopLabel={shopLabel} onShopClick={onShopClick} />
       </div>
     );
@@ -96,8 +96,7 @@ export default function HeroBanner({ slides = [], heroTitle, heroSub, heroBadge,
         pagination={{ clickable: true, dynamicBullets: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop
-        className="hero-swiper"
-        style={{ height: 'calc(100vh - 88px)', minHeight: '480px' }}
+        className="hero-swiper h-hero-mobile"
       >
         {slides.map((slide, idx) => (
           <SwiperSlide key={idx}>
