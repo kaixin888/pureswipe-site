@@ -49,9 +49,10 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-8 z-50 w-full h-14 md:h-16 bg-white md:bg-white/75 md:backdrop-blur-xl md:supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
-      {/* Mobile Navbar: hamburger | logo center | search + cart — grid-cols-3 for true centering */}
-      <div className="md:hidden grid grid-cols-3 items-center px-3 h-full">
-        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="justify-self-start text-slate-950 p-2" aria-label="Menu">
+      {/* Mobile Navbar: hamburger absolute left, logo absolute center, actions absolute right */}
+      <div className="md:hidden relative flex items-center h-full">
+        {/* Hamburger - absolute left */}
+        <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-950 p-2" aria-label="Menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             {isOpen ? (
               <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
@@ -60,12 +61,18 @@ export default function Navbar() {
             )}
           </svg>
         </button>
-        <a href="/" className="justify-self-center flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+
+        {/* Logo - absolute screen center */}
+        <a
+          href="/"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+        >
           <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold text-[11px]">C</div>
           <span className="text-base font-black tracking-tight uppercase italic text-slate-900 whitespace-nowrap">clowand</span>
         </a>
-        <div className="justify-self-end flex items-center gap-0.5">
-          {/* Search icon — toggles search overlay */}
+
+        {/* Search + Cart - absolute right */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
           <button
             onClick={() => { setSearchOpen(!searchOpen); setIsOpen(false); }}
             className="text-slate-950 p-1.5"
