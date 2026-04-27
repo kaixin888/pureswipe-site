@@ -31,8 +31,8 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
   // selectedImage removed — ProductGallery handles it internally
-  const [purchaseType, setPurchaseType] = useState('one-time') // 'one-time' | 'subscribe'
-const [previewImage, setPreviewImage] = useState(null)
+  const [purchaseType, setPurchaseType] = useState('one-time')
+  const [previewImage, setPreviewImage] = useState(null)
   const [openSection, setOpenSection] = useState(null)
   const [relatedProducts, setRelatedProducts] = useState([])
   
@@ -66,7 +66,7 @@ const [previewImage, setPreviewImage] = useState(null)
         .eq('product_id', id)
         .eq('is_published', true)
         .order('created_at', { ascending: false })
-if (data) setReviews(data)
+      if (data) setReviews(data)
     }
     fetchReviews()
   }, [id])
