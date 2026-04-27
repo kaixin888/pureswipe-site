@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor scroll offset: fixed header height */
+[id] {
+  scroll-margin-top: 96px;
+}
+@media (max-width: 767px) {
+  [id] {
+    scroll-margin-top: 88px;
+  }
+}
+
 :root {
   --foreground-rgb: 30, 41, 59;
   --background-start-rgb: 255, 255, 255;

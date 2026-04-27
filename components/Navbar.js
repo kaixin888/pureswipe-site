@@ -48,7 +48,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-0 z-50 w-full h-14 md:h-16 bg-white/75 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
+    <nav className="fixed top-8 z-50 w-full h-14 md:h-16 bg-white/75 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 border-b border-black/5 transition-all duration-200">
       {/* Mobile Navbar: hamburger | logo center | search + cart */}
       <div className="md:hidden flex items-center justify-between px-4 h-full">
         <button onClick={() => { setIsOpen(!isOpen); setSearchOpen(false); }} className="text-slate-950 p-2.5" aria-label="Menu">

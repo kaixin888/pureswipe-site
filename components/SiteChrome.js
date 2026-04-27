@@ -34,7 +34,7 @@ export default function SiteChrome({ children }) {
       <AnnouncementBar />
       <Navbar />
       <GlobalCheckout />
-      <main>{children}</main>
+      <main className={pathname === '/' ? 'pt-[88px] md:pt-[96px]' : ''}>{children}</main>
       <Footer />
     </>
   );
