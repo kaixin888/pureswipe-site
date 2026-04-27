@@ -20,9 +20,12 @@ const normalizeUrl = (url) => {
   return normalized.startsWith('/') ? `https://media.clowand.com${normalized}` : normalized;
 };
 
-export default function ProductEdit() {
+export default function ProductEdit({ params }) {
+  const { id } = params;
   const { formProps, saveButtonProps, form, queryResult } = useForm({
     resource: 'products',
+    id,
+    action: 'edit',
     redirect: 'list',
     onMutationSuccess: (mutationResult) => {
       // After Refine saves basic fields, separately save image fields via Supabase.
