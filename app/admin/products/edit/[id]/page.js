@@ -49,6 +49,11 @@ export default function ProductEdit() {
     },
   });
 
+  if (typeof window !== 'undefined') {
+    window.DEBUG_QUERY_RESULT = queryResult;
+    console.log('AUDITOR_RAW_QUERY_DATA', queryResult?.data);
+  }
+
   const rawRecord = queryResult?.data?.data;
   const record = Array.isArray(rawRecord) ? rawRecord[0] : rawRecord;
 
