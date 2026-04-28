@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '../components/Providers'
 import SiteChrome from '../components/SiteChrome'
+import CookieConsentBanner from '../components/CookieConsent'
 import './globals.css'
 
 const inter = Inter({
@@ -65,6 +66,7 @@ export default function RootLayout({ children }) {
             `}
           </Script>
           <SiteChrome>{children}</SiteChrome>
+          <CookieConsentBanner />
         </Providers>
       </body>
     </html>
