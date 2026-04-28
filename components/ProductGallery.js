@@ -137,7 +137,13 @@ export default function ProductGallery({ images = [], tag, altText, productName 
             thumbs={{
               swiper: desktopThumbsSwiper && !desktopThumbsSwiper.destroyed ? desktopThumbsSwiper : null,
             }}
-            onSlideChange={(s) => setDesktopActiveIndex(s.realIndex)}
+            onSlideChange={(s) => {
+              const idx = s.realIndex;
+              setDesktopActiveIndex(idx);
+              if (desktopThumbsSwiper && !desktopThumbsSwiper.destroyed) {
+                desktopThumbsSwiper.slideTo(idx, 300);
+              }
+            }}
             className="product-gallery-main-desktop"
             style={{ aspectRatio: '1' }}
           >
@@ -178,7 +184,8 @@ export default function ProductGallery({ images = [], tag, altText, productName 
             modules={[FreeMode, Thumbs]}
             spaceBetween={8}
             slidesPerView={4.5}
-            freeMode={true}
+            freeMode={false}
+            centeredSlides={true}
             watchSlidesProgress={true}
             className="product-gallery-thumbs-desktop mt-3"
           >
