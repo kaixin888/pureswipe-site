@@ -183,7 +183,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <main className="min-h-screen bg-[#faf9f7] text-[#1a2935] pb-20">
+    <main className="min-h-screen bg-white text-[#1a2935] pb-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       
       {/* Breadcrumb */}
