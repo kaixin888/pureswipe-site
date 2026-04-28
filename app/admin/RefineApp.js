@@ -17,7 +17,7 @@ import routerProvider, {
 import { createClient } from '@supabase/supabase-js';
 import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2 } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -71,6 +71,7 @@ const zhDict = {
   subscribers: { subscribers: '订阅用户', titles: { list: '订阅用户' } },
   reviews: { reviews: '商品评价', titles: { list: '商品评价', create: '新建评价' } },
   faqs: { faqs: '常见问题', titles: { list: '常见问题', create: '新建问题', edit: '编辑问题' } },
+  inventory: { inventory: '库存管理', titles: { list: '库存管理', edit: '调整库存' } },
   settings: { settings: '系统设置', titles: { list: '系统设置' } },
   documentTitle: {
     default: 'clowand 管理后台',
@@ -247,6 +248,16 @@ export default function RefineApp({ children }) {
           create: '/admin/faqs/create',
           edit: '/admin/faqs/edit/:id',
           meta: { canDelete: true, label: '常见问题', icon: <HelpCircle size={16} /> }
+        },
+        {
+          name: 'inventory',
+          list: '/admin/inventory',
+          edit: '/admin/inventory/edit/:id',
+          meta: {
+            canDelete: true,
+            label: '库存管理',
+            icon: <Archive size={16} />
+          },
         },
         {
           name: 'settings',
