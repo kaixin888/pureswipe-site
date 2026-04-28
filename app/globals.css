@@ -182,19 +182,32 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none;
 }
 
-/* Cookie Consent: constrain width and center on desktop */
+/* Cookie Consent: full-width thin bar centered content (desktop) */
 #cc-main .cm--cloud {
-  max-width: 640px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+#cc-main .cm--cloud .cm__wrapper {
+  max-width: none !important;
+  width: 100% !important;
 }
 #cc-main .cm--cloud .cm__body {
-  padding: 0 2rem !important;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.25rem 2rem;
 }
-@media (max-width: 767px) {
-  #cc-main .cm--cloud {
-    max-width: 100% !important;
-  }
-  #cc-main .cm--cloud .cm__body {
-    padding: 0 1rem !important;
-  }
+#cc-main .cm--cloud .cm__title {
+  margin-bottom: 0.15rem;
+  font-size: 0.9rem;
+}
+#cc-main .cm--cloud .cm__desc {
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+#cc-main .cm--cloud .cm__btn-group {
+  gap: 0.5rem;
+}
+#cc-main .cm--cloud .cm__btn {
+  padding: 0.3rem 1rem;
+  font-size: 0.8rem;
 }
