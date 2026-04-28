@@ -181,3 +181,20 @@ h1, h2, h3, h4, h5, h6 {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Cookie Consent: constrain width and center on desktop */
+#cc-main .cm--cloud {
+  max-width: 640px !important;
+  margin: 0 auto !important;
+}
+#cc-main .cm--cloud .cm__body {
+  padding: 0 2rem !important;
+}
+@media (max-width: 767px) {
+  #cc-main .cm--cloud {
+    max-width: 100% !important;
+  }
+  #cc-main .cm--cloud .cm__body {
+    padding: 0 1rem !important;
+  }
+}
