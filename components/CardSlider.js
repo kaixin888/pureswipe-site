@@ -31,7 +31,7 @@ export default function CardSlider({ cards = [], type = 'review' }) {
         {cards.map((card, idx) => (
           <SwiperSlide key={card.id || idx}>
             {type === 'review' ? (
-              <div className="p-8 bg-white rounded-[2rem] border border-slate-100 shadow-sm min-h-[220px]">
+              <div className="p-8 bg-white rounded-[12px] border border-[#e5e0da] shadow-[0_2px_12px_rgba(0,0,0,0.06)] min-h-[220px]">
                 <div className="flex gap-1 text-blue-600 mb-4">
                   {[...Array(card.rating || 5)].map((_, i) => (
                     <svg key={i} className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">

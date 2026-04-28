@@ -173,33 +173,33 @@ export default function Navbar() {
       )}
       {/* Side drawer */}
       <div
-        className={`md:hidden fixed top-0 left-0 z-[70] h-full w-[80vw] max-w-[320px] bg-white shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`md:hidden fixed top-0 left-0 z-[70] h-full w-[80vw] max-w-[320px] bg-[#1a3a5c] shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Drawer header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">C</div>
-            <span className="text-lg font-black tracking-tighter uppercase italic text-slate-900">clowand</span>
+            <span className="text-lg font-black tracking-tighter uppercase italic text-white">clowand</span>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-950 p-1">
+          <button onClick={() => setIsOpen(false)} className="text-white/50 hover:text-white p-1">
             <X size={20} />
           </button>
         </div>
         {/* Drawer body */}
-        <div className="flex flex-col px-6 py-6 gap-1">
-          <button onClick={() => scrollTo('features')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Features</button>
-          <button onClick={() => scrollTo('bundles')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Shop</button>
-          <button onClick={() => scrollTo('reviews')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Reviews</button>
-          <button onClick={() => scrollTo('faq')} className="text-left py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">FAQ</button>
-          <div className="border-t border-gray-100 my-2" />
-          <a href="/blog" onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">Blog</a>
-          <a href="/about" onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all">About</a>
-          <a href={user ? "/account" : "/login"} onClick={() => setIsOpen(false)} className="py-4 text-base font-bold uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 transition-all flex items-center gap-2">
+        <div className="flex flex-col px-6 py-8 gap-2">
+          <button onClick={() => scrollTo('features')} className="text-left py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">Features</button>
+          <button onClick={() => scrollTo('bundles')} className="text-left py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">Shop</button>
+          <button onClick={() => scrollTo('reviews')} className="text-left py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">Reviews</button>
+          <button onClick={() => scrollTo('faq')} className="text-left py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">FAQ</button>
+          <div className="border-t border-white/10 my-3" />
+          <a href="/blog" onClick={() => setIsOpen(false)} className="py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">Blog</a>
+          <a href="/about" onClick={() => setIsOpen(false)} className="py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all">About</a>
+          <a href={user ? "/account" : "/login"} onClick={() => setIsOpen(false)} className="py-4 text-sm font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/10 rounded-xl px-5 transition-all flex items-center gap-2">
             <User size={16} />
             {user ? 'Account' : 'Login'}
           </a>
-          <div className="border-t border-gray-100 my-2" />
-          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-[#2ecc71] text-white py-4 rounded-full text-center text-sm font-bold uppercase tracking-widest mt-4 active:scale-[0.98] transition-transform">Shop Now</button>
+          <div className="border-t border-white/10 my-3" />
+          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-[#2ecc71] text-white py-4 rounded-full text-center text-sm font-bold uppercase tracking-widest mt-4 active:scale-[0.98] transition-transform hover:bg-[#27ae60]">Shop Now</button>
         </div>
       </div>
 

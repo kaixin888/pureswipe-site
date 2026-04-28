@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 py-24 text-white">
+    <footer className="bg-[#1a3a5c] py-24 text-white">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-12 text-center md:text-left">
         <div className="col-span-1 md:col-span-2">
           <a href="/" className="inline-block group mb-6" style={{ filter: 'brightness(0) invert(1)' }}>

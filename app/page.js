@@ -841,7 +841,7 @@ export default function Home() {
               const displayComment = review.content || review.comment || ''
               const displayRating = review.rating || 5
               return (
-              <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[4rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group">
+              <div key={review.id || i} className="p-8 md:p-12 bg-white rounded-[12px] border border-[#e5e0da] shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 group">
                 {/* UGC photo if available */}
                 {/* Video review — click to open modal */}
                 {review.video_url && (
