@@ -18,7 +18,7 @@ export default function CardSlider({ cards = [], type = 'review' }) {
   const slidesPerViewDesktop = type === 'feature' ? 3 : 2;
 
   return (
-    <div className="block md:hidden">
+    <div className="block md:hidden overflow-hidden">
       <Swiper
         modules={[Pagination]}
         pagination={{ clickable: true, dynamicBullets: true }}

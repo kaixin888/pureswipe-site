@@ -32,7 +32,7 @@ export default function ProductGallery({ images = [], tag, altText, productName 
   return (
     <>
       {/* Mobile: Swiper carousel - Apple Store style */}
-      <div className="block md:hidden">
+      <div className="block md:hidden overflow-hidden">
         {/* Main carousel: slidesPerView=1, auto-play, pagination dots */}
         <div className="relative">
           <Swiper

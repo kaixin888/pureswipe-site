@@ -18,7 +18,7 @@ export default function RelatedProducts({ products = [], onProductClick }) {
   return (
     <>
       {/* Mobile: horizontal swipe */}
-      <div className="block md:hidden">
+      <div className="block md:hidden overflow-hidden">
         <Swiper
           modules={[Pagination]}
           pagination={{ clickable: true, dynamicBullets: true }}
