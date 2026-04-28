@@ -194,20 +194,21 @@ h1, h2, h3, h4, h5, h6 {
 #cc-main .cm--cloud .cm__body {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.25rem 2rem;
+  padding: 0.15rem 2rem;
 }
 #cc-main .cm--cloud .cm__title {
-  margin-bottom: 0.15rem;
-  font-size: 0.9rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
 }
 #cc-main .cm--cloud .cm__desc {
-  font-size: 0.8rem;
-  margin-bottom: 0.15rem;
+  font-size: 0.7rem;
+  margin-bottom: 0;
+  line-height: 1.15;
 }
 #cc-main .cm--cloud .cm__btn-group {
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 #cc-main .cm--cloud .cm__btn {
-  padding: 0.3rem 1rem;
-  font-size: 0.8rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
 }
