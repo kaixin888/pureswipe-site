@@ -212,3 +212,25 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.15rem 0.6rem;
   font-size: 0.7rem;
 }
+
+@media (max-width: 767px) {
+  #cc-main .cm--cloud .cm__body {
+    padding: 0.08rem 1rem;
+  }
+  #cc-main .cm--cloud .cm__title {
+    font-size: 0.65rem;
+    margin-bottom: 0;
+  }
+  #cc-main .cm--cloud .cm__desc {
+    font-size: 0.6rem;
+    margin-bottom: 0;
+    line-height: 1.1;
+  }
+  #cc-main .cm--cloud .cm__btn {
+    padding: 0.1rem 0.4rem;
+    font-size: 0.6rem;
+  }
+  #cc-main .cm--cloud .cm__btn-group {
+    gap: 0.2rem;
+  }
+}
