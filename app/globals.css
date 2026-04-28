@@ -107,6 +107,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Swiper pagination styling — APP-style dynamic bullets */
+/* Constrain Swiper container so it never overflows its parent */
+.swiper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
 .swiper-pagination-bullet {
   width: 6px;
   height: 6px;

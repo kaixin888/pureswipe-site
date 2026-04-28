@@ -25,7 +25,7 @@ export default function AnnouncementBar() {
 
   return (
     // h-8 on mobile (32px), h-10 on desktop (40px) + safe-area notch padding
-    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-4 text-center z-[60] fixed top-0 left-0 right-0 flex items-center justify-center"
+    <div className="w-full bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest px-4 text-center z-40 fixed top-0 left-0 right-0 flex items-center justify-center"
          style={{ height: 'calc(32px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Mobile: show first segment only, truncate to single line */}
       <span className="md:hidden truncate max-w-full">
