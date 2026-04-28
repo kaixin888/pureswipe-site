@@ -1,16 +1,35 @@
 // 一键数据库迁移端点
-// 发送 POST 请求到 /api/run-migration?secret=clowand888
-// 即可在 Supabase 上创建/更新表结构（使用 SERVICE_ROLE_KEY）
+// POST /api/run-migration?secret=clowand888
+// 在 Supabase 上创建 inventory 表并插入初始数据
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase 管理员客户端（使用 service_role_key 可以执行 DDL）
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// 用 pg 直接连接 Postgres 执行 DDL
+async function runSQL(sql) {
+  // 优先用 DATABASE_URL（Vercel + Supabase 集成自动注入）
+  const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  if (dbUrl) {
+    try {
+      const { Pool } = await import('pg');
+      const pool = new Pool({ connectionString: dbUrl, max: 1, idleTimeoutMillis: 5000 });
+      try {
+        await pool.query(sql);
+        return { ok: true };
+      } finally {
+        await pool.end();
+      }
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
+  }
+  return { ok: false, error: 'No DATABASE_URL available — try Supabase Dashboard or add DATABASE_URL env var' };
+}
+
 export async function POST(request) {
-  // 简单鉴权，防止任意调用
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
   if (secret !== 'clowand888') {
@@ -20,63 +39,57 @@ export async function POST(request) {
   const results = [];
 
   try {
-    // 执行 SQL 迁移：创建 inventory 表（如果不存在）
-    const { error: createError } = await supabaseAdmin.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS inventory (
-          id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-          product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-          warehouse TEXT DEFAULT 'main',
-          quantity INTEGER NOT NULL DEFAULT 0,
-          reserved INTEGER NOT NULL DEFAULT 0,
-          low_stock_threshold INTEGER NOT NULL DEFAULT 10,
-          last_restocked_at TIMESTAMPTZ,
-          updated_at TIMESTAMPTZ DEFAULT NOW()
-        );
+    // Step 1: 创建 inventory 表
+    const createSQL = `
+      CREATE TABLE IF NOT EXISTS inventory (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        warehouse TEXT DEFAULT 'main',
+        quantity INTEGER NOT NULL DEFAULT 0,
+        reserved INTEGER NOT NULL DEFAULT 0,
+        low_stock_threshold INTEGER NOT NULL DEFAULT 10,
+        last_restocked_at TIMESTAMPTZ,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
 
-        -- 给 inventory 表加上 updated_at 自动更新触发器
-        CREATE OR REPLACE FUNCTION update_inventory_updated_at()
-        RETURNS TRIGGER AS $$
-        BEGIN
-          NEW.updated_at = NOW();
-          RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;
+      CREATE OR REPLACE FUNCTION update_inventory_updated_at()
+      RETURNS TRIGGER AS $func$
+      BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+      END;
+      $func$ LANGUAGE plpgsql;
 
-        DROP TRIGGER IF EXISTS trg_inventory_updated_at ON inventory;
-        CREATE TRIGGER trg_inventory_updated_at
-          BEFORE UPDATE ON inventory
-          FOR EACH ROW EXECUTE FUNCTION update_inventory_updated_at();
-      `
-    });
-    results.push({ step: 'create_inventory', error: createError?.message || null });
+      DROP TRIGGER IF EXISTS trg_inventory_updated_at ON inventory;
+      CREATE TRIGGER trg_inventory_updated_at
+        BEFORE UPDATE ON inventory
+        FOR EACH ROW EXECUTE FUNCTION update_inventory_updated_at();
+    `;
 
-    // 如果没有 exec_sql 函数，尝试用 raw SQL 方式
-    if (createError && createError.message?.includes('function "exec_sql"')) {
-      // 通过 REST API 直接执行 SQL — 如果 service_role_key 可用的话
-      // 先检查表是否存在
-      const { data: tables } = await supabaseAdmin
-        .from('inventory')
-        .select('id')
-        .limit(1);
-      
-      if (tables === null) {
-        // 表不存在 — 无法创建（需要 Supabase dashboard 或者 DB URL）
-        results.push({ step: 'note', message: '表不存在且无法通过 REST API 创建。需要 Supabase Dashboard 手动执行 SQL，或者添加 supabase DB URL 到环境变量。' });
+    const createResult = await runSQL(createSQL);
+    results.push({ step: 'create_inventory', ...createResult });
+
+    if (!createResult.ok) {
+      // 如果 pg 方式失败，尝试用 supabase rpc
+      const { error: rpcErr } = await supabaseAdmin.rpc('exec_sql', { sql: createSQL });
+      if (!rpcErr) {
+        results.push({ step: 'create_inventory_retry', ok: true });
       } else {
-        results.push({ step: 'check', message: '表已存在，跳过创建' });
+        // 检查表是否已存在
+        const { data: check } = await supabaseAdmin.from('inventory').select('id').limit(1);
+        if (check === null) {
+          results.push({ step: 'note', message: '表不存在。请先在 Supabase Dashboard → SQL Editor 执行建表 SQL，或设置 DATABASE_URL 环境变量。' });
+        } else {
+          results.push({ step: 'check', message: '表已存在' });
+        }
       }
     }
 
-    // 插入初始数据（从 products.stock 同步）
-    const { data: existing } = await supabaseAdmin
-      .from('inventory')
-      .select('product_id');
-    const existingIds = new Set((existing || []).map(r => r.product_id));
+    // Step 2: 插入初始数据
+    const { data: existingInv } = await supabaseAdmin.from('inventory').select('product_id');
+    const existingIds = new Set((existingInv || []).map(r => r.product_id));
 
-    const { data: products } = await supabaseAdmin
-      .from('products')
-      .select('id, stock');
+    const { data: products } = await supabaseAdmin.from('products').select('id, stock');
     
     if (products) {
       const toInsert = products
@@ -88,12 +101,11 @@ export async function POST(request) {
         }));
       
       if (toInsert.length > 0) {
-        const { error: insertError } = await supabaseAdmin
-          .from('inventory')
-          .insert(toInsert);
+        const { error: insertError } = await supabaseAdmin.from('inventory').insert(toInsert);
         results.push({ step: 'seed_inventory', inserted: toInsert.length, error: insertError?.message || null });
       } else {
-        results.push({ step: 'seed_inventory', message: '无需插入（已有数据）' });
+        const totalInv = existingInv?.length || 0;
+        results.push({ step: 'seed_inventory', message: `无需插入 — 已有 ${totalInv} 条库存记录` });
       }
     }
 
