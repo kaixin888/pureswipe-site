@@ -92,14 +92,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Mobile hero: dvh + safe-area for Safari toolbar + notch */
+/* Uses --header-end (set dynamically by Navbar.js) for perfect alignment */
 .h-hero-mobile {
-  height: calc(100vh - 88px);
-  height: calc(100dvh - 88px);
+  height: calc(100vh - var(--header-end, 88px));
+  height: calc(100dvh - var(--header-end, 88px));
   min-height: 480px;
 }
 @supports (padding: max(0px)) {
   .h-hero-mobile {
-    height: calc(100dvh - 88px - env(safe-area-inset-top, 0px));
+    height: calc(100dvh - var(--header-end, 88px) - env(safe-area-inset-top, 0px));
   }
 }
 

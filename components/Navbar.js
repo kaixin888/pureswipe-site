@@ -20,6 +20,20 @@ export default function Navbar() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Dynamic header measurement — set CSS variable so SiteChrome main padding is always correct
+  useEffect(() => {
+    const update = () => {
+      const nav = document.querySelector('nav');
+      if (nav) {
+        const bottom = nav.getBoundingClientRect().bottom;
+        document.documentElement.style.setProperty('--header-end', bottom + 'px');
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
