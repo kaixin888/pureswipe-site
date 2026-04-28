@@ -185,7 +185,6 @@ export default function ProductGallery({ images = [], tag, altText, productName 
             spaceBetween={8}
             slidesPerView={4.5}
             freeMode={false}
-            centeredSlides={true}
             watchSlidesProgress={true}
             className="product-gallery-thumbs-desktop mt-3"
           >
