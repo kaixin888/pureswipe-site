@@ -1,8 +1,8 @@
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import { Providers } from '../components/Providers'
 import SiteChrome from '../components/SiteChrome'
 import CookieConsentBanner from '../components/CookieConsent'
+import GoogleAnalytics from '../components/GoogleAnalytics'
 import './globals.css'
 
 const inter = Inter({
@@ -52,19 +52,8 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <Providers>
-          {/* Google Analytics GA4 */}
-          <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-JFTMBGD8EM"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-JFTMBGD8EM');
-            `}
-          </Script>
+          {/* Consent-based GA4 — loads only when user accepts analytics cookies */}
+          <GoogleAnalytics />
           <SiteChrome>{children}</SiteChrome>
           <CookieConsentBanner />
         </Providers>

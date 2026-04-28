@@ -3,8 +3,11 @@
 import { useEffect } from 'react'
 import 'vanilla-cookieconsent/dist/cookieconsent.css'
 import * as CookieConsent from 'vanilla-cookieconsent'
+import { useStore } from './Providers'
 
 export default function CookieConsentBanner() {
+  const { setCookieConsent } = useStore()
+
   useEffect(() => {
     CookieConsent.run({
       guiOptions: {
@@ -20,24 +23,24 @@ export default function CookieConsentBanner() {
           flipButtons: false,
         },
       },
-      categories: {
-        necessary: {
-          enabled: true,
-          readOnly: true,
-        },
-        analytics: {
-          autoClear: {
-            cookies: [{ name: /^_ga/ }, { name: '_gid' }],
-          },
-          services: {
-            ga: {
-              label: 'Google Analytics',
-              onAccept: () => {},
-              onReject: () => {},
+          categories: {
+            necessary: {
+              enabled: true,
+              readOnly: true,
+            },
+            analytics: {
+              autoClear: {
+                cookies: [{ name: /^_ga/ }, { name: '_gid' }],
+              },
+              services: {
+                ga: {
+                  label: 'Google Analytics',
+                  onAccept: () => setCookieConsent?.(true),
+                  onReject: () => setCookieConsent?.(false),
+                },
+              },
             },
           },
-        },
-      },
       language: {
         default: 'en',
         translations: {
