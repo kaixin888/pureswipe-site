@@ -67,7 +67,7 @@ function HeroSlide({ slide, normalizeUrl, heroTitle, heroBadge, heroSub, shopLab
         </p>
         <button
           onClick={onShopClick}
-          className="w-full bg-walmart-navy text-white rounded-full py-4 text-sm font-semibold tracking-wide active:scale-[0.98] transition-transform hover:opacity-90"
+          className="w-full bg-[#2ecc71] text-white rounded-full py-4 text-sm font-semibold tracking-wide active:scale-[0.98] transition-transform hover:bg-[#27ae60]"
         >
           {shopLabel || 'Shop Bundles'}
         </button>

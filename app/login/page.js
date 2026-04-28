@@ -81,7 +81,7 @@ export default function Login() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-6 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full py-6 bg-[#2ecc71] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#27ae60] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
               {loading ? 'Authenticating...' : (
                 <>
@@ -93,7 +93,7 @@ export default function Login() {
 
           <div className="mt-12 pt-12 border-t border-slate-50 text-center">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">New to clowand?</p>
-            <a href="/register" className="text-blue-600 text-[10px] font-black uppercase tracking-widest italic border-b-2 border-blue-600/10 hover:border-blue-600 transition-all">Create your account</a>
+            <a href="/register" className="text-[#1a3a5c] text-[10px] font-black uppercase tracking-widest italic border-b-2 border-[#1a3a5c]/10 hover:border-[#1a3a5c] transition-all">Create your account</a>
           </div>
         </div>
       </div>

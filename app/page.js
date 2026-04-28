@@ -507,7 +507,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-sm border border-blue-100">
               {siteSettings.hero_badge || "2026 Hygiene Revolution"}
             </div>
-                        <h1 className="text-6xl lg:text-7xl font-medium tracking-tight leading-[1.1] mb-10 text-walmart-navy overflow-visible">
+                            <h1 className="text-6xl lg:text-7xl font-medium tracking-tight leading-[1.1] mb-10 text-[#1a3a5c] overflow-visible">
               {siteSettings.hero_title || t.heroTitle}
             </h1>
             <p className="text-lg text-slate-500 mb-12 max-w-xl leading-relaxed">
@@ -516,7 +516,7 @@ export default function Home() {
             <div className="flex flex-row items-center gap-6">
               <button
                 onClick={() => scrollIntoView('bundles')}
-                className="px-10 py-5 bg-walmart-navy text-white rounded-full text-sm font-semibold tracking-wide hover:bg-walmart-navy/90 transition-all shadow-lg"
+                className="px-10 py-5 bg-[#2ecc71] text-white rounded-full text-sm font-semibold tracking-wide hover:bg-[#27ae60] transition-all shadow-lg"
               >
                 {t.shopBundles}
               </button>
@@ -663,7 +663,7 @@ export default function Home() {
                   </div>
                 )}
                 {bundle.tag && !bundle.popular && (
-                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                  <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-[#1a3a5c] text-white text-[10px] font-black uppercase tracking-widest rounded-full">
                     {bundle.tag}
                   </div>
                 )}
@@ -684,7 +684,7 @@ export default function Home() {
                 {/* Text */}
                 <div className="p-5 md:p-7 flex flex-col flex-1 pb-4">
                   <a href={`/products/${bundle.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                  <h3 className="text-base md:text-lg font-medium text-walmart-ink leading-snug mb-2 line-clamp-2 min-h-[2.6em]">{bundle.name}</h3>
+                  <h3 className="text-base md:text-lg font-medium text-[#1a2935] leading-snug mb-2 line-clamp-2 min-h-[2.6em]">{bundle.name}</h3>
                   </a>
                   {/* Bundle card minimal: description / bullets / items moved to detail page */}
                   <div className="mt-auto space-y-3">
@@ -700,7 +700,7 @@ export default function Home() {
                             )}
                             <span className={onSale ? "text-lg font-bold text-red-600" : "text-lg font-bold text-gray-900"}>${display.toFixed(2)}</span>
                             {onSale && (
-                              <span className="text-[9px] font-black tracking-widest text-white bg-red-500 px-2 py-0.5 rounded-full uppercase">Sale</span>
+                              <span className="text-[9px] font-black tracking-widest text-white bg-[#ff6b35] px-2 py-0.5 rounded-full uppercase">Sale</span>
                             )}
                           </div>
                         </div>
@@ -710,14 +710,14 @@ export default function Home() {
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined') { if (window.gtag) { window.gtag('event', 'add_to_cart', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } if (window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: _p }); } } }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-walmart-navy text-white hover:bg-walmart-navy/90 active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#2ecc71] text-white hover:bg-[#27ae60] active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                       </button>
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-walmart-navy border border-walmart-navy hover:bg-walmart-navy hover:text-white active:scale-[0.98]'}`}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-[#1a3a5c] border border-[#1a3a5c] hover:bg-[#1a3a5c] hover:text-white active:scale-[0.98]'}`}
                       >
                         {bundle.stock <= 0 ? 'Out of Stock' : 'Buy Now'}
                       </button>
@@ -949,7 +949,7 @@ export default function Home() {
               onChange={(e) => setTrackId(e.target.value)}
               className="flex-1 px-10 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
             />
-            <button type="submit" className="px-10 py-5 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20">
+            <button type="submit" className="px-10 py-5 bg-[#2ecc71] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#27ae60] transition-all">
               Track
             </button>
           </form>
@@ -1109,7 +1109,7 @@ export default function Home() {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full py-4 md:py-5 bg-blue-600 text-white rounded-full text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-[0.98] disabled:opacity-50"
+                        className="w-full py-4 md:py-5 bg-[#2ecc71] text-white rounded-full text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] hover:bg-[#27ae60] transition-all active:scale-[0.98] disabled:opacity-50"
                       >
                         {isSubmitting ? 'Sending...' : 'GET MY DISCOUNT →'}
                       </button>
@@ -1161,3 +1161,4 @@ export default function Home() {
     </main>
   )
 }
+

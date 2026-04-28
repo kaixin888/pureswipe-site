@@ -58,7 +58,7 @@ export default function Register() {
                   placeholder="JOHN DOE"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
+                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-[#1a3a5c]/10 transition-all"
                 />
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function Register() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
+                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-[#1a3a5c]/10 transition-all"
                 />
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function Register() {
                   placeholder="MIN 6 CHARACTERS"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all"
+                  className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-[#1a3a5c]/10 transition-all"
                 />
               </div>
             </div>

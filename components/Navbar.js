@@ -199,7 +199,7 @@ export default function Navbar() {
             {user ? 'Account' : 'Login'}
           </a>
           <div className="border-t border-gray-100 my-2" />
-          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-blue-600 text-white py-4 rounded-full text-center text-sm font-bold uppercase tracking-widest mt-4 active:scale-[0.98] transition-transform">Shop Now</button>
+          <button onClick={() => { setIsOpen(false); scrollTo('bundles'); }} className="bg-[#2ecc71] text-white py-4 rounded-full text-center text-sm font-bold uppercase tracking-widest mt-4 active:scale-[0.98] transition-transform">Shop Now</button>
         </div>
       </div>
 
@@ -213,4 +213,5 @@ export default function Navbar() {
       />
     </nav>
   );
-}
+ }
+
