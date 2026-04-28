@@ -78,7 +78,7 @@ export default function CookieConsentBanner() {
                 {
                   title: 'More Information',
                   description:
-                    'For any questions about our cookie policy, please <a href="/privacy-policy">contact us</a>.',
+                    'For any questions about our cookie policy, please <a href="/privacy">contact us</a>.',
                 },
               ],
             },
