@@ -1,60 +1,49 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay, Thumbs, FreeMode } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/thumbs';
-import 'swiper/css/free-mode';
-import 'swiper/css/navigation';
-import { X } from 'lucide-react';
+import React, { useState } from 'react'
+import Image from 'next/image'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination, Autoplay, Thumbs, FreeMode } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/thumbs'
+import 'swiper/css/free-mode'
+import { X } from 'lucide-react'
 
 const normalizeUrl = (url) => {
-  if (!url) return '';
-  return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com');
-};
+  if (!url) return ''
+  return url.replace('pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev', 'media.clowand.com')
+}
 
 export default function ProductGallery({ images = [], tag, altText, productName }) {
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [desktopThumbsSwiper, setDesktopThumbsSwiper] = useState(null);
-  const [desktopActiveIndex, setDesktopActiveIndex] = useState(0);
-  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [mainDesktopSwiper, setMainDesktopSwiper] = useState(null)
+  const [desktopActiveIndex, setDesktopActiveIndex] = useState(0)
+  const [lightboxIndex, setLightboxIndex] = useState(null)
 
-  if (!images || images.length === 0) return null;
+  if (!images || images.length === 0) return null
 
-  const resolvedImages = images.map(normalizeUrl);
+  const resolvedImages = images.map(normalizeUrl)
 
-  const openLightbox = (idx) => setLightboxIndex(idx);
-  const closeLightbox = () => setLightboxIndex(null);
-  const prevLightbox = () => setLightboxIndex((i) => (i > 0 ? i - 1 : resolvedImages.length - 1));
-  const nextLightbox = () => setLightboxIndex((i) => (i < resolvedImages.length - 1 ? i + 1 : 0));
+  const openLightbox = (idx) => setLightboxIndex(idx)
+  const closeLightbox = () => setLightboxIndex(null)
+  const prevLightbox = () => setLightboxIndex((i) => (i > 0 ? i - 1 : resolvedImages.length - 1))
+  const nextLightbox = () => setLightboxIndex((i) => (i < resolvedImages.length - 1 ? i + 1 : 0))
 
   return (
     <>
-      {/* Mobile: Swiper carousel - Apple Store style */}
+      {/* Mobile: Swiper carousel */}
       <div className="block md:hidden overflow-hidden">
-        {/* Main carousel: slidesPerView=1, auto-play, pagination dots */}
         <div className="relative">
           <Swiper
             modules={[Pagination, Autoplay, Thumbs]}
             slidesPerView={1}
             spaceBetween={0}
             loop={true}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true,
-            }}
-            thumbs={{
-              swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-            }}
+            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            pagination={{ clickable: true, dynamicBullets: true }}
+            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
             onSlideChange={(s) => setActiveIndex(s.realIndex)}
             className="product-gallery-main"
             style={{ aspectRatio: '1' }}
@@ -82,14 +71,10 @@ export default function ProductGallery({ images = [], tag, altText, productName 
               </SwiperSlide>
             ))}
           </Swiper>
-
-          {/* Page number badge: bottom-right corner */}
           <div className="absolute bottom-3 right-3 z-10 bg-black/60 text-white text-xs font-medium px-2 py-0.5 rounded-full pointer-events-none select-none">
             {activeIndex + 1} / {resolvedImages.length}
           </div>
         </div>
-
-        {/* Thumbnail strip: 4.5 slides visible, clickable */}
         {resolvedImages.length > 1 && (
           <Swiper
             onSwiper={setThumbsSwiper}
@@ -117,33 +102,18 @@ export default function ProductGallery({ images = [], tag, altText, productName 
         )}
       </div>
 
-      {/* Desktop: Swiper carousel — same behaviour as mobile */}
+      {/* Desktop: Swiper carousel + fixed thumbnail row (all visible, no scroll) */}
       <div className="hidden md:block overflow-hidden">
         <div className="relative">
           <Swiper
-            modules={[Pagination, Autoplay, Thumbs]}
+            onSwiper={setMainDesktopSwiper}
+            modules={[Pagination, Autoplay]}
             slidesPerView={1}
             spaceBetween={0}
             loop={true}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true,
-            }}
-            thumbs={{
-              swiper: desktopThumbsSwiper && !desktopThumbsSwiper.destroyed ? desktopThumbsSwiper : null,
-            }}
-            onSlideChange={(s) => {
-              const idx = s.realIndex;
-              setDesktopActiveIndex(idx);
-              if (desktopThumbsSwiper && !desktopThumbsSwiper.destroyed) {
-                desktopThumbsSwiper.slideTo(idx, 300);
-              }
-            }}
+            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            pagination={{ clickable: true, dynamicBullets: true }}
+            onSlideChange={(s) => setDesktopActiveIndex(s.realIndex)}
             className="product-gallery-main-desktop"
             style={{ aspectRatio: '1' }}
           >
@@ -170,40 +140,35 @@ export default function ProductGallery({ images = [], tag, altText, productName 
               </SwiperSlide>
             ))}
           </Swiper>
-
-          {/* Page number badge */}
           <div className="absolute bottom-3 right-3 z-10 bg-black/60 text-white text-xs font-medium px-2 py-0.5 rounded-full pointer-events-none select-none">
             {desktopActiveIndex + 1} / {resolvedImages.length}
           </div>
         </div>
 
-        {/* Thumbnail strip — single row, no wrap */}
+        {/* Thumbnail strip — fixed row, all visible, no scroll */}
         {resolvedImages.length > 1 && (
-          <Swiper
-            onSwiper={setDesktopThumbsSwiper}
-            modules={[FreeMode, Thumbs]}
-            spaceBetween={8}
-            slidesPerView={4.5}
-            freeMode={false}
-            watchSlidesProgress={true}
-            className="product-gallery-thumbs-desktop mt-3"
-          >
+          <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
             {resolvedImages.map((src, idx) => (
-              <SwiperSlide key={idx} className="cursor-pointer">
-                <div className={`aspect-square rounded-lg overflow-hidden border-2 bg-white transition-all ${
+              <button
+                key={idx}
+                onClick={() => {
+                  setDesktopActiveIndex(idx)
+                  if (mainDesktopSwiper) mainDesktopSwiper.slideTo(idx, 300)
+                }}
+                className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 bg-white transition-all ${
                   desktopActiveIndex === idx ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200 hover:border-blue-400'
-                }`}>
-                  <Image
-                    src={src}
-                    alt={`${altText || productName || 'Product'} thumb ${idx + 1}`}
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-contain p-1"
-                  />
-                </div>
-              </SwiperSlide>
+                }`}
+              >
+                <Image
+                  src={src}
+                  alt={`${altText || productName || 'Product'} thumb ${idx + 1}`}
+                  width={56}
+                  height={56}
+                  className="w-full h-full object-contain p-1"
+                />
+              </button>
             ))}
-          </Swiper>
+          </div>
         )}
       </div>
 
@@ -214,13 +179,13 @@ export default function ProductGallery({ images = [], tag, altText, productName 
             <X size={32} />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
+            onClick={(e) => { e.stopPropagation(); prevLightbox() }}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white text-3xl font-bold z-10 px-4"
           >
             &#8249;
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
+            onClick={(e) => { e.stopPropagation(); nextLightbox() }}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white text-3xl font-bold z-10 px-4"
           >
             &#8250;
@@ -238,7 +203,7 @@ export default function ProductGallery({ images = [], tag, altText, productName 
             {resolvedImages.map((_, idx) => (
               <button
                 key={idx}
-                onClick={(e) => { e.stopPropagation(); setLightboxIndex(idx); }}
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(idx) }}
                 className={`w-2 h-2 rounded-full transition-all ${
                   lightboxIndex === idx ? 'bg-blue-400 scale-1.5' : 'bg-white/40 hover:bg-white/60'
                 }`}
@@ -248,5 +213,5 @@ export default function ProductGallery({ images = [], tag, altText, productName 
         </div>
       )}
     </>
-  );
+  )
 }
