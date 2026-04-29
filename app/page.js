@@ -1,7 +1,7 @@
 'use client'
 // VERSION: 6.4.1-HOTFIX-VIDEO-OPTIMIZATION
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { createClient } from '@supabase/supabase-js'
@@ -13,15 +13,14 @@ import { getSiteImage } from '../lib/getSiteImage'
 
 import HeroBanner from '../components/HeroBanner'
 import BundleComparisonTable from '../components/BundleComparisonTable'
-const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
-
-
 import { 
   Play, ShieldCheck, Zap, Droplets, CheckCircle, Package, CreditCard, 
   Truck, Globe, X, Search, MapPin, Star, AlertCircle, ThumbsUp, 
   ChevronDown, Trash2, Recycle, Droplet, Sparkles, Ruler, Shield, RefreshCw,
   Mail, Phone
 } from 'lucide-react'
+
+const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -209,9 +208,43 @@ function TrustBar() {
 export default function Home() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
+
+  // 桌面 Hero 视频懒加载：页面加载后才设置 src，避免首次加载带宽浪费
+  useEffect(() => {
+    if (!mounted) return;
+    const v = heroVideoRef.current;
+    if (!v) return;
+    const timer = setTimeout(() => {
+      const src = v.getAttribute('data-lazy-src');
+      if (src && !v.src) {
+        v.src = src;
+        v.load();
+        v.play().catch(() => {});
+      }
+    }, 500); // 延迟500ms，优先加载其他关键资源
+    // 如果用户scroll到视口附近，立即加载
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          clearTimeout(timer);
+          const src = v.getAttribute('data-lazy-src');
+          if (src && !v.src) {
+            v.src = src;
+            v.load();
+            v.play().catch(() => {});
+          }
+          observer.unobserve(v);
+        }
+      }, { rootMargin: '300px' });
+      observer.observe(v);
+      return () => { clearTimeout(timer); observer.disconnect(); };
+    }
+    return () => clearTimeout(timer);
+  }, [mounted]);
   const { addItem, cartTotal, items, emptyCart } = useCart()
   const { setIsCheckoutOpen } = useStore()
   const [lang, setLang] = useState('en')
+  const heroVideoRef = useRef(null)
 
 
   const [activeFaq, setActiveFaq] = useState(null)
@@ -492,6 +525,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-blue-600/10 rounded-[4rem] blur-[80px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
             <div className="relative rounded-[4rem] overflow-hidden border border-slate-100 shadow-3xl bg-black aspect-square group-hover:-rotate-1 transition-all duration-700">
               <video
+                ref={heroVideoRef}
                 autoPlay
                 muted
                 loop
@@ -499,11 +533,9 @@ export default function Home() {
                 preload="metadata"
                 poster={heroImage?.image_url || '/images/hero.jpg'}
                 className="w-full h-full object-cover"
-                onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
+                data-lazy-src="https://media.clowand.com/videos/product-wand.mp4"
                 suppressHydrationWarning
-              >
-                <source src="https://media.clowand.com/videos/product-wand.mp4" type="video/mp4" />
-              </video>
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent"></div>
               <div className="absolute bottom-12 left-12">
                 <div className="flex items-center gap-4 text-white">

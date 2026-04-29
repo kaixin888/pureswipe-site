@@ -18,13 +18,10 @@ function HeroSlide({ slide, normalizeUrl, heroTitle, heroBadge, heroSub, shopLab
   useEffect(() => {
     if (videoRef.current && slide.type === 'video') {
       const v = videoRef.current;
-      // Force-set preload and muted at runtime — Next.js SSR drops 'auto' to 'metadata'
       v.preload = 'auto';
       const playPromise = v.play();
       if (playPromise) {
-        playPromise.catch(() => {
-          // Autoplay blocked by browser (e.g. iOS low power mode); wait for user interaction
-        });
+        playPromise.catch(() => {});
       }
     }
   }, [slide.src, slide.type]);
