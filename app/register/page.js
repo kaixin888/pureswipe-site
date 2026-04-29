@@ -47,17 +47,17 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-40 px-6 bg-slate-50">
+    <div className="min-h-screen pt-32 pb-40 px-6 bg-[#faf9f7]">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-16">
-          <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">Join clowand</span>
-          <h1 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">Create Account</h1>
+          <span className="text-[#1a3a5c] font-black uppercase tracking-[0.3em] text-[10px] italic">Join clowand</span>
+          <h1 className="text-5xl font-display tracking-tight mt-6 text-[#1a2935]">Create Account</h1>
         </div>
 
-        <div className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-2xl">
+        <div className="bg-[#ffffff] p-12 rounded-[4rem] border border-[#e5e0da] shadow-2xl">
           <form onSubmit={handleRegister} className="space-y-8">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic ml-6">Full Name</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#5a6978] italic ml-6">Full Name</label>
               <div className="relative">
                 <User className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                 <input 
@@ -134,7 +134,7 @@ export default function Register() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-6 bg-blue-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full py-6 bg-[#2ecc71] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#27ae60] transition-all shadow-xl shadow-green-600/20 disabled:opacity-50 flex items-center justify-center gap-3"
             >
               {loading ? 'Authenticating...' : (
                 <>

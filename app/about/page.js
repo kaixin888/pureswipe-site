@@ -49,7 +49,7 @@ export default function AboutPage() {
           <span className="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] italic block mb-6">
             Our Story
           </span>
-          <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter mb-8 leading-none">
+          <h1 className="text-5xl md:text-7xl font-display tracking-tight mb-8 leading-none">
             Built in Boston.<br />
             <span className="text-blue-400">Trusted Nationwide.</span>
           </h1>
@@ -65,8 +65,8 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {STATS.map((s) => (
             <div key={s.label}>
-              <p className="text-4xl font-black italic tracking-tighter text-slate-950 mb-2">{s.value}</p>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">{s.label}</p>
+              <p className="text-4xl font-display font-bold text-[#1a2935] mb-2">{s.value}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#5a6978] italic">{s.label}</p>
             </div>
           ))}
         </div>
@@ -125,7 +125,7 @@ export default function AboutPage() {
       {/* Contact */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-slate-950 mb-12">
+          <h2 className="text-3xl font-display tracking-tight text-[#1a2935] mb-12">
             Get In Touch
           </h2>
           <div className="space-y-6">

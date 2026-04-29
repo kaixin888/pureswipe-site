@@ -19,7 +19,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-32 px-6 bg-slate-50">
+    <div className="min-h-screen pt-24 pb-32 px-6 bg-[#faf9f7]">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-12">
@@ -27,13 +27,13 @@ export default function CartPage() {
             onClick={() => router.back()}
             className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
           >
-            <ArrowLeft size={18} className="text-slate-600" />
+            <ArrowLeft size={18} className="text-[#5a6978]" />
           </button>
           <div>
-            <h1 className="text-3xl font-black italic tracking-tighter uppercase text-slate-950">
+            <h1 className="text-3xl font-display tracking-tight text-[#1a2935]">
               Shopping Cart
             </h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mt-1">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#5a6978] italic mt-1">
               {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>

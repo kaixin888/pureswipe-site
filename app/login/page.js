@@ -127,18 +127,18 @@ export default function Login() {
   // 如果处于 TOTP 验证步骤
   if (totpStep) {
     return (
-      <div className="min-h-screen pt-32 pb-40 px-6 bg-slate-50">
+        <div className="min-h-screen pt-32 pb-40 px-6 bg-[#faf9f7]">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-16">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">
+            <span className="text-[#1a3a5c] font-black uppercase tracking-[0.3em] text-[10px] italic">
               Two-Factor Auth
             </span>
-            <h1 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">
+            <h1 className="text-5xl font-display tracking-tight mt-6 text-[#1a2935]">
               Verify Code
             </h1>
           </div>
 
-          <div className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-2xl">
+          <div className="bg-[#ffffff] p-12 rounded-[4rem] border border-[#e5e0da] shadow-2xl">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -193,18 +193,18 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-40 px-6 bg-slate-50">
+    <div className="min-h-screen pt-32 pb-40 px-6 bg-[#faf9f7]">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-16">
-          <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] italic">
+          <span className="text-[#1a3a5c] font-black uppercase tracking-[0.3em] text-[10px] italic">
             Welcome Back
           </span>
-          <h1 className="text-5xl font-black italic tracking-tighter uppercase mt-6 text-slate-950">
+          <h1 className="text-5xl font-display tracking-tight mt-6 text-[#1a2935]">
             Log In
           </h1>
         </div>
 
-        <div className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-2xl">
+        <div className="bg-[#ffffff] p-12 rounded-[4rem] border border-[#e5e0da] shadow-2xl">
           <form onSubmit={handleLogin} className="space-y-8">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic ml-6">
