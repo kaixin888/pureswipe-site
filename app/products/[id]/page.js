@@ -32,7 +32,7 @@ export default function ProductDetail() {
   const [added, setAdded] = useState(false)
   const [purchaseType, setPurchaseType] = useState('one-time')
   const [previewImage, setPreviewImage] = useState(null)
-  const [openSection, setOpenSection] = useState(null)
+  const [openSection, setOpenSection] = useState('howto')
   const [relatedProducts, setRelatedProducts] = useState([])
   
   const { addItem } = useCart()
@@ -320,6 +320,58 @@ export default function ProductDetail() {
 
           {/* Product Specs & Shipping Accordion */}
           <div className="flex flex-col gap-4 mt-2 border-t border-[#e5e0da] pt-8">
+
+            {/* How to Use */}
+            <div className="border-b border-[#e5e0da] pb-4">
+              <button
+                onClick={() => setOpenSection(openSection === 'howto' ? null : 'howto')}
+                className="w-full flex justify-between items-center group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#1a3a5c]/10 text-[#1a3a5c] text-xs font-black">i</span>
+                  <span className="text-sm font-black uppercase tracking-widest text-[#1a2935] group-hover:text-[#1a3a5c] transition-colors">How to Use</span>
+                </div>
+                <ChevronDown size={18} className={`text-[#b0bcc8] transition-transform ${openSection === 'howto' ? 'rotate-180' : ''}`} />
+              </button>
+              {openSection === 'howto' && (
+                <div className="mt-4 animate-in slide-in-from-top-2 duration-200 space-y-4">
+                  <div className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl">
+                    <span className="flex-shrink-0 w-8 h-8 bg-[#1a3a5c] text-white rounded-full flex items-center justify-center text-sm font-black">1</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#1a2935]">Attach</p>
+                      <p className="text-sm text-[#8a9aa8] mt-1">Push handle down until the refill clicks into place. You will hear a satisfying snap.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl">
+                    <span className="flex-shrink-0 w-8 h-8 bg-[#1a3a5c] text-white rounded-full flex items-center justify-center text-sm font-black">2</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#1a2935]">Wet</p>
+                      <p className="text-sm text-[#8a9aa8] mt-1">Dip the cleaning head into toilet water for 1-2 seconds to activate the cleaner.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl">
+                    <span className="flex-shrink-0 w-8 h-8 bg-[#1a3a5c] text-white rounded-full flex items-center justify-center text-sm font-black">3</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#1a2935]">Scrub</p>
+                      <p className="text-sm text-[#8a9aa8] mt-1">Clean the entire bowl with 360deg coverage. The 18-inch reach means no bending over.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl">
+                    <span className="flex-shrink-0 w-8 h-8 bg-[#1a3a5c] text-white rounded-full flex items-center justify-center text-sm font-black">4</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#1a2935]">Release</p>
+                      <p className="text-sm text-[#8a9aa8] mt-1">Slide the button forward to eject the pad. No touching, no mess, no odor contact.</p>
+                    </div>
+                  </div>
+                  <div className="text-center pt-2">
+                    <a href="/#bundles" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] italic text-[#1a3a5c] border-b-2 border-blue-600/10 hover:border-blue-600 transition-all">
+                      Ready to try? Shop Now →
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="border-b border-[#e5e0da] pb-4">
               <button 
                 onClick={() => setOpenSection(openSection === 'specs' ? null : 'specs')}
