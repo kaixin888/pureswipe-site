@@ -123,8 +123,59 @@ export default function CartPage() {
               <UpsellCards />
             </div>
 
+            {/* Free Shipping Progress Bar */}
+            <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm mt-8">
+              {(() => {
+                var threshold = 30;
+                var total = cartTotal;
+                if (total >= threshold) {
+                  return (
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center">
+                          <Truck size={20} className="text-emerald-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-emerald-600">Free Shipping Unlocked!</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400 italic">
+                            Your order qualifies for free shipping
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full h-3 bg-emerald-100 rounded-full overflow-hidden">
+                        <div className="w-full h-full bg-emerald-400 rounded-full" />
+                      </div>
+                    </div>
+                  );
+                } else {
+                  var remaining = (threshold - total);
+                  var pct = Math.min((total / threshold) * 100, 99);
+                  return (
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+                          <Gift size={20} className="text-amber-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-amber-700">
+                            Add <span className="text-amber-500">${remaining.toFixed(2)}</span> more for free shipping!
+                          </p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-amber-400 italic">
+                            Free shipping on orders over ${threshold}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full h-3 bg-amber-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 rounded-full transition-all duration-500" style={{ width: pct + '%' }} />
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
+            </div>
+
             {/* Summary */}
-            <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm mt-8">
+            <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm mt-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">
                   Subtotal
