@@ -17,7 +17,7 @@ import routerProvider, {
 import { createClient } from '@supabase/supabase-js';
 import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon, LogIn, ClipboardList } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon, LogIn, ClipboardList, UserCog, Globe, Smartphone } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -270,6 +270,26 @@ export default function RefineApp({ children }) {
           list: '/admin/site-images',
           edit: '/admin/site-images/edit/:id',
           meta: { label: '站点图片', icon: <ImageIcon size={16} /> }
+        },
+        {
+          name: 'login_logs',
+          list: '/admin/login-logs',
+          meta: { label: '登录日志', icon: <LogIn size={16} /> }
+        },
+        {
+          name: 'audit_logs',
+          list: '/admin/audit-logs',
+          meta: { label: '审计日志', icon: <ClipboardList size={16} /> }
+        },
+        {
+          name: 'user_profiles',
+          list: '/admin/users',
+          meta: { label: '用户管理', icon: <UserCog size={16} /> }
+        },
+        {
+          name: 'user_sessions',
+          list: '/admin/sessions',
+          meta: { label: '会话管理', icon: <Smartphone size={16} /> }
         }
       ]}
       options={{

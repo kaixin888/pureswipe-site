@@ -1,0 +1,58 @@
+### Part A: Cloudflare DNS for clowand.com
+Existing TXT records:
+1. SPF: "v=spf1 +include:_netblocks.m.feishu.cn -all"
+2. DMARC: "v=DMARC1; p=none;" (found at _dmarc.clowand.com)
+3. Google Site Verification: "google-site-verification=zZwPtAUT96IuKz4LSbMpE3giMtdgRRPg2l3zJLp0z1c"
+4. Feishu Verification: "verification-code-site-App_feishu=Z1kV6ZTHEzkuxf00ujJm"
+
+### Part B: GA4 Component Created
+File: C:\Users\Administrator\.accio\accounts\1754518429\agents\MID-48518429U1775887-BC56CE-2691-29A310\project\components\GoogleAnalytics.js
+Content:
+'use client'
+
+import { useEffect } from 'react'
+import { useStore } from './Providers'
+
+// GA4 Measurement ID — set in Vercel env as NEXT_PUBLIC_GA_MEASUREMENT_ID
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+
+// Only load GA when cookies are consented
+export default function GoogleAnalytics() {
+  const { cookieConsent } = useStore() || {}
+
+  useEffect(() => {
+    // Only load if we have an ID AND user consented (or consent is not required for analytics)
+    if (!GA_ID) return
+    
+    // Check consent — if cookieConsent exists and analytics is denied, skip
+    if (cookieConsent && !cookieConsent.analytics) return
+
+    // Load gtag script
+    const script = document.createElement('script')
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`
+    script.async = true
+    document.head.appendChild(script)
+
+    // Init gtag
+    window.dataLayer = window.dataLayer || []
+    function gtag(){ window.dataLayer.push(arguments) }
+    window.gtag = gtag
+    gtag('js', new Date())
+    gtag('config', GA_ID, {
+      send_page_view: true,
+      cookie_flags: 'max-age=7200;Secure;SameSite=Lax',
+    })
+
+    return () => {
+      // Cleanup script on unmount
+      document.head.removeChild(script)
+    }
+  }, [GA_ID, cookieConsent?.analytics])
+
+  return null
+}
+
+### Part C: Cookie Consent Check
+1. components/Providers.js does NOT currently have cookieConsent in its state or context value.
+2. components/CookieConsent.js was found. It uses 'vanilla-cookieconsent' to handle the banner and consent categories (necessary, analytics).
+3. The vanilla-cookieconsent configuration includes an 'analytics' category which matches the expected property in the GA4 component, but there is no code currently bridging the vanilla-cookieconsent state into the Providers store state.

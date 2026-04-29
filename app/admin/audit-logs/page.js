@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { List, useTable } from '@refinedev/antd';
-import { Table, Tag, Space, Typography, Tooltip } from 'antd';
-import { ReloadOutlined, Button } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { ReloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Tag, Space, Typography, Tooltip, Button } from 'antd';
 
 const { Text } = Typography;
 

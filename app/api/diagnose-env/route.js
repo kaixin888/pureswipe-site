@@ -1,4 +1,4 @@
-// 环境诊断端点（完整版，不截断）
+// 环境诊断端点（完整版，不截断任何值）
 // GET /api/diagnose-env?secret=clowand888
 export async function GET(request) {
   const { searchParams } = new URL(request.url);

@@ -1,16 +1,15 @@
-import { Inter } from 'next/font/google'
+// 使用 fontsource 本地字体（无需 CDN 请求，兼容 GFW 环境）
+import '@fontsource/inter/300.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/inter/900.css'
 import { Providers } from '../components/Providers'
 import SiteChrome from '../components/SiteChrome'
 import CookieConsentBanner from '../components/CookieConsent'
 import GoogleAnalytics from '../components/GoogleAnalytics'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '900'],
-  variable: '--font-inter',
-  display: 'swap',
-})
 
 export const metadata = {
   title: 'clowand | Professional 18" Disposable Toilet Brush - 365 Days of Hygiene',
@@ -50,7 +49,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico" />
         <meta name="google" content="notranslate" />
       </head>
-      <body className={inter.className}>
+      <body className="font-sans">
         <Providers>
           {/* Consent-based GA4 — loads only when user accepts analytics cookies */}
           <GoogleAnalytics />
