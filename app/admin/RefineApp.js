@@ -113,6 +113,43 @@ const i18nProvider = {
   getLocale: () => 'zh',
 };
 
+// ----- 角色权限定义 -----
+const ROLE_HIERARCHY = {
+  super_admin: 100,
+  admin: 80,
+  operator: 60,
+  support: 40,
+};
+
+// 每个角色可访问的资源列表（名称对应 resource.name）
+const ROLE_RESOURCES = {
+  super_admin: [
+    'products', 'orders', 'site_stats', 'discount_codes', 'subscribers',
+    'posts', 'reviews', 'faqs', 'inventory', 'site_images', 'settings',
+    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs',
+  ],
+  admin: [
+    'products', 'orders', 'site_stats', 'discount_codes', 'subscribers',
+    'posts', 'reviews', 'faqs', 'inventory', 'site_images', 'settings',
+    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs',
+  ],
+  operator: [
+    'products', 'orders', 'site_stats',
+    'posts', 'reviews', 'faqs', 'inventory',
+  ],
+  support: [
+    'orders', 'site_stats', 'reviews', 'faqs',
+  ],
+};
+
+// 每个角色可执行的操作（action）
+const ROLE_ACTIONS = {
+  super_admin: ['list', 'create', 'edit', 'show', 'delete', 'clone', 'export'],
+  admin: ['list', 'create', 'edit', 'show', 'delete', 'export'],
+  operator: ['list', 'show', 'edit'],
+  support: ['list', 'show'],
+};
+
 const Header = () => {
   return (
     <ThemedHeader
@@ -148,12 +185,53 @@ const authProvider = {
     return { success: true, redirectTo: "/admin" };
   },
   check: async () => {
+    // 检查 Supabase 会话 + 本地存储
+    const { data } = await supabaseClient.auth.getSession();
+    if (data?.session) {
+      // 同步更新本地标记
+      localStorage.setItem("clowand_admin_auth", "true");
+      return { authenticated: true };
+    }
     const auth = typeof window !== 'undefined' ? localStorage.getItem("clowand_admin_auth") : null;
     if (auth === "true") return { authenticated: true };
     return { authenticated: false };
   },
-  getPermissions: async () => null,
-  getIdentity: async () => ({ id: 1, name: "Clowand 管理员" }),
+  getPermissions: async () => {
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return { role: 'admin' }; // fallback for legacy admin page
+      
+      const { data: profile } = await supabaseClient
+        .from('user_profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      
+      return { role: profile?.role || 'admin' };
+    } catch {
+      return { role: 'admin' };
+    }
+  },
+  getIdentity: async () => {
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return { id: 1, name: "Clowand 管理员" };
+      
+      const { data: profile } = await supabaseClient
+        .from('user_profiles')
+        .select('display_name, role')
+        .eq('user_id', user.id)
+        .single();
+      
+      return {
+        id: user.id,
+        name: profile?.display_name || user.email || '管理员',
+        avatar: null,
+      };
+    } catch {
+      return { id: 1, name: "Clowand 管理员" };
+    }
+  },
   onError: async (error) => {
     if (error.status === 401 || error.status === 403) {
       return { logout: true };
@@ -162,13 +240,158 @@ const authProvider = {
   },
 };
 
+// ----- accessControlProvider（按角色权限表控制）-----
+const accessControlProvider = {
+  can: async ({ resource, action, params }) => {
+    // 从权限中获取角色
+    let role = 'admin';
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabaseClient
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+        if (profile?.role) role = profile.role;
+      }
+    } catch {}
+
+    const canAccessResource = ROLE_RESOURCES[role]?.includes(resource) ?? false;
+    const canPerformAction = ROLE_ACTIONS[role]?.includes(action) ?? false;
+
+    return {
+      can: canAccessResource && canPerformAction,
+      reason: canAccessResource
+        ? '角色权限不足'
+        : '无权访问此模块',
+    };
+  },
+  options: {
+    buttons: {
+      hide: true,  // 无权时隐藏按钮
+    },
+    disableNavigate: true,  // 无权时阻止导航
+  },
+};
+
+// ----- 按角色过滤资源（影响侧边栏菜单显示）-----
+const ALL_RESOURCES = [
+  {
+    name: 'products',
+    list: '/admin/products',
+    create: '/admin/products/create',
+    edit: '/admin/products/edit/:id',
+    meta: { canDelete: true, label: '商品管理', icon: <Package size={16} /> },
+  },
+  {
+    name: 'orders',
+    list: '/admin/orders',
+    create: '/admin/orders/create',
+    edit: '/admin/orders/edit/:id',
+    show: '/admin/orders/show/:id',
+    meta: { canDelete: true, label: '订单管理', icon: <ShoppingCart size={16} /> },
+  },
+  {
+    name: 'site_stats',
+    list: '/admin/stats',
+    meta: { label: '数据看板', icon: <Activity size={16} /> }
+  },
+  {
+    name: 'discount_codes',
+    list: '/admin/discounts',
+    create: '/admin/discounts/create',
+    meta: { canDelete: true, label: '折扣码', icon: <Tag size={16} /> }
+  },
+  {
+    name: 'subscribers',
+    list: '/admin/subscribers',
+    meta: { label: '订阅用户', icon: <Mail size={16} /> }
+  },
+  {
+    name: 'posts',
+    list: '/admin/posts',
+    create: '/admin/posts/create',
+    edit: '/admin/posts/edit/:id',
+    meta: { canDelete: true, label: '博客文章', icon: <BookOpen size={16} /> }
+  },
+  {
+    name: 'reviews',
+    list: '/admin/reviews',
+    create: '/admin/reviews/create',
+    meta: { canDelete: true, label: '商品评价', icon: <Star size={16} /> }
+  },
+  {
+    name: 'faqs',
+    list: '/admin/faqs',
+    create: '/admin/faqs/create',
+    edit: '/admin/faqs/edit/:id',
+    meta: { canDelete: true, label: '常见问题', icon: <HelpCircle size={16} /> }
+  },
+  {
+    name: 'inventory',
+    list: '/admin/inventory',
+    edit: '/admin/inventory/edit/:id',
+    meta: { canDelete: true, label: '库存管理', icon: <Archive size={16} /> },
+  },
+  {
+    name: 'site_images',
+    list: '/admin/site-images',
+    edit: '/admin/site-images/edit/:id',
+    meta: { label: '站点图片', icon: <ImageIcon size={16} /> }
+  },
+  {
+    name: 'login_logs',
+    list: '/admin/login-logs',
+    meta: { label: '登录日志', icon: <LogIn size={16} /> }
+  },
+  {
+    name: 'audit_logs',
+    list: '/admin/audit-logs',
+    meta: { label: '审计日志', icon: <ClipboardList size={16} /> }
+  },
+  {
+    name: 'user_profiles',
+    list: '/admin/users',
+    meta: { label: '用户管理', icon: <UserCog size={16} /> }
+  },
+  {
+    name: 'user_sessions',
+    list: '/admin/sessions',
+    meta: { label: '会话管理', icon: <Smartphone size={16} /> }
+  },
+  {
+    name: 'settings',
+    list: '/admin/settings',
+    meta: { label: '系统设置', icon: <Settings2 size={16} /> }
+  },
+];
+
 export default function RefineApp({ children }) {
   const [mounted, setMounted] = React.useState(false);
+  const [filteredResources, setFilteredResources] = React.useState(ALL_RESOURCES);
   const notificationProvider = useNotificationProvider();
 
+  React.useEffect(() => { setMounted(true); }, []);
+
+  // 根据角色过滤侧边栏菜单
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!mounted) return;
+    supabaseClient.auth.getUser().then(({ data }) => {
+      if (!data?.user) return;
+      supabaseClient
+        .from('user_profiles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .single()
+        .then(({ data: profile }) => {
+          const role = profile?.role || 'admin';
+          const allowed = ROLE_RESOURCES[role] || ROLE_RESOURCES.admin;
+          setFilteredResources(ALL_RESOURCES.filter((r) => allowed.includes(r.name)));
+        })
+        .catch(() => {});
+    });
+  }, [mounted]);
 
   if (!mounted) {
     return <div style={{ padding: '24px', background: '#0f172a', height: '100vh', color: '#fff' }}>clowand OS 加载中...</div>;
@@ -188,121 +411,21 @@ export default function RefineApp({ children }) {
         dataProvider={dataProvider(supabaseClient)}
         routerProvider={routerProvider}
         authProvider={authProvider}
+        accessControlProvider={accessControlProvider}
         notificationProvider={notificationProvider}
         i18nProvider={i18nProvider}
-        resources={[
-        {
-          name: 'products',
-          list: '/admin/products',
-          create: '/admin/products/create',
-          edit: '/admin/products/edit/:id',
-          meta: {
-            canDelete: true,
-            label: '商品管理',
-            icon: <Package size={16} />
-          },
-        },
-        {
-          name: 'orders',
-          list: '/admin/orders',
-          create: '/admin/orders/create',
-          edit: '/admin/orders/edit/:id',
-          show: '/admin/orders/show/:id',
-          meta: {
-            canDelete: true,
-            label: '订单管理',
-            icon: <ShoppingCart size={16} />
-          },
-        },
-        {
-          name: 'site_stats',
-          list: '/admin/stats',
-          meta: { label: '数据看板', icon: <Activity size={16} /> }
-        },
-        {
-          name: 'discount_codes',
-          list: '/admin/discounts',
-          create: '/admin/discounts/create',
-          meta: { canDelete: true, label: '折扣码', icon: <Tag size={16} /> }
-        },
-        {
-          name: 'subscribers',
-          list: '/admin/subscribers',
-          meta: { label: '订阅用户', icon: <Mail size={16} /> }
-        },
-        {
-          name: 'posts',
-          list: '/admin/posts',
-          create: '/admin/posts/create',
-          edit: '/admin/posts/edit/:id',
-          meta: { canDelete: true, label: '博客文章', icon: <BookOpen size={16} /> }
-        },
-        {
-          name: 'reviews',
-          list: '/admin/reviews',
-          create: '/admin/reviews/create',
-          meta: { canDelete: true, label: '商品评价', icon: <Star size={16} /> }
-        },
-        {
-          name: 'faqs',
-          list: '/admin/faqs',
-          create: '/admin/faqs/create',
-          edit: '/admin/faqs/edit/:id',
-          meta: { canDelete: true, label: '常见问题', icon: <HelpCircle size={16} /> }
-        },
-        {
-          name: 'inventory',
-          list: '/admin/inventory',
-          edit: '/admin/inventory/edit/:id',
-          meta: {
-            canDelete: true,
-            label: '库存管理',
-            icon: <Archive size={16} />
-          },
-        },
-        {
-          name: 'settings',
-          list: '/admin/settings',
-          meta: { label: '系统设置', icon: <Settings2 size={16} /> }
-        },
-        {
-          name: 'site_images',
-          list: '/admin/site-images',
-          edit: '/admin/site-images/edit/:id',
-          meta: { label: '站点图片', icon: <ImageIcon size={16} /> }
-        },
-        {
-          name: 'login_logs',
-          list: '/admin/login-logs',
-          meta: { label: '登录日志', icon: <LogIn size={16} /> }
-        },
-        {
-          name: 'audit_logs',
-          list: '/admin/audit-logs',
-          meta: { label: '审计日志', icon: <ClipboardList size={16} /> }
-        },
-        {
-          name: 'user_profiles',
-          list: '/admin/users',
-          meta: { label: '用户管理', icon: <UserCog size={16} /> }
-        },
-        {
-          name: 'user_sessions',
-          list: '/admin/sessions',
-          meta: { label: '会话管理', icon: <Smartphone size={16} /> }
-        }
-      ]}
-      options={{
-        syncWithLocation: true,
-        warnWhenUnsavedChanges: true,
-      }}
-    >
-      <Authenticated fallback={<AuthPage type="login" title="clowand 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
-        <ThemedLayout Header={Header} Sider={ThemedSider}>
-            {children}
-        </ThemedLayout>
-      </Authenticated>
-    </Refine>
+        resources={filteredResources}
+        options={{
+          syncWithLocation: true,
+          warnWhenUnsavedChanges: true,
+        }}
+      >
+        <Authenticated fallback={<AuthPage type="login" title="clowand 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
+          <ThemedLayout Header={Header} Sider={ThemedSider}>
+              {children}
+          </ThemedLayout>
+        </Authenticated>
+      </Refine>
     </ConfigProvider>
   );
 }

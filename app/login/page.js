@@ -64,6 +64,12 @@ export default function Login() {
     });
     const data = await res.json();
     if (data.ok) {
+      // TOTP 验证成功 → 记录登录日志
+      fetch('/api/auth-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('totp_login_email') || '', status: 'success' }),
+      }).catch(() => {});
       router.push('/admin');
     } else {
       setError(data.error || '验证码错误');
@@ -102,7 +108,8 @@ export default function Login() {
         .single();
 
       if (profile?.totp_enabled) {
-        // 需要 TOTP 第二步
+        // 需要 TOTP 第二步 — 保存 email 供验证后记录日志
+        localStorage.setItem('totp_login_email', email);
         setTempUserId(loginData.user.id);
         setTotpStep(true);
         setLoading(false);
