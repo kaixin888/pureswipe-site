@@ -11,7 +11,7 @@ import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
 import { getSiteImage } from '../lib/getSiteImage'
 
-const HeroBanner = dynamic(() => import('../components/HeroBanner'), { ssr: false })
+import HeroBanner from '../components/HeroBanner'
 const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
 
 
