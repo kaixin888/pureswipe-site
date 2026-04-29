@@ -3,7 +3,7 @@
 import React from 'react';
 import { useCart } from "react-use-cart";
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, ArrowLeft, Plus, Minus, Trash2 } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Plus, Minus, Trash2, Truck, Gift } from 'lucide-react';
 import { useStore } from '../../components/Providers';
 import UpsellCards from '../../components/UpsellCards';
 
