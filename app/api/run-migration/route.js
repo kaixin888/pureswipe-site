@@ -52,6 +52,10 @@ export async function POST(request) {
             BEFORE UPDATE ON inventory
             FOR EACH ROW EXECUTE FUNCTION update_inventory_updated_at();
 
+          -- ===== blog posts 分类和标签 =====
+          ALTER TABLE posts ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'Cleaning Tips';
+          ALTER TABLE posts ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
+
           -- ===== subscriptions 表 =====
           CREATE TABLE IF NOT EXISTS subscriptions (
             id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
