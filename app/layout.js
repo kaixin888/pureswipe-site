@@ -10,6 +10,7 @@ import '@fontsource/playfair-display/700.css'
 import { Providers } from '../components/Providers'
 import SiteChrome from '../components/SiteChrome'
 import CookieConsentBanner from '../components/CookieConsent'
+import ExitPopup from '../components/ExitPopup'
 import GoogleAnalytics from '../components/GoogleAnalytics'
 import './globals.css'
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
           {/* Consent-based GA4 — loads only when user accepts analytics cookies */}
           <GoogleAnalytics />
           <SiteChrome>{children}</SiteChrome>
+          <ExitPopup />
           <CookieConsentBanner />
         </Providers>
       </body>

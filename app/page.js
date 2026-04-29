@@ -216,12 +216,8 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(null)
   const [trackId, setTrackId] = useState('')
   const [trackResult, setTrackResult] = useState(null)
-  const [isExitPopupOpen, setIsExitPopupOpen] = useState(false)
 
   const [videoModal, setVideoModal] = useState(null) // { url, poster }
-  const [subscriberEmail, setSubscriberEmail] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubscribed, setIsSubscribed] = useState(false)
   const [previewImage, setPreviewImage] = useState(null)
   const [bundles, setBundles] = useState([])
   const [bundlesLoading, setBundlesLoading] = useState(true)
@@ -358,60 +354,6 @@ export default function Home() {
     }
     trackVisitor()
   }, [])
-
-  useEffect(() => {
-    const shown = localStorage.getItem('clowand_exit_popup_shown')
-    if (shown) return
-
-    const handleMouseLeave = (e) => {
-      if (e.clientY <= 0) {
-        setIsExitPopupOpen(true)
-        localStorage.setItem('clowand_exit_popup_shown', 'true')
-        window.removeEventListener('mouseleave', handleMouseLeave)
-      }
-    }
-
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    if (isMobile) {
-      const timer = setTimeout(() => {
-        setIsExitPopupOpen(true)
-        localStorage.setItem('clowand_exit_popup_shown', 'true')
-      }, 30000)
-      return () => clearTimeout(timer)
-    } else {
-      window.addEventListener('mouseleave', handleMouseLeave)
-      return () => window.removeEventListener('mouseleave', handleMouseLeave)
-    }
-  }, [])
-
-  const handleSubscribe = async (e) => {
-    e.preventDefault()
-    if (!subscriberEmail || isSubmitting) return
-    
-    setIsSubmitting(true)
-    const { error } = await supabase
-      .from('subscribers')
-      .insert([{ email: subscriberEmail }])
-    
-    setIsSubmitting(false)
-    if (!error) {
-      setIsSubscribed(true)
-      // Send welcome email with discount code (fire-and-forget)
-      fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'welcome', email: subscriberEmail }),
-      }).catch(() => {})
-      setTimeout(() => {
-        setIsExitPopupOpen(false)
-      }, 3000)
-    } else if (error.code === '23505') {
-      setIsSubscribed(true) // Already subscribed
-      setTimeout(() => {
-        setIsExitPopupOpen(false)
-      }, 3000)
-    }
-  }
 
   const handleTrack = async () => {
     const { data } = await supabase
@@ -1059,102 +1001,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Exit Intent Popup */}
-      {isExitPopupOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 backdrop-blur-2xl bg-slate-950/70 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-[680px] rounded-[2rem] overflow-hidden shadow-2xl relative">
-            <button
-              onClick={() => setIsExitPopupOpen(false)}
-              className="absolute top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 hover:bg-slate-50 rounded-full transition-all text-slate-300 hover:text-slate-950 z-10"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="flex flex-col md:flex-row">
-              {/* Left: Product hero image */}
-              <div className="hidden md:flex md:w-[45%] bg-gradient-to-br from-blue-50 to-slate-50 items-center justify-center p-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-transparent" />
-                <Image
-                  src={productDefaultImage?.image_url || '/images/products/starter-kit-main.jpg'}
-                  width={320}
-                  height={320}
-                  className="object-contain drop-shadow-2xl rounded-2xl max-h-[280px] w-auto"
-                  alt="Clowand Toilet Wand Starter Kit"
-                  priority={false}
-                />
-              </div>
-
-              {/* Mobile: compact product strip */}
-              <div className="md:hidden bg-gradient-to-br from-blue-50 to-slate-50 flex items-center justify-center py-4 px-6">
-                <Image
-                  src={productDefaultImage?.image_url || '/images/products/starter-kit-main.jpg'}
-                  width={100}
-                  height={100}
-                  className="object-contain drop-shadow-xl max-h-[80px] w-auto"
-                  alt="Clowand Toilet Wand Starter Kit"
-                  priority={false}
-                />
-                <div className="ml-4">
-                  <span className="text-blue-600 font-black uppercase tracking-[0.15em] text-[8px] italic">Welcome to Cleaner Living</span>
-                  <p className="text-slate-900 font-black italic tracking-tight text-sm mt-1">10% OFF + Free Guide</p>
-                </div>
-              </div>
-
-              {/* Right: Content area */}
-              <div className="md:w-[55%] p-6 md:p-10 flex flex-col items-center justify-center text-center">
-                {!isSubscribed ? (
-                  <>
-                    <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[9px] md:text-[10px] italic mb-3 md:mb-4">Welcome to Cleaner Living</span>
-                    <h2 className="text-xl md:text-3xl font-black italic tracking-tighter text-slate-950 leading-tight mb-3 md:mb-4">
-                      Get 10% OFF<br/>
-                      <span className="text-blue-600">+ A Free Hygiene Guide</span>
-                    </h2>
-                    <p className="text-slate-500 text-[10px] md:text-[11px] font-semibold leading-relaxed mb-6 md:mb-8">
-                      Join 5,000+ households choosing zero-touch cleaning. Your discount code &amp; guide arrive instantly.
-                    </p>
-                    <form onSubmit={handleSubscribe} className="space-y-3 md:space-y-4 w-full">
-                      <input
-                        type="email"
-                        required
-                        placeholder="your@email.com"
-                        value={subscriberEmail}
-                        onChange={(e) => setSubscriberEmail(e.target.value)}
-                        className="w-full px-6 py-4 md:py-5 bg-slate-50 border border-slate-100 rounded-full text-[12px] md:text-[13px] font-semibold tracking-wide focus:outline-none focus:ring-4 focus:ring-blue-600/10 transition-all text-center placeholder:text-slate-400 placeholder:font-medium placeholder:tracking-normal"
-                      />
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full py-4 md:py-5 bg-[#2ecc71] text-white rounded-full text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] hover:bg-[#27ae60] transition-all active:scale-[0.98] disabled:opacity-50"
-                      >
-                        {isSubmitting ? 'Sending...' : 'GET MY DISCOUNT →'}
-                      </button>
-                    </form>
-                    <p className="text-slate-400 text-[9px] md:text-[10px] font-medium mt-4 md:mt-6 tracking-wide">
-                      Email only. No spam ever. Unsubscribe anytime.
-                    </p>
-                  </>
-                ) : (
-                  <div className="animate-in zoom-in duration-500">
-                    <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-                      <CheckCircle className="text-emerald-500" size={28} />
-                    </div>
-                    <p className="text-2xl font-black italic tracking-tighter text-emerald-600 uppercase mb-2">You're In!</p>
-                    <p className="text-[11px] font-black uppercase tracking-widest text-emerald-500 italic mb-4">Your code: <span className="bg-emerald-100 px-3 py-1 rounded-full text-emerald-700">CLOWAND10</span></p>
-                    <p className="text-[10px] font-medium text-slate-400 mb-2">Check your inbox for the discount code + Bathroom Hygiene Guide.</p>
-                    <button
-                      onClick={() => setIsExitPopupOpen(false)}
-                      className="mt-4 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] italic border-b-2 border-blue-600/20 hover:border-blue-600 transition-all"
-                    >
-                      Start Shopping →
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-          {/* Image Preview Modal */}
+      {/* Image Preview Modal */}
       {/* Video Review Modal */}
       {videoModal && (
         <VideoModal
