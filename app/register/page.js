@@ -34,6 +34,14 @@ export default function Register() {
       setError(signUpError.message);
       setLoading(false);
     } else {
+      // 记录登录日志
+      try {
+        await fetch('/api/auth-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, status: 'success' }),
+        });
+      } catch {}
       router.push('/account');
     }
   };
@@ -85,13 +93,37 @@ export default function Register() {
                 <input 
                   type="password" 
                   required
-                  placeholder="MIN 6 CHARACTERS"
+                  placeholder="MIN 12 CHARACTERS"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-16 pr-8 py-6 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-4 focus:ring-[#1a3a5c]/10 transition-all"
                 />
               </div>
             </div>
+
+            {password && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Shield size={14} className={strengthTextColors[strength]} />
+                  <span className={`text-[9px] font-black uppercase tracking-wider ${strengthTextColors[strength]}`}>
+                    {strengthLabels[strength]} Password
+                  </span>
+                </div>
+                <div className="flex gap-1.5">
+                  {[1,2,3,4,5].map((lvl) => (
+                    <div
+                      key={lvl}
+                      className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${
+                        strength >= lvl ? strengthColors[strength] : 'bg-slate-100'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-[8px] text-slate-400 uppercase tracking-wider">
+                  Min 12 characters, mixed case + numbers
+                </p>
+              </div>
+            )}
 
             {error && (
               <p className="text-center text-[10px] font-black uppercase tracking-widest text-red-500 italic bg-red-50 py-3 rounded-full border border-red-100">
@@ -113,6 +145,15 @@ export default function Register() {
           </form>
 
           <div className="mt-12 pt-12 border-t border-slate-50 text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">Already have an account?</p>
+            <a href="/login" className="text-blue-600 text-[10px] font-black uppercase tracking-widest italic border-b-2 border-blue-600/10 hover:border-blue-600 transition-all">Sign In Here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+r-slate-50 text-center">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">Already have an account?</p>
             <a href="/login" className="text-blue-600 text-[10px] font-black uppercase tracking-widest italic border-b-2 border-blue-600/10 hover:border-blue-600 transition-all">Sign In Here</a>
           </div>

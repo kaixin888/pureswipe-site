@@ -17,7 +17,7 @@ import routerProvider, {
 import { createClient } from '@supabase/supabase-js';
 import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon, LogIn, ClipboardList } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -278,6 +278,15 @@ export default function RefineApp({ children }) {
       }}
     >
       <Authenticated fallback={<AuthPage type="login" title="clowand 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
+        <ThemedLayout Header={Header} Sider={ThemedSider}>
+            {children}
+        </ThemedLayout>
+      </Authenticated>
+    </Refine>
+    </ConfigProvider>
+  );
+}
+and 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
         <ThemedLayout Header={Header} Sider={ThemedSider}>
             {children}
         </ThemedLayout>

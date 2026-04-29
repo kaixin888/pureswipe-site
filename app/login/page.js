@@ -27,7 +27,19 @@ export default function Login() {
     if (loginError) {
       setError(loginError.message);
       setLoading(false);
+      // 记录失败登录
+      fetch('/api/auth-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, status: 'failed', failed_reason: loginError.message }),
+      }).catch(() => {});
     } else {
+      // 记录成功登录
+      fetch('/api/auth-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, status: 'success' }),
+      }).catch(() => {});
       router.push('/account');
     }
   };

@@ -1,0 +1,36 @@
+// 登录日志 API — 记录登录成功/失败到 login_logs 表
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+export async function POST(req) {
+  try {
+    const { email, status, failed_reason } = await req.json();
+
+    // 获取客户端 IP（Vercel 或 Cloudflare 代理头）
+    const forwarded = req.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || '';
+
+    const { error } = await supabase.from('login_logs').insert({
+      email,
+      status,
+      failed_reason: failed_reason || null,
+      ip_address: ip,
+      user_agent: userAgent,
+    });
+
+    if (error) {
+      console.error('auth-log insert error:', error);
+      return Response.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    return Response.json({ ok: true });
+  } catch (err) {
+    console.error('auth-log error:', err);
+    return Response.json({ ok: false, error: err.message }, { status: 500 });
+  }
+}
