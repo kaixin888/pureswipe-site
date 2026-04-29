@@ -6,5 +6,19 @@
       "destination": "https://www.clowand.com/$1",
       "permanent": true
     }
+  ],
+  "cron": [
+    {
+      "path": "/api/cron/backup",
+      "schedule": "0 4 * * 0"
+    },
+    {
+      "path": "/api/cron/gdpr-cleanup",
+      "schedule": "0 3 1 * *"
+    },
+    {
+      "path": "/api/cron/abandoned-cart",
+      "schedule": "0 9,14,19,23 * * *"
+    }
   ]
 }
