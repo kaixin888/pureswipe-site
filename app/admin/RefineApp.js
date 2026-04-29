@@ -264,6 +264,12 @@ export default function RefineApp({ children }) {
           name: 'settings',
           list: '/admin/settings',
           meta: { label: '系统设置', icon: <Settings2 size={16} /> }
+        },
+        {
+          name: 'site_images',
+          list: '/admin/site-images',
+          edit: '/admin/site-images/edit/:id',
+          meta: { label: '站点图片', icon: <ImageIcon size={16} /> }
         }
       ]}
       options={{
@@ -274,13 +280,6 @@ export default function RefineApp({ children }) {
       <Authenticated fallback={<AuthPage type="login" title="clowand 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
         <ThemedLayout Header={Header} Sider={ThemedSider}>
             {children}
-        </ThemedLayout>
-      </Authenticated>
-    </Refine>
-    </ConfigProvider>
-  );
-}
-ldren}
         </ThemedLayout>
       </Authenticated>
     </Refine>
