@@ -72,6 +72,7 @@ const zhDict = {
   reviews: { reviews: '商品评价', titles: { list: '商品评价', create: '新建评价' } },
   faqs: { faqs: '常见问题', titles: { list: '常见问题', create: '新建问题', edit: '编辑问题' } },
   inventory: { inventory: '库存管理', titles: { list: '库存管理', edit: '调整库存' } },
+  'site_images': { 'site_images': '站点图片', titles: { list: '站点图片管理', edit: '编辑图片', create: '新建图片插槽' } },
   settings: { settings: '系统设置', titles: { list: '系统设置' } },
   documentTitle: {
     default: 'clowand 管理后台',
@@ -273,6 +274,13 @@ export default function RefineApp({ children }) {
       <Authenticated fallback={<AuthPage type="login" title="clowand 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
         <ThemedLayout Header={Header} Sider={ThemedSider}>
             {children}
+        </ThemedLayout>
+      </Authenticated>
+    </Refine>
+    </ConfigProvider>
+  );
+}
+ldren}
         </ThemedLayout>
       </Authenticated>
     </Refine>
