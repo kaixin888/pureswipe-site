@@ -286,12 +286,3 @@ export default function RefineApp({ children }) {
     </ConfigProvider>
   );
 }
-and 管理后台" registerLink={false} forgotPasswordLink={false} wrapperProps={{ style: { backgroundColor: '#0f172a' } }} />}>
-        <ThemedLayout Header={Header} Sider={ThemedSider}>
-            {children}
-        </ThemedLayout>
-      </Authenticated>
-    </Refine>
-    </ConfigProvider>
-  );
-}

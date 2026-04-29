@@ -153,12 +153,3 @@ export default function Register() {
     </div>
   );
 }
-r-slate-50 text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">Already have an account?</p>
-            <a href="/login" className="text-blue-600 text-[10px] font-black uppercase tracking-widest italic border-b-2 border-blue-600/10 hover:border-blue-600 transition-all">Sign In Here</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
