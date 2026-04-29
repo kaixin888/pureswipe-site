@@ -9,6 +9,7 @@ import VideoModal from '../components/VideoModal'
 
 import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
+import { getSiteImage } from '../lib/getSiteImage'
 
 const HeroBanner = dynamic(() => import('../components/HeroBanner'), { ssr: false })
 const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
@@ -224,9 +225,9 @@ export default function Home() {
   const [previewImage, setPreviewImage] = useState(null)
   const [bundles, setBundles] = useState([])
   const [bundlesLoading, setBundlesLoading] = useState(true)
-
-
-
+  const [heroImage, setHeroImage] = useState(null)
+  const [productDefaultImage, setProductDefaultImage] = useState(null)
+  const [bundleSiteImages, setBundleSiteImages] = useState([])
 
   const [reviews, setReviews] = useState([])
   const [faqs, setFaqs] = useState([])
@@ -269,6 +270,20 @@ export default function Home() {
       setBundlesLoading(false)
     }
     fetchProducts()
+  }, [])
+
+  // 从 site_images 表异步加载动态可替换图片
+  useEffect(() => {
+    const loadSiteImages = async () => {
+      const hero = await getSiteImage('home_hero_bg')
+      setHeroImage(hero)
+      const prodDef = await getSiteImage('product_default')
+      setProductDefaultImage(prodDef)
+      const bundleKeys = ['home_bundle_1', 'home_bundle_2', 'home_bundle_3']
+      const results = await Promise.all(bundleKeys.map(k => getSiteImage(k)))
+      setBundleSiteImages(results)
+    }
+    loadSiteImages()
   }, [])
 
   // Fetch published reviews from Supabase
@@ -449,7 +464,7 @@ export default function Home() {
             "@context": "https://schema.org/",
             "@type": "Product",
             "name": "clowand Disposable Toilet Brush System",
-            "image": "/images/hero.jpg",
+            "image": heroImage?.image_url || "/images/hero.jpg",
             "description": "The ultimate 18-inch reach bathroom hygiene system. Triple-action pads, zero-touch mechanism, and 365-day supply in one box. Designed for the modern US home.",
             "brand": {
               "@type": "Brand",
@@ -475,9 +490,9 @@ export default function Home() {
 {/* Hero — Mobile: Swiper carousel; Desktop: original layout */}
       <HeroBanner
         slides={[
-          { type: 'video', src: 'https://media.clowand.com/videos/product-wand.mp4', poster: '/images/hero.jpg', alt: 'Clowand Wand Demo' },
-          { type: 'video', src: 'https://media.clowand.com/videos/product-lid.mp4', poster: '/images/hero.jpg', alt: 'Clowand Caddy Demo' },
-          { type: 'image', src: '/images/hero.jpg', alt: 'Clowand Hero' },
+          { type: 'video', src: 'https://media.clowand.com/videos/product-wand.mp4', poster: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Wand Demo' },
+          { type: 'video', src: 'https://media.clowand.com/videos/product-lid.mp4', poster: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Caddy Demo' },
+          { type: 'image', src: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Hero' },
         ]}
         heroTitle={siteSettings.hero_title || t.heroTitle}
         heroSub={siteSettings.hero_subtitle || t.heroSub}
@@ -539,7 +554,7 @@ export default function Home() {
                 loop
                 playsInline
                 preload="metadata"
-                poster="/images/hero.jpg"
+                poster={heroImage?.image_url || '/images/hero.jpg'}
                 className="w-full h-full object-cover"
                 onCanPlay={(e) => { try { e.target.play() } catch(err) {} }}
                 suppressHydrationWarning
@@ -596,7 +611,7 @@ export default function Home() {
           <div className="flex-1 order-2 md:order-1">
                            <div className="relative group rounded-[4rem] border border-white/10 min-h-[550px] flex items-center overflow-visible">
               <Image 
-                src="/images/products/starter-kit-main.jpg" 
+                src={productDefaultImage?.image_url || '/images/products/starter-kit-main.jpg'} 
                 width={800} 
                 height={450}
                 className="absolute top-0 right-0 h-full w-1/2 object-cover grayscale opacity-10 group-hover:opacity-100 transition-all duration-1000 group-hover:grayscale-0 pointer-events-none" 
@@ -671,7 +686,7 @@ export default function Home() {
                 <a href={`/products/${bundle.id}`} className="block">
                 <div className="w-full bg-white overflow-hidden [aspect-ratio:3/4] md:[aspect-ratio:4/3] flex items-center justify-center p-6">
                   <Image
-                    src={bundle.image}
+                    src={bundleSiteImages[i]?.image_url || bundle.image}
                     width={600}
                     height={800}
                     className="w-full h-full object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-500"
@@ -907,7 +922,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto rounded-[5rem] bg-blue-600 text-white p-10 md:p-32 overflow-visible relative group">
           <div className="absolute top-0 right-0 w-full h-full opacity-20 scale-150 group-hover:scale-110 transition-transform duration-[3s]">
             <Image 
-              src="/images/products/auto-lid-main.jpg" 
+              src={productDefaultImage?.image_url || '/images/products/auto-lid-main.jpg'} 
               width={800} 
               height={600}
               className="w-full h-full object-cover grayscale" 
@@ -1060,7 +1075,7 @@ export default function Home() {
               <div className="hidden md:flex md:w-[45%] bg-gradient-to-br from-blue-50 to-slate-50 items-center justify-center p-8 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-transparent" />
                 <Image
-                  src="/images/products/starter-kit-main.jpg"
+                  src={productDefaultImage?.image_url || '/images/products/starter-kit-main.jpg'}
                   width={320}
                   height={320}
                   className="object-contain drop-shadow-2xl rounded-2xl max-h-[280px] w-auto"
@@ -1072,7 +1087,7 @@ export default function Home() {
               {/* Mobile: compact product strip */}
               <div className="md:hidden bg-gradient-to-br from-blue-50 to-slate-50 flex items-center justify-center py-4 px-6">
                 <Image
-                  src="/images/products/starter-kit-main.jpg"
+                  src={productDefaultImage?.image_url || '/images/products/starter-kit-main.jpg'}
                   width={100}
                   height={100}
                   className="object-contain drop-shadow-xl max-h-[80px] w-auto"
