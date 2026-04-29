@@ -1,5 +1,3 @@
-'use client';
-
 import { Package, Check, Minus, Star } from 'lucide-react';
 
 /**
