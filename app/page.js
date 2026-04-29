@@ -12,6 +12,7 @@ import { useStore } from '../components/Providers'
 import { getSiteImage } from '../lib/getSiteImage'
 
 import HeroBanner from '../components/HeroBanner'
+import BundleComparisonTable from '../components/BundleComparisonTable'
 const CardSlider = dynamic(() => import('../components/CardSlider'), { ssr: false })
 
 
@@ -684,6 +685,9 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Bundle Comparison Table */}
+          <BundleComparisonTable bundles={bundles} />
         </div>
       </section>
 
