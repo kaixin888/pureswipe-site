@@ -1,6 +1,6 @@
 // 一键数据库迁移端点
 // POST /api/run-migration?secret=clowand888
-// 在 Supabase 上创建 inventory 表并插入初始数据
+// 在 Supabase 上创建 inventory + subscriptions 表并插入初始数据
 import pg from 'pg';
 import { createClient } from '@supabase/supabase-js';
 
@@ -50,6 +50,42 @@ export async function POST(request) {
           DROP TRIGGER IF EXISTS trg_inventory_updated_at ON inventory;
           CREATE TRIGGER trg_inventory_updated_at
             BEFORE UPDATE ON inventory
+            FOR EACH ROW EXECUTE FUNCTION update_inventory_updated_at();
+
+          -- ===== subscriptions 表 =====
+          CREATE TABLE IF NOT EXISTS subscriptions (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            user_id UUID NOT NULL,
+            product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+            status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','paused','cancelled')),
+            frequency TEXT NOT NULL DEFAULT 'every_3_months' CHECK (frequency IN ('every_1_month','every_2_months','every_3_months','every_6_months')),
+            next_delivery DATE,
+            price DECIMAL(10,2) NOT NULL,
+            shipping_address JSONB,
+            order_id TEXT,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+          );
+
+          -- subscriptions RLS
+          ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+          DROP POLICY IF EXISTS "Users view own subscriptions" ON subscriptions;
+          DROP POLICY IF EXISTS "Users insert own subscriptions" ON subscriptions;
+          DROP POLICY IF EXISTS "Users update own subscriptions" ON subscriptions;
+          CREATE POLICY "Users view own subscriptions"
+            ON subscriptions FOR SELECT
+            USING (user_id = auth.uid());
+          CREATE POLICY "Users insert own subscriptions"
+            ON subscriptions FOR INSERT
+            WITH CHECK (user_id = auth.uid());
+          CREATE POLICY "Users update own subscriptions"
+            ON subscriptions FOR UPDATE
+            USING (user_id = auth.uid())
+            WITH CHECK (user_id = auth.uid());
+
+          DROP TRIGGER IF EXISTS trg_subscriptions_updated_at ON subscriptions;
+          CREATE TRIGGER trg_subscriptions_updated_at
+            BEFORE UPDATE ON subscriptions
             FOR EACH ROW EXECUTE FUNCTION update_inventory_updated_at();
         `;
 
