@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import BlogProducts from '../../../components/BlogProducts'
+import BlogRelatedArticles from '../../../components/BlogRelatedArticles'
 import { getSiteImage } from '../../../lib/getSiteImage'
 
 // Force dynamic rendering - always fetch latest content from DB
@@ -184,6 +185,9 @@ export default async function BlogPostPage({ params }) {
           </Link>
         </div>
       </article>
+
+      {/* Related Articles - 3 latest posts excluding current */}
+      <BlogRelatedArticles currentSlug={params.slug} />
     </main>
   )
 }
