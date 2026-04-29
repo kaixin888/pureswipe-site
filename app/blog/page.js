@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getSiteImage } from '../../lib/getSiteImage'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -18,12 +19,19 @@ export const metadata = {
 // Server component — fetch at request time for fresh data
 async function getPosts() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co', (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY')
+  // 获取 site_images 管理的博客默认封面
+  const defaultCover = await getSiteImage('blog_default_cover')
+  const defaultCoverUrl = defaultCover?.image_url || ''
   const { data } = await supabase
     .from('posts')
-    .select('id, title, slug, excerpt, cover_image, published_at')
+    .select('id, title, slug, excerpt, cover_image, alt_text, published_at')
     .eq('is_published', true)
     .order('published_at', { ascending: false })
-  return data || []
+  // 为没有封面图的文章填充默认封面
+  return (data || []).map(post => ({
+    ...post,
+    cover_image: post.cover_image || defaultCoverUrl,
+  }))
 }
 
 function formatDate(iso) {
@@ -69,18 +77,14 @@ export default async function BlogPage() {
                 href={`/blog/${post.slug}`}
                 className="group block bg-slate-900 rounded-2xl overflow-hidden hover:bg-slate-800 transition-all duration-300"
               >
-                {/* Cover image */}
+                {/* Cover image — uses site_images default as fallback */}
                 <div className="relative w-full h-52 bg-slate-800">
-                  {post.cover_image ? (
-                    <Image
-                      src={post.cover_image}
-                      alt={post.alt_text || post.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">🧹</div>
-                  )}
+                  <Image
+                    src={post.cover_image}
+                    alt={post.alt_text || post.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 {/* Content */}
                 <div className="p-6">

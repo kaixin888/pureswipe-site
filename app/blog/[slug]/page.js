@@ -5,12 +5,19 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import BlogProducts from '../../../components/BlogProducts'
+import { getSiteImage } from '../../../lib/getSiteImage'
 
 // Force dynamic rendering - always fetch latest content from DB
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co', (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY')
+
+// 获取站点默认封面图（site_images 管理）
+async function getDefaultCover() {
+  const siteImg = await getSiteImage('blog_default_cover')
+  return siteImg?.image_url || ''
+}
 
 // Generate SEO metadata per article
 export async function generateMetadata({ params }) {
@@ -22,13 +29,16 @@ export async function generateMetadata({ params }) {
 
   if (!data) return { title: 'Article Not Found | Clowand' }
 
+  // 如果文章没有封面图，回退到 site_images 管理的默认封面
+  const coverImage = data.cover_image || await getDefaultCover()
+
   return {
     title: `${data.title} | Clowand Blog`,
     description: data.excerpt || '',
     openGraph: {
       title: data.title,
       description: data.excerpt || '',
-      images: data.cover_image ? [data.cover_image] : [],
+      images: coverImage ? [coverImage] : [],
       url: `https://clowand.com/blog/${params.slug}`,
       type: 'article',
     },
@@ -50,13 +60,16 @@ export default async function BlogPostPage({ params }) {
 
   if (!post) notFound()
 
+  // 若文章无自定义封面图，使用 site_images 管理的默认封面
+  const defaultCover = post.cover_image || await getDefaultCover()
+
     // GEO: Enhanced Article and Breadcrumb Schema
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": post.title,
     "description": post.excerpt || "",
-    "image": post.cover_image || "https://clowand.com/logo.png",
+    "image": defaultCover || "https://clowand.com/logo.png",
     "datePublished": post.published_at,
     "dateModified": post.published_at,
     "author": { "@type": "Person", "name": "Clowand Engineering Team", "url": "https://clowand.com/about" },
@@ -120,11 +133,11 @@ export default async function BlogPostPage({ params }) {
         {/* Title */}
         <h1 className="text-3xl lg:text-4xl font-black leading-tight mb-8 text-white">{post.title}</h1>
 
-        {/* Cover image */}
-        {post.cover_image && (
+        {/* Cover image — supports site_images fallback */}
+        {defaultCover && (
           <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-10 bg-slate-800">
             <Image
-              src={post.cover_image}
+              src={defaultCover}
               alt={post.alt_text || post.title}
               fill
               className="object-cover"
