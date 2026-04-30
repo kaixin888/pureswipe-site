@@ -37,9 +37,10 @@ async function notifyFeishu(text) {
 }
 
 export async function GET(request) {
-  // Vercel Cron auth
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Vercel Cron auth — Vercel sends x-vercel-cron: 1 automatically
+  // Do NOT use custom Bearer token; Vercel Cron does not send one.
+  const isVercelCron = request.headers.get('x-vercel-cron') === '1';
+  if (!isVercelCron) {
     return new Response('Unauthorized', { status: 401 });
   }
 
