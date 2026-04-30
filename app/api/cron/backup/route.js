@@ -19,8 +19,7 @@ const R2_ENDPOINT    = process.env.R2_ENDPOINT;             // e.g. https://xxx.
 const R2_ACCESS_KEY  = process.env.R2_BACKUPS_ACCESS_KEY_ID;
 const R2_SECRET_KEY  = process.env.R2_BACKUPS_SECRET_ACCESS_KEY;
 const R2_BUCKET     = process.env.R2_BACKUPS_BUCKET;
-const FEISHU_WEBHOOK = process.env.FEISHU_WEBHOOK_URL
-  || 'https://open.feishu.cn/open-apis/bot/v2/hook/30ce9bd2-1eac-4dd5-a7d2-23c1fbcf1096';
+const FEISHU_WEBHOOK = process.env.FEISHU_WEBHOOK_URL;
 
 // ── R2 Client ─────────────────────────────────────────────────────────────────
 const r2 = new S3Client({

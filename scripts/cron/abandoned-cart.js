@@ -14,10 +14,13 @@
  *       本地网络不通畅时不执行，避免 Supabase 连接池耗尽。
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg5NDcxNywiZXhwIjoyMDkxNDcwNzE3fQ.RDr_UBLAR1bjxRa1pbq7SIeFeUUbMtSu_FwJ6tkIaJY';
-const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_8JmtiyB3_FQP5kwscM1qC7Gpwp2c3uRis';
-const FEISHU_WEBHOOK = process.env.FEISHU_WEBHOOK_URL || 'https://open.feishu.cn/open-apis/bot/v2/hook/30ce9bd2-1eac-4dd5-a7d2-23c1fbcf1096';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+if (!SUPABASE_URL) throw new Error('NEXT_PUBLIC_SUPABASE_URL is required');
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY is required');
+const FEISHU_WEBHOOK = process.env.FEISHU_WEBHOOK_URL;
 
 const FROM_EMAIL = 'Clowand <support@clowand.com>';
 

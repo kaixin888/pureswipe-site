@@ -12,7 +12,9 @@ const supabaseAdmin = createClient(
 export async function POST(request) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
-  if (secret !== 'clowand888') {
+// 管理员密码全局引用 — 指向 ADMIN_PASSWORD 环境变量
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  if (secret !== ADMIN_PASSWORD) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
