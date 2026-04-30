@@ -13,6 +13,8 @@ import {
 import { useStore } from '../../../components/Providers'
 import DeliveryCountdown from '../../../components/DeliveryCountdown'
 import { getEffectivePrice } from '../../../lib/getEffectivePrice'
+import { useProductActions } from '../../../lib/productActions'
+import ActionBar from '../../../components/ActionBar'
 import dynamic from 'next/dynamic'
 const ProductGallery = dynamic(() => import('../../../components/ProductGallery'), { ssr: false })
 const RelatedProducts = dynamic(() => import('../../../components/RelatedProducts'), { ssr: false })
@@ -28,15 +30,14 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null)
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
-  const [qty, setQty] = useState(1)
-  const [added, setAdded] = useState(false)
-  const [purchaseType, setPurchaseType] = useState('one-time')
   const [previewImage, setPreviewImage] = useState(null)
   const [openSection, setOpenSection] = useState('howto')
   const [relatedProducts, setRelatedProducts] = useState([])
   
   const { addItem } = useCart()
   const { setIsCheckoutOpen } = useStore()
+
+  const actions = useProductActions(product || {}, { addItem }, () => setIsCheckoutOpen(true))
 
   useEffect(() => {
     async function fetchProduct() {
@@ -110,54 +111,7 @@ export default function ProductDetail() {
   const isOutOfStock = product.stock <= 0
 
   // Phase E-2: unified effective price (sale_price-aware).
-  // Subscribe-and-save 15% stacks ON TOP of the base effective price.
-  const { price: effectivePrice, originalPrice: trueOriginalPrice, isOnSale } = getEffectivePrice(product)
-  const finalPrice = purchaseType === 'subscribe' ? effectivePrice * 0.85 : effectivePrice
-  // Strikethrough basis: real original on sale, otherwise legacy 1.3x marketing markup.
-  const strikethroughPrice = isOnSale ? trueOriginalPrice : effectivePrice * 1.3
-
-  function handleBuyNow() {
-    if (isOutOfStock) return
-    addItem({
-      id: product.id.toString(),
-      name: product.name,
-      price: finalPrice,
-      image: product.image_url,
-      quantity: qty,
-      purchase_type: purchaseType
-    })
-    setIsCheckoutOpen(true)
-  }
-
-  function handleAddToCart() {
-    if (isOutOfStock) return
-    addItem({
-      id: product.id.toString(),
-      name: product.name,
-      price: finalPrice,
-      image: product.image_url,
-      quantity: qty,
-      purchase_type: purchaseType
-    })
-
-    // GA4 Ecommerce: add_to_cart
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'add_to_cart', {
-        currency: 'USD',
-        value: finalPrice * qty,
-        items: [{
-          item_id: product.id.toString(),
-          item_name: product.name,
-          price: finalPrice,
-          quantity: qty
-        }]
-      });
-    }
-
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
-  }
-
+  const { price: effectivePrice } = getEffectivePrice(product)
   const rating = parseFloat(product.rating) || 4.9
   const fullStars = Math.floor(rating)
   const halfStar = (rating - fullStars) >= 0.5
@@ -225,90 +179,16 @@ export default function ProductDetail() {
 
           <div className="flex items-baseline gap-3 flex-wrap">
             <span className="text-4xl font-semibold text-[#1a2935] tracking-tight">
-              ${finalPrice.toFixed(2)}
+              ${actions.finalPrice.toFixed(2)}
             </span>
-            <span className="text-sm text-[#b0bcc8] line-through">${strikethroughPrice.toFixed(2)}</span>
-            {isOnSale && (
+            <span className="text-sm text-[#b0bcc8] line-through">${actions.strikethroughPrice.toFixed(2)}</span>
+            {actions.isOnSale && (
               <span className="text-[10px] bg-red-600/10 text-red-600 px-2 py-1 rounded-md font-semibold tracking-wide uppercase">Sale</span>
             )}
-            {purchaseType === 'subscribe' && <span className="text-[10px] bg-[#1a3a5c]/10 text-[#1a3a5c] px-2 py-1 rounded-md font-semibold tracking-wide uppercase">Save 15%</span>}
+            {actions.purchaseType === 'subscribe' && <span className="text-[10px] bg-[#1a3a5c]/10 text-[#1a3a5c] px-2 py-1 rounded-md font-semibold tracking-wide uppercase">Save 15%</span>}
           </div>
 
-          {/* Subscribe & Save UI */}
-          <div className="flex flex-col gap-2 mt-2">
-            <button 
-              onClick={() => setPurchaseType('one-time')}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'one-time' ? 'border-[#1a3a5c] bg-[#1a3a5c]/5' : 'border-[#e5e0da] hover:border-[#c5c0ba]'}`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${purchaseType === 'one-time' ? 'border-[#1a3a5c]' : 'border-[#c5c0ba]'}`}>
-                  {purchaseType === 'one-time' && <div className="w-2 h-2 rounded-full bg-[#1a3a5c]" />}
-                </div>
-                <span className="text-sm font-bold text-[#1a2935]">One-time purchase</span>
-              </div>
-              <span className="text-sm font-semibold tracking-tight text-[#5a6978]">${effectivePrice.toFixed(2)}</span>
-            </button>
-
-            <button 
-              onClick={() => setPurchaseType('subscribe')}
-              className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${purchaseType === 'subscribe' ? 'border-[#1a3a5c] bg-[#1a3a5c]/5' : 'border-[#e5e0da] hover:border-[#c5c0ba]'}`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${purchaseType === 'subscribe' ? 'border-[#1a3a5c]' : 'border-[#c5c0ba]'}`}>
-                  {purchaseType === 'subscribe' && <div className="w-2 h-2 rounded-full bg-[#1a3a5c]" />}
-                </div>
-                <div>
-                  <span className="text-sm font-bold block text-left text-[#1a2935]">Subscribe & Save</span>
-                  <span className="text-[10px] text-[#1a3a5c] font-semibold tracking-[0.18em] block text-left">Deliver every 3 months</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-sm font-semibold tracking-tight text-[#1a2935]">${(effectivePrice * 0.85).toFixed(2)}</span>
-                <span className="text-[10px] text-[#b0bcc8] block line-through tracking-tighter">${effectivePrice.toFixed(2)}</span>
-              </div>
-            </button>
-          </div>
-
-          {/* Delivery Countdown */}
-          <DeliveryCountdown />
-
-          {/* Qty + Actions */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border border-[#e5e0da] rounded-full overflow-hidden">
-                <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-4 py-3 text-[#1a2935] hover:bg-[#efece8] font-bold">-</button>
-                <span className="px-4 py-3 text-[#1a2935] font-bold min-w-[40px] text-center">{qty}</span>
-                <button onClick={() => setQty(q => q + 1)} className="px-4 py-3 text-[#1a2935] hover:bg-[#efece8] font-bold">+</button>
-              </div>
-              <button
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className={`flex-1 py-4 rounded-full font-semibold tracking-wide text-sm transition-all ${isOutOfStock ? 'bg-[#e5e0da] text-[#b0bcc8]' : added ? 'bg-[#2ecc71] text-white' : 'bg-[#1a3a5c] text-white hover:bg-[#1a3a5c]/90'}`}
-              >
-                {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
-              </button>
-            </div>
-            
-            <button
-              onClick={handleBuyNow}
-              disabled={isOutOfStock}
-              className={`w-full py-4 rounded-full font-semibold tracking-wide text-sm transition-all bg-[#1a3a5c] text-white hover:bg-[#1a3a5c]/90 flex items-center justify-center gap-2 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <Zap size={16} fill="currentColor" />
-              BUY IT NOW
-            </button>
-
-            {/* Payment Trust Badges */}
-            <div className="flex flex-col items-center gap-3 mt-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#b0bcc8]">Guaranteed Safe Checkout</p>
-              <div className="flex items-center gap-4 opacity-70 grayscale hover:grayscale-0 transition-all">
-                <img src="/images/trust/paypal.svg" alt="PayPal" className="h-5 opacity-50 hover:opacity-100 transition-opacity" />
-                <img src="/images/trust/stripe.svg" alt="Stripe" className="h-6 opacity-50 hover:opacity-100 transition-opacity" />
-                <img src="/images/trust/visa.svg" alt="Visa" className="h-4 opacity-50 hover:opacity-100 transition-opacity" />
-                <img src="/images/trust/mastercard.svg" alt="Mastercard" className="h-8 opacity-50 hover:opacity-100 transition-opacity" />
-              </div>
-            </div>
-          </div>
+          <ActionBar product={product} actions={actions} />
 
           <div className="border-t border-[#e5e0da] pt-6">
             <h2 className="text-sm font-black tracking-widest text-[#8a9aa8] mb-3 uppercase flex items-center gap-2">
