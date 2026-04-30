@@ -7,18 +7,19 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 
-// Reuse existing Edge Store R2 credentials (ES_* vars already in Vercel env)
+// Reuse existing R2 credentials (same CF_R2_* vars as /api/upload-image)
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const r2 = new S3Client({
-  region: process.env.ES_AWS_REGION || 'auto',
-  endpoint: process.env.ES_AWS_ENDPOINT,
+  region: 'auto',
+  endpoint: `https://${CF_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.ES_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.ES_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.CF_R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_R2_SECRET_ACCESS_KEY,
   },
 });
 
-const BUCKET = process.env.ES_AWS_BUCKET_NAME || 'clowand-images';
-const PUBLIC_URL = process.env.EDGE_STORE_BASE_URL || 'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev';
+const BUCKET = 'clowand-images';
+const PUBLIC_URL = process.env.CF_R2_PUBLIC_URL || 'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co';
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 

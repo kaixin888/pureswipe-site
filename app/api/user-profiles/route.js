@@ -45,15 +45,20 @@ export async function POST(req) {
     });
     if (authError) throw new Error(`Auth create failed: ${authError.message}`);
 
-    // 2. user_profiles 由触发器自动创建，但我们需要覆写 role
-    const { error: profileError } = await adminSupabase
+    // 2. 直接 INSERT 到 user_profiles（不依赖 trigger，避免时序问题）
+    const { error: insertError } = await adminSupabase
       .from('user_profiles')
-      .update({ display_name: display_name || email, role: role || 'operator', status: 'active' })
-      .eq('user_id', authData.user.id);
+      .insert({
+        user_id: authData.user.id,
+        email,
+        display_name: display_name || email,
+        role: role || 'operator',
+        status: 'active',
+      });
 
-    if (profileError) throw new Error(`Profile update failed: ${profileError.message}`);
+    if (insertError) throw new Error(`Profile insert failed: ${insertError.message}`);
 
-    return Response.json({ ok: true, user_id: authData.user.id });
+    return Response.json({ ok: true, user_id: authData.user.id, email, display_name: display_name || email });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
