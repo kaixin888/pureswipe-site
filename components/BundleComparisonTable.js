@@ -17,6 +17,7 @@ import { Check, Minus, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 //   "48 Refills" → 48
 //   "36x Refill Pads" → 36
 //   items: ["12x Single-Use Refill Pads"] → 12
+//   "48 Disposable Toilet Brush Refills" → 48 (non-adjacent)
 function extractRefillCount(bundle) {
   // Try parsing from items array first (hardcoded BUNDLES)
   if (bundle.items && bundle.items.length > 0) {
@@ -25,9 +26,15 @@ function extractRefillCount(bundle) {
       if (m) return parseInt(m[1], 10);
     }
   }
-  // Fallback: parse from name
-  const m = (bundle.name || '').match(/(\d+)\s*[Rr]efill/);
-  if (m) return parseInt(m[1], 10);
+  // Try adjacent "N Refills" or "N-Pack"
+  const m1 = (bundle.name || '').match(/(\d+)\s*[Rr]efill/);
+  if (m1) return parseInt(m1[1], 10);
+  // Try "N-Pack" or "Refill Pack N" or "Refills xN"
+  const m2 = (bundle.name || '').match(/(?:(\d+)\s*[-–]\s*[Pp]ack|[Rr]efills?\s*(?:x|:|\s+)\s*(\d+))/);
+  if (m2) return parseInt(m2[1] || m2[2], 10);
+  // Fallback: any digit followed by "Refills" (non-adjacent, e.g. "48 Disposable Toilet Brush Refills")
+  const m3 = (bundle.name || '').match(/(\d+).*?[Rr]efills?\b/);
+  if (m3) return parseInt(m3[1], 10);
   // Fallback: parse from description
   const d = (bundle.description || '').match(/(\d+)\s*[Rr]efill/);
   if (d) return parseInt(d[1], 10);
