@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { List, useTable } from '@refinedev/antd';
-import { Table, Tag, Space, Image, Button, Tooltip } from 'antd';
+import { Table, Tag, Space, Image, Button, Tooltip, Card, Upload, message, Alert } from 'antd';
 import { useRouter } from 'next/navigation';
-import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
+import { EditOutlined, ReloadOutlined, UploadOutlined, InboxOutlined, CheckCircleOutlined } from '@ant-design/icons';
+
+const { Dragger } = Upload;
 
 const PAGE_LABEL = {
   '首页': 'blue',
@@ -18,6 +20,10 @@ const PAGE_LABEL = {
 
 export default function SiteImagesList() {
   const router = useRouter();
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
+  const [selectedSlotKey, setSelectedSlotKey] = useState('');
 
   const { tableProps, tableQueryResult, refetch } = useTable({
     resource: 'site_images',
@@ -26,8 +32,82 @@ export default function SiteImagesList() {
 
   const images = tableQueryResult?.data?.data || [];
 
+  const handleUpload = async () => {
+    if (!uploadFile) {
+      message.warning('请先选择一张图片');
+      return;
+    }
+    if (!selectedSlotKey) {
+      message.warning('请先点击表格中要替换的插槽所在行的"上传到此插槽"按钮');
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('slot_key', selectedSlotKey);
+    formData.append('file', uploadFile);
+
+    try {
+      const res = await fetch('/api/upload-site-image', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '上传失败');
+      setUploadResult(data);
+      message.success(`上传成功！压缩率 ${data.savings}%`);
+      refetch();
+      setUploadFile(null);
+      setSelectedSlotKey('');
+    } catch (err) {
+      message.error(err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <List
+    <>
+      {/* 快速上传区 */}
+      <Card
+        title="快速上传图片"
+        style={{ marginBottom: 16 }}
+        extra={uploadResult && (
+          <Tag color="success" icon={<CheckCircleOutlined />}>上次上传成功</Tag>
+        )}
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <Dragger
+            name="file"
+            multiple={false}
+            showUploadList={false}
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            beforeUpload={(file) => {
+              setUploadFile(file);
+              return false;
+            }}
+          >
+            <p className="ant-upload-drag-icon"><InboxOutlined /></p>
+            <p className="ant-upload-text">点击或拖拽图片到此处</p>
+            <p className="ant-upload-hint">
+              {uploadFile
+                ? `已选择: ${uploadFile.name}`
+                : '先点击右侧表格某行的"上传到此插槽"按钮，再将图片拖入或选择'}
+            </p>
+          </Dragger>
+          <Button
+            type="primary"
+            icon={<UploadOutlined />}
+            onClick={handleUpload}
+            loading={uploading}
+            disabled={!uploadFile || !selectedSlotKey}
+            size="large"
+            block
+          >
+            {uploading ? '正在上传并压缩...' : `上传${selectedSlotKey ? `到 ${selectedSlotKey}` : ''}`}
+          </Button>
+        </Space>
+      </Card>
+
+      {/* 原表格 */}
+      <List
       headerButtons={() => (
         <Space>
           <Button icon={<ReloadOutlined />} onClick={() => refetch()}>刷新</Button>
@@ -101,18 +181,32 @@ export default function SiteImagesList() {
         <Table.Column
           title="操作"
           render={(_, record) => (
-            <Button
-              type="primary"
-              size="small"
-              ghost
-              icon={<EditOutlined />}
-              onClick={() => router.push(`/admin/site-images/edit/${record.id}`)}
-            >
-              编辑
-            </Button>
+            <Space>
+              <Button
+                type="primary"
+                size="small"
+                icon={<UploadOutlined />}
+                onClick={() => {
+                  setSelectedSlotKey(record.slot_key);
+                  message.info(`已选择插槽: ${record.slot_key}，请在上方区域上传图片`);
+                }}
+              >
+                上传到此插槽
+              </Button>
+              <Button
+                type="primary"
+                size="small"
+                ghost
+                icon={<EditOutlined />}
+                onClick={() => router.push(`/admin/site-images/edit/${record.id}`)}
+              >
+                编辑
+              </Button>
+            </Space>
           )}
         />
       </Table>
-    </List>
-  );
-}
+        </List>
+      </>
+    );
+  }
