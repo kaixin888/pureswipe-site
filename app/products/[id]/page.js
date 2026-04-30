@@ -7,11 +7,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
 import { 
-  CheckCircle, ShieldCheck, X, Star, Zap, Shield, Camera, 
+  CheckCircle, ShieldCheck, X, Star, Shield, Camera, 
   Ruler, Truck, ChevronDown 
 } from 'lucide-react'
 import { useStore } from '../../../components/Providers'
-import DeliveryCountdown from '../../../components/DeliveryCountdown'
 import { getEffectivePrice } from '../../../lib/getEffectivePrice'
 import { useProductActions } from '../../../lib/productActions'
 import ActionBar from '../../../components/ActionBar'
