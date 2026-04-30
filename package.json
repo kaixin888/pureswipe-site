@@ -16,6 +16,7 @@
     "@aws-sdk/lib-storage": "^3.1030.0",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/playfair-display": "^5.2.8",
+    "@paypal/react-paypal-js": "^9.2.0",
     "@refinedev/antd": "^6.0.3",
     "@refinedev/core": "^5.0.12",
     "@refinedev/inferencer": "^7.0.0",

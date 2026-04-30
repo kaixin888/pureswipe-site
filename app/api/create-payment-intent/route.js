@@ -15,20 +15,35 @@ export async function POST(request) {
   });
 
   try {
-    const { amount, currency = 'usd', metadata = {} } = await request.json();
+    const { amount, currency = 'usd', metadata = {}, payment_method, off_session, confirm: doConfirm } = await request.json();
 
     if (!amount || amount < 50) {
       return NextResponse.json({ error: 'Invalid amount (min $0.50)' }, { status: 400 });
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
+    const piParams = {
       amount: Math.round(amount * 100), // convert dollars to cents
       currency,
       automatic_payment_methods: { enabled: true },
       metadata,
-    });
+    };
 
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
+    // One-click upsell: reuse saved payment method
+    if (payment_method) {
+      piParams.payment_method = payment_method;
+      piParams.off_session = true;
+      if (doConfirm) {
+        piParams.confirm = true;
+      }
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(piParams);
+
+    return NextResponse.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      status: paymentIntent.status,
+    });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

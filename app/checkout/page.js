@@ -1,13 +1,15 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingBag, CreditCard, ChevronDown, CheckCircle, AlertCircle, Trash2, Mail, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, CreditCard, ChevronDown, CheckCircle, AlertCircle, Trash2, Mail, ShieldCheck, Zap } from 'lucide-react';
 import { useCart } from 'react-use-cart';
 import { useStore } from '../../components/Providers';
 import StripeCheckout from '../../components/StripeCheckout';
 import { createClient } from '@supabase/supabase-js';
 import DeliveryCountdown from '../../components/DeliveryCountdown';
 import { useSearchParams } from 'next/navigation';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import UpsellModal from '../../components/UpsellModal';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -40,6 +42,9 @@ function CheckoutContent() {
   const [discountError, setDiscountError] = useState('');
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [upsellPaymentMethod, setUpsellPaymentMethod] = useState(null);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -241,9 +246,31 @@ function CheckoutContent() {
                       amount={Math.round(finalTotal * 100)}
                       customerName={customerName}
                       customerEmail={customerEmail}
-                      onSuccess={() => {
+                      onSuccess={(paymentIntent) => {
                         setPaymentStatus('success');
-                        emptyCart();
+                        // Capture payment_method for one-click upsell
+                        if (paymentIntent?.payment_method) {
+                          setUpsellPaymentMethod(paymentIntent.payment_method);
+                        }
+                        const orderId = 'ORD-' + Date.now();
+                        // Save order to Supabase
+                        fetch('/api/orders', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            order_id: orderId,
+                            customer_name: customerName,
+                            email: customerEmail,
+                            amount: finalTotal.toFixed(2),
+                            product_name: items.map(i => i.name).join(', '),
+                            items: items,
+                            status: 'Paid',
+                            payment_method: 'stripe',
+                          }),
+                        }).catch(() => {});
+                        setCurrentOrderId(orderId);
+                        // Show upsell before emptying cart
+                        setShowUpsell(true);
                       }}
                       onError={(msg) => setPaymentStatus('error')}
                     />
@@ -252,10 +279,52 @@ function CheckoutContent() {
 
                 {/* PayPal */}
                 {paymentTab === 'paypal' && (
-                  <div id="paypal-button-container" className="min-h-[200px] flex items-center justify-center">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">
-                      PayPal button renders here (SDK loaded on mount)
-                    </p>
+                  <div className="min-h-[200px]">
+                    <PayPalScriptProvider
+                      options={{
+                        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '',
+                        currency: 'USD',
+                        intent: 'capture',
+                      }}
+                    >
+                      <PayPalButtons
+                        style={{ layout: 'vertical', color: 'gold', shape: 'pill', label: 'pay' }}
+                        createOrder={(data, actions) => {
+                          return actions.order.create({
+                            purchase_units: [{
+                              amount: { value: finalTotal.toFixed(2) },
+                              description: items.map(i => i.name).join(', '),
+                            }],
+                          });
+                        }}
+                        onApprove={async (data, actions) => {
+                          const capture = await actions.order.capture();
+                          if (capture.status === 'COMPLETED') {
+                            setPaymentStatus('success');
+                            const orderId = 'ORD-' + Date.now() + '-PP';
+                            await fetch('/api/orders', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                order_id: orderId,
+                                customer_name: customerName,
+                                email: customerEmail,
+                                amount: finalTotal.toFixed(2),
+                                product_name: items.map(i => i.name).join(', '),
+                                items: items,
+                                status: 'Paid',
+                                payment_method: 'paypal',
+                              }),
+                            });
+                            setCurrentOrderId(orderId);
+                            setShowUpsell(true);
+                          }
+                        }}
+                        onError={(err) => {
+                          setPaymentStatus('error');
+                        }}
+                      />
+                    </PayPalScriptProvider>
                   </div>
                 )}
 
@@ -378,6 +447,24 @@ function CheckoutContent() {
           </div>
         </div>
       </div>
+
+      {/* Post-Purchase Upsell Modal */}
+      {showUpsell && (
+        <UpsellModal
+          orderId={currentOrderId}
+          email={customerEmail}
+          type={paymentTab === 'card' ? 'stripe' : 'paypal'}
+          paymentMethod={upsellPaymentMethod} // Stripe pm_xxx for one-click upsell
+          onAccept={() => {
+            setShowUpsell(false);
+            emptyCart();
+          }}
+          onDecline={() => {
+            setShowUpsell(false);
+            emptyCart();
+          }}
+        />
+      )}
     </div>
   );
 }
