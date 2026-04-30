@@ -54,6 +54,11 @@ const nextConfig = {
         destination: '/blog',
         permanent: false,
       },
+      {
+        source: '/blog/5-common-mistakes-when-buying-disposable-toilet-brush-how-to-avoid-them',
+        destination: '/blog',
+        permanent: false,
+      },
     ];
   },
 };
