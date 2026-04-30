@@ -47,6 +47,15 @@ const nextConfig = {
       { protocol: 'https', hostname: 'pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog/when-bathroom-hygiene-changes-how-your-home-smells-a-fresh-perspective',
+        destination: '/blog',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
