@@ -1,4 +1,4 @@
-import { Package, Check, Minus, Star } from 'lucide-react';
+import { Check, Minus, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * Bundle Comparison Table — shows all bundles side-by-side so customers
@@ -37,7 +37,7 @@ function extractRefillCount(bundle) {
 // Determine if bundle includes a wand/handle
 function includesWand(bundle) {
   const text = (bundle.name + ' ' + bundle.description + ' ' + (bundle.items || []).join(' ')).toLowerCase();
-  return /\bwand\b|\bhandle\b/i.test(text);
+  return /\bwand\b|\bhandle\b|\bbrush\b|\bstarter\s*kit\b/i.test(text);
 }
 
 // Determine if bundle includes a caddy/holder
@@ -77,6 +77,13 @@ export default function BundleComparisonTable({ bundles }) {
         Compare Your Options
       </h3>
 
+      {/* Mobile scroll hint */}
+      <div className="block sm:hidden text-center mb-3">
+        <div className="inline-flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-slate-300 italic">
+          <ChevronRight size={12} /><ChevronLeft size={12} /> Swipe to compare <ChevronRight size={12} /><ChevronLeft size={12} />
+        </div>
+      </div>
+
       <div className="overflow-x-auto -mx-4 px-4 pb-4">
         <div className="min-w-[640px]">
           {/* Header row */}
@@ -101,9 +108,20 @@ export default function BundleComparisonTable({ bundles }) {
                     </div>
                   )}
                   <div className={'bg-white rounded-2xl border-2 p-5 ' + (bundle.popular ? 'border-emerald-400 shadow-lg shadow-emerald-100' : 'border-[#e5e0da]')}>
-                    <div className="w-16 h-16 mx-auto bg-[#eef2f5] rounded-xl flex items-center justify-center mb-4">
-                      <Package size={28} className="text-[#1a3a5c]/40" />
-                    </div>
+                    {bundle.image ? (
+                      <div className="w-16 h-16 mx-auto rounded-xl overflow-hidden mb-4">
+                        <img
+                          src={bundle.image}
+                          alt={bundle.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 mx-auto bg-[#eef2f5] rounded-xl flex items-center justify-center mb-4">
+                        <Check size={28} className="text-[#1a3a5c]/40" />
+                      </div>
+                    )}
                     <h4 className="text-sm font-black italic uppercase tracking-tight text-slate-900 mb-1 leading-tight line-clamp-2 min-h-[2.5em]">
                       {bundle.name}
                     </h4>
