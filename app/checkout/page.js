@@ -7,6 +7,7 @@ import { useStore } from '../../components/Providers';
 import StripeCheckout from '../../components/StripeCheckout';
 import { createClient } from '@supabase/supabase-js';
 import DeliveryCountdown from '../../components/DeliveryCountdown';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import UpsellModal from '../../components/UpsellModal';

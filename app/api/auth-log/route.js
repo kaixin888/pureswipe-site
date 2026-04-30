@@ -14,6 +14,11 @@ export async function POST(req) {
     const ip = forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip') || 'unknown';
     const userAgent = req.headers.get('user-agent') || '';
 
+    if (!supabase) {
+      console.warn('auth-log: supabase not initialized (missing env vars)');
+      return Response.json({ ok: false, error: 'Server not configured' }, { status: 500 });
+    }
+
     const { error } = await supabase.from('login_logs').insert({
       email,
       status,
