@@ -4,6 +4,7 @@
 'use client';
 
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Zap } from 'lucide-react';
 import DeliveryCountdown from './DeliveryCountdown';
 
@@ -92,9 +93,10 @@ export default function ActionBar({ product, actions }) {
             <span className="px-4 py-3 text-[#1a2935] font-bold min-w-[40px] text-center">{qty}</span>
             <button onClick={() => setQty(q => q + 1)} className="px-4 py-3 text-[#1a2935] hover:bg-[#efece8] font-bold">+</button>
           </div>
-          <button
+          <motion.button
             onClick={addToCart}
             disabled={isOutOfStock}
+            whileTap={!isOutOfStock ? { scale: 0.95 } : undefined}
             className={`flex-1 py-4 rounded-full font-semibold tracking-wide text-sm transition-all ${
               isOutOfStock
                 ? 'bg-[#e5e0da] text-[#b0bcc8]'
@@ -103,8 +105,19 @@ export default function ActionBar({ product, actions }) {
                   : 'bg-[#1a3a5c] text-white hover:bg-[#1a3a5c]/90'
             }`}
           >
-            {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
-          </button>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={isOutOfStock ? 'oos' : added ? 'added' : 'add'}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.15 }}
+                className="inline-block"
+              >
+                {isOutOfStock ? 'OUT OF STOCK' : added ? '✓ ADDED TO CART' : 'ADD TO CART'}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
         </div>
 
         <button

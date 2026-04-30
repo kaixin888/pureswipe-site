@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { createClient } from '@supabase/supabase-js'
 import VideoModal from '../components/VideoModal'
 
+import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from 'react-use-cart'
 import { useStore } from '../components/Providers'
 import { getSiteImage } from '../lib/getSiteImage'
@@ -263,6 +264,8 @@ export default function Home() {
   const [faqs, setFaqs] = useState([])
   const [blogPosts, setBlogPosts] = useState([])
   const [siteSettings, setSiteSettings] = useState({})
+  // Track which product ids just had "Add to Cart" pressed (for animation)
+  const [justAdded, setJustAdded] = useState({})
   // videoIndex removed — HeroBanner Swiper handles carousel now
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en
@@ -697,13 +700,25 @@ export default function Home() {
                       )
                     })()}
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined') { if (window.gtag) { window.gtag('event', 'add_to_cart', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } if (window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: _p }); } } }}
+                      <motion.button
+                        onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); setJustAdded(prev => ({ ...prev, [bundle.id]: true })); setTimeout(() => setJustAdded(prev => ({ ...prev, [bundle.id]: false })), 1500); if (typeof window !== 'undefined') { if (window.gtag) { window.gtag('event', 'add_to_cart', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } if (window.dataLayer) { window.dataLayer.push({ event: 'add_to_cart', item_name: bundle.name, value: _p }); } } }}
                         disabled={bundle.stock <= 0}
-                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#2ecc71] text-white hover:bg-[#27ae60] active:scale-[0.98]'}`}
+                        whileTap={bundle.stock > 0 ? { scale: 0.95 } : undefined}
+                        className={`flex-1 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${bundle.stock <= 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : justAdded[bundle.id] ? 'bg-[#27ae60] text-white' : 'bg-[#2ecc71] text-white hover:bg-[#27ae60]'}`}
                       >
-                        {bundle.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                      </button>
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={bundle.stock <= 0 ? 'oos' : justAdded[bundle.id] ? 'added' : 'add'}
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 6 }}
+                            transition={{ duration: 0.12 }}
+                            className="inline-block"
+                          >
+                            {bundle.stock <= 0 ? 'Out of Stock' : justAdded[bundle.id] ? '✓ Added' : 'Add to Cart'}
+                          </motion.span>
+                        </AnimatePresence>
+                      </motion.button>
                       <button
                         onClick={() => { if (bundle.stock <= 0) return; const _p = bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price) ? Number(bundle.sale_price) : Number(bundle.price); addItem({ id: bundle.id, name: bundle.name, price: _p, image: bundle.image }); if (typeof window !== 'undefined' && window.gtag) { window.gtag('event', 'begin_checkout', { currency: 'USD', value: _p, items: [{ item_id: bundle.id, item_name: bundle.name, price: _p, quantity: 1 }] }); } setIsCheckoutOpen(true); }}
                         disabled={bundle.stock <= 0}
