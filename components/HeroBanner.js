@@ -88,7 +88,7 @@ export default function HeroBanner({ slides = [], heroTitle, heroSub, heroBadge,
 
   // Multiple slides: use Swiper
   return (
-    <div className="md:hidden relative w-full overflow-hidden" style={{ minHeight: '480px' }}>
+    <div className="md:hidden relative w-full overflow-hidden" style={{ minHeight: '480px', overflow: 'hidden' }}>
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true, dynamicBullets: true }}

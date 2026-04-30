@@ -34,10 +34,7 @@ export default function SiteChrome({ children }) {
       <AnnouncementBar />
       <Navbar />
       <GlobalCheckout />
-      <main
-        className={pathname === '/' ? '' : ''}
-        style={pathname === '/' ? { paddingTop: 'var(--header-end, 88px)' } : undefined}
-      >{children}</main>
+      <main style={{ paddingTop: 'var(--header-end, 88px)' }}>{children}</main>
       <Footer />
     </>
   );

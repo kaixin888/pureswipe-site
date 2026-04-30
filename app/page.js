@@ -140,7 +140,7 @@ function BeforeAfterSlider() {
     <div ref={sliderRef} className="relative rounded-2xl min-h-[20rem] md:min-h-[24rem] select-none">
       {/* Left: Before - content locked to left half */}
       <div className="absolute inset-0 bg-gray-100 flex items-center overflow-hidden">
-        <div className="px-3 md:px-8 py-4" style={{ width: '50%' }}>
+        <div className="px-4 md:px-8 py-4" style={{ width: '50%' }}>
           <p className="text-xs font-black tracking-widest text-gray-400 uppercase mb-2">Before</p>
           <p className="text-sm md:text-base font-black text-gray-800 mb-3">Traditional Brush</p>
           <ul className="space-y-1">
@@ -160,7 +160,7 @@ function BeforeAfterSlider() {
         style={{ clipPath: `inset(0 0 0 ${split}%)`, transition: animated ? 'clip-path 0.6s ease' : 'none' }}
       >
         <div className="w-full flex justify-end">
-          <div className="px-3 md:px-8 py-4" style={{ width: '50%' }}>
+          <div className="px-4 md:px-8 py-4" style={{ width: '50%' }}>
             <p className="text-xs font-black tracking-widest text-blue-400 uppercase mb-2">After</p>
             <p className="text-sm md:text-base font-black text-white mb-3">Clowand System</p>
             <ul className="space-y-1">
