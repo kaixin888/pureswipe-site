@@ -14,6 +14,7 @@ import { useStore } from '../../../components/Providers'
 import { getEffectivePrice } from '../../../lib/getEffectivePrice'
 import { useProductActions } from '../../../lib/productActions'
 import ActionBar from '../../../components/ActionBar'
+import StickyBuyBar from '../../../components/StickyBuyBar'
 import dynamic from 'next/dynamic'
 const ProductGallery = dynamic(() => import('../../../components/ProductGallery'), { ssr: false })
 const RelatedProducts = dynamic(() => import('../../../components/RelatedProducts'), { ssr: false })
@@ -407,6 +408,9 @@ export default function ProductDetail() {
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Buy Bar — 固定在底部导航栏上方 */}
+      <StickyBuyBar product={product} actions={actions} />
     </main>
   )
 }

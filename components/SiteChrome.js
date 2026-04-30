@@ -6,6 +6,7 @@ import AnnouncementBar from './AnnouncementBar';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import GlobalCheckout from './GlobalCheckout';
+import MobileBottomNav from './MobileBottomNav';
 
 /**
  * SiteChrome — public-site shell (AnnouncementBar + Navbar + Footer).
@@ -34,7 +35,8 @@ export default function SiteChrome({ children }) {
       <AnnouncementBar />
       <Navbar />
       <GlobalCheckout />
-      <main style={{ paddingTop: 'var(--header-end, 88px)' }}>{children}</main>
+      <main style={{ paddingTop: 'var(--header-end, 88px)', paddingBottom: 'calc(56px + env(safe-area-inset-bottom, 0px))' }} className="md:pb-0">{children}</main>
+      <MobileBottomNav />
       <Footer />
     </>
   );
