@@ -25,10 +25,11 @@ export default function SiteImagesList() {
   const [uploadResult, setUploadResult] = useState(null);
   const [selectedSlotKey, setSelectedSlotKey] = useState('');
 
-  const { tableProps, tableQueryResult, refetch } = useTable({
+  const { tableProps, tableQueryResult } = useTable({
     resource: 'site_images',
     sorters: { initial: [{ field: 'slot_key', order: 'asc' }] },
   });
+  const refetch = tableQueryResult?.refetch || (() => {});
 
   const images = tableQueryResult?.data?.data || [];
 
