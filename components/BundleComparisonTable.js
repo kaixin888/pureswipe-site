@@ -1,247 +1,210 @@
-import { Check, Minus, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+'use client'
+
+import { Check, X } from 'lucide-react'
 
 /**
- * Bundle Comparison Table — shows all bundles side-by-side so customers
- * can compare price, refill count, cost-per-pad, and included items at a glance.
+ * Bundle Comparison Table — Bento Grid 版（V2）
  *
- * Data is derived from the `bundles` array (products table or hardcoded fallback)
- * by parsing names/descriptions — no extra schema needed.
+ * 取代旧的横向滑动对比表，改为 3 列 Bento Card 布局：
+ * - 上方 NegativeChecklistBanner（"WHAT YOU WON'T GET WITH OLD BRUSHES" — Dropps 风格）
+ * - 3 张 BundleCard（Bento Grid），含 3 词人格标签、特性列表、统一 teal-600 CTA
+ * - 移动端自动堆叠为单列垂直卡片
  *
  * Props:
- *   bundles: Array<{
- *     id, name, price, sale_price, description, image, items (string[]), tag, popular, stock
- *   }>
+ *   bundles: Array<{ id, name, price, sale_price, description, image, items, tag, popular, stock }>
  */
 
-// Extract refill count from product name/items. Handles:
-//   "48 Refills" → 48
-//   "36x Refill Pads" → 36
-//   items: ["12x Single-Use Refill Pads"] → 12
-//   "48 Disposable Toilet Brush Refills" → 48 (non-adjacent)
-function extractRefillCount(bundle) {
-  // Try parsing from items array first (hardcoded BUNDLES)
-  if (bundle.items && bundle.items.length > 0) {
-    for (const item of bundle.items) {
-      const m = item.match(/(\d+)\s*x?\s*(?:[Rr]efill|[Pp]ad)/);
-      if (m) return parseInt(m[1], 10);
-    }
-  }
-  // Try adjacent "N Refills" or "N-Pack"
-  const m1 = (bundle.name || '').match(/(\d+)\s*[Rr]efill/);
-  if (m1) return parseInt(m1[1], 10);
-  // Try "N-Pack" or "Refill Pack N" or "Refills xN"
-  const m2 = (bundle.name || '').match(/(?:(\d+)\s*[-–]\s*[Pp]ack|[Rr]efills?\s*(?:x|:|\s+)\s*(\d+))/);
-  if (m2) return parseInt(m2[1] || m2[2], 10);
-  // Fallback: any digit followed by "Refills" (non-adjacent, e.g. "48 Disposable Toilet Brush Refills")
-  const m3 = (bundle.name || '').match(/(\d+).*?[Rr]efills?\b/);
-  if (m3) return parseInt(m3[1], 10);
-  // Fallback: parse from description
-  const d = (bundle.description || '').match(/(\d+)\s*[Rr]efill/);
-  if (d) return parseInt(d[1], 10);
-  return null;
+// 3 词人格标签 — 按 bundle name 前缀匹配
+const TAGLINES = {
+  starter: 'Complete. Compact. Daily.',
+  'auto-lid': 'Smart. Hygienic. Premium.',
+  eco: 'Minimal. Sustainable. Refillable.',
 }
 
-// Determine if bundle includes a wand/handle
-function includesWand(bundle) {
-  const text = (bundle.name + ' ' + bundle.description + ' ' + (bundle.items || []).join(' ')).toLowerCase();
-  return /\bwand\b|\bhandle\b|\bbrush\b|\bstarter\s*kit\b/i.test(text);
+// 特性列表 — 按 bundle name 前缀匹配
+const FEATURES = {
+  starter: ['Disposable Refills', '18" Extended Reach', 'Ergonomic Grip', 'Compact Storage'],
+  'auto-lid': ['Disposable Refills', 'Auto-Lid Mechanism', '48 Pads Included', 'Odor-Proof Storage'],
+  eco: ['48 Pads Included', 'Cleaning Solution Infused', 'Biodegradable Materials', 'Multi-Scent Options'],
 }
 
-// Determine if bundle includes a caddy/holder
-function includesCaddy(bundle) {
-  const text = (bundle.name + ' ' + bundle.description + ' ' + (bundle.items || []).join(' ')).toLowerCase();
-  return /\bcaddy\b|\bholder\b|\bhanger\b|\bventilated/i.test(text);
+// 负面清单项
+const NEGATIVE_ITEMS = [
+  'Bacteria Growth',
+  'Wet Mess',
+  'Reusable Germs',
+  'Awkward Storage',
+  'Under-Rim Struggle',
+]
+
+function getBundleKey(bundle) {
+  const name = (bundle.name || '').toLowerCase()
+  if (name.includes('eco')) return 'eco'
+  if (name.includes('auto') || name.includes('lid')) return 'auto-lid'
+  return 'starter'
 }
 
-// Determine if bundle includes an auto-lid mechanism
-function includesAutoLid(bundle) {
-  const text = (bundle.name + ' ' + bundle.description + ' ' + (bundle.items || []).join(' ')).toLowerCase();
-  return /\bauto\s*lid\b|\bautomatic\s*lid\b|\blower\b|\blid\b.*open/i.test(text);
+function getTagline(bundle) {
+  return TAGLINES[getBundleKey(bundle)] || ''
 }
 
-function getBestFor(bundle) {
-  const name = (bundle.name || '').toLowerCase();
-  const tag = (bundle.tag || '').toLowerCase();
-  if (bundle.popular || tag.includes('best') || tag.includes('popular') || name.includes('family') || name.includes('value')) {
-    return 'Best Value for Families';
-  }
-  if (name.includes('starter') || name.includes('beginner') || name.includes('basic')) {
-    return 'Perfect for Beginners';
-  }
-  if (name.includes('eco') || name.includes('refill') || name.includes('bulk')) {
-    return 'Stock Up & Save';
-  }
-  return 'Premium Cleaning';
+function getFeatures(bundle) {
+  return FEATURES[getBundleKey(bundle)] || []
 }
+
+function isBestValue(bundle) {
+  return bundle.popular || (getBundleKey(bundle) === 'auto-lid')
+}
+
+function getDisplayPrice(bundle) {
+  const sp = bundle.sale_price
+  if (sp != null && Number(sp) > 0 && Number(sp) < Number(bundle.price)) {
+    return Number(sp)
+  }
+  return Number(bundle.price)
+}
+
+// 产品图：先尝试 site_images 映射，否则 fallback 到 bundle.image
+function getImageUrl(bundle, index) {
+  const IMAGE_MAP = [
+    'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-starter-kit.jpg',
+    'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-family-pack.jpg',
+    'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-eco-refill.jpg',
+  ]
+  return IMAGE_MAP[index] || bundle.image
+}
+
+// ─── 子组件 ───────────────────────────────────────
+
+function NegativeChecklistBanner() {
+  return (
+    <div className="bg-stone-50 rounded-2xl p-5 md:p-6 mb-8">
+      <p className="text-stone-900 font-semibold text-xs uppercase tracking-wider mb-3">
+        What you won&apos;t get with old brushes
+      </p>
+      <div className="flex flex-wrap gap-x-5 gap-y-1.5">
+        {NEGATIVE_ITEMS.map((item) => (
+          <span key={item} className="text-stone-600 text-sm italic flex items-center gap-1.5">
+            <X size={14} className="text-red-400 shrink-0" />
+            {item}
+          </span>
+        ))}
+      </div>
+      <p className="text-stone-400 text-xs mt-3 leading-relaxed">
+        All clowand brushes are disposable, sealed, and designed for one-time hygienic use.
+      </p>
+    </div>
+  )
+}
+
+function BundleCard({ bundle, index }) {
+  const key = getBundleKey(bundle)
+  const tagline = getTagline(bundle)
+  const features = getFeatures(bundle)
+  const bestValue = isBestValue(bundle)
+  const price = getDisplayPrice(bundle)
+  const imageUrl = getImageUrl(bundle, index)
+
+  return (
+    <div
+      className={
+        'relative flex flex-col bg-white rounded-2xl p-6 transition-all duration-300 ' +
+        (bestValue
+          ? 'border-2 border-teal-500 shadow-md shadow-teal-100/50'
+          : 'border border-stone-200 shadow-sm hover:shadow-lg')
+      }
+    >
+      {/* ★ BEST VALUE 角标 */}
+      {bestValue && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 inline-block px-4 py-1 bg-teal-500 text-white text-[10px] font-semibold uppercase tracking-wider rounded-full whitespace-nowrap shadow-sm">
+          ★ Best Value
+        </div>
+      )}
+
+      {/* 产品图 */}
+      <div className="w-full aspect-square rounded-lg overflow-hidden bg-white mb-4">
+        <img
+          src={imageUrl}
+          alt={bundle.name}
+          className="w-full h-full object-contain p-2"
+          loading="lazy"
+          onError={(e) => {
+            e.target.style.display = 'none'
+          }}
+        />
+      </div>
+
+      {/* 3 词标签 */}
+      {tagline && (
+        <p className="text-teal-700 font-serif italic text-sm opacity-85 mb-1">
+          &ldquo;{tagline}&rdquo;
+        </p>
+      )}
+
+      {/* 标题 */}
+      <h4 className="text-stone-900 font-bold text-base mb-1 leading-snug line-clamp-1">
+        {key === 'starter' ? 'Starter Kit' : key === 'auto-lid' ? 'Auto-Lid Bundle' : 'Eco Refill Box'}
+      </h4>
+
+      {/* 简述 */}
+      <p className="text-stone-600 text-sm leading-relaxed mb-4 line-clamp-2 min-h-[2.6em]">
+        {bundle.description}
+      </p>
+
+      {/* 特性列表 */}
+      <ul className="space-y-1.5 mb-5">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-2 text-stone-700 text-sm leading-5">
+            <Check size={14} className="text-teal-600 shrink-0 mt-0.5" strokeWidth={3} />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Spacer for bottom alignment */}
+      <div className="flex-1" />
+
+      {/* 价格 */}
+      <div className="mb-4">
+        <span className="text-stone-900 font-bold text-3xl">${price.toFixed(2)}</span>
+        <span className="text-teal-600 text-xs ml-2 font-medium">+ Free Shipping</span>
+      </div>
+
+      {/* CTA 按钮 — 统一 teal-600 */}
+      <a
+        href={'/products/' + bundle.id}
+        className="block w-full py-3 rounded-lg bg-teal-600 text-white text-center text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-teal-700 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+      >
+        Add to Cart
+      </a>
+    </div>
+  )
+}
+
+// ─── 主组件 ───────────────────────────────────────
 
 export default function BundleComparisonTable({ bundles }) {
-  // Only show if we have 2+ bundles to compare
-  if (!bundles || bundles.length < 2) return null;
+  if (!bundles || bundles.length < 2) return null
 
   return (
     <div className="mt-16">
-      <h3 className="text-center text-lg md:text-xl font-black italic uppercase tracking-tighter text-slate-900 mb-8">
+      <h3 className="text-center font-serif text-stone-900 text-2xl md:text-3xl mb-6">
         Compare Your Options
       </h3>
 
-      {/* Mobile scroll hint */}
-      <div className="block sm:hidden text-center mb-3">
-        <div className="inline-flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-slate-300 italic">
-          <ChevronRight size={12} /><ChevronLeft size={12} /> Swipe to compare <ChevronRight size={12} /><ChevronLeft size={12} />
-        </div>
+      {/* 负面清单对比横幅 */}
+      <NegativeChecklistBanner />
+
+      {/* Bento Grid — 3 卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        {bundles.map((bundle, i) => (
+          <BundleCard key={bundle.id} bundle={bundle} index={i} />
+        ))}
       </div>
 
-      <div className="overflow-x-auto -mx-4 px-4 pb-4">
-        <div className="min-w-[640px]">
-          {/* Header row */}
-          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
-            {/* Empty top-left */}
-            <div className="sticky left-0 bg-[#f2efe8] z-10" />
-
-            {bundles.map((bundle) => {
-              const price = (bundle.sale_price != null && Number(bundle.sale_price) > 0 && Number(bundle.sale_price) < Number(bundle.price))
-                ? Number(bundle.sale_price) : Number(bundle.price);
-              return (
-                <div key={bundle.id} className="relative px-4 pb-6 text-center">
-                  {/* BEST VALUE / Tag */}
-                  {bundle.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 bg-emerald-600 text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
-                      <Star size={10} className="fill-white" /> BEST VALUE
-                    </div>
-                  )}
-                  {bundle.tag && !bundle.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 bg-[#1a3a5c] text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full whitespace-nowrap">
-                      {bundle.tag}
-                    </div>
-                  )}
-                  <div className={'bg-white rounded-2xl border-2 p-5 ' + (bundle.popular ? 'border-emerald-400 shadow-lg shadow-emerald-100' : 'border-[#e5e0da]')}>
-                    {bundle.image ? (
-                      <div className="w-20 h-20 mx-auto rounded-xl overflow-hidden mb-4 bg-[#f8f9fa] shadow-sm">
-                        <img
-                          src={bundle.image}
-                          alt={bundle.name}
-                          className="w-full h-full object-contain p-1.5"
-                          loading="lazy"
-                          onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.parentElement.querySelector('.fallback-icon')?.classList.remove('hidden'); }}
-                        />
-                        {/* hidden fallback — shown only if img errors */}
-                        <div className="fallback-icon hidden w-full h-full bg-[#eef2f5] rounded-xl flex items-center justify-center">
-                          <Check size={28} className="text-[#1a3a5c]/40" />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-20 h-20 mx-auto bg-[#eef2f5] rounded-xl flex items-center justify-center mb-4">
-                        <Check size={28} className="text-[#1a3a5c]/40" />
-                      </div>
-                    )}
-                    <h4 className="text-sm font-black italic uppercase tracking-tight text-slate-900 mb-1 leading-tight line-clamp-2 min-h-[2.5em]">
-                      {bundle.name}
-                    </h4>
-                    <p className="text-2xl font-black italic tracking-tighter text-[#1a3a5c] mb-1">
-                      ${price.toFixed(2)}
-                    </p>
-                    <a
-                      href={'/products/' + bundle.id}
-                      className={'inline-block mt-2 text-[8px] font-black uppercase tracking-widest px-5 py-2 rounded-full transition-all ' +
-                        (bundle.popular
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'bg-[#1a3a5c] text-white hover:bg-[#2a4a6c]')}
-                    >
-                      Shop Now
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Feature rows */}
-          <ComparisonRow label="Includes Wand" bundles={bundles} getter={includesWand} icon />
-          <ComparisonRow label="Includes Caddy" bundles={bundles} getter={includesCaddy} icon />
-          <ComparisonRow label="Auto-Lid Mechanism" bundles={bundles} getter={includesAutoLid} icon />
-
-          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
-            <ComparisonLabel>Refill Count</ComparisonLabel>
-            {bundles.map((b) => {
-              const count = extractRefillCount(b);
-              return (
-                <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
-                  <span className="text-sm font-black text-slate-900">{count != null ? count + ' pads' : '\u2014'}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
-            <ComparisonLabel>Cost per Pad</ComparisonLabel>
-            {bundles.map((b) => {
-              const count = extractRefillCount(b);
-              const price = (b.sale_price != null && Number(b.sale_price) > 0 && Number(b.sale_price) < Number(b.price))
-                ? Number(b.sale_price) : Number(b.price);
-              const cpp = count && count > 0 ? (price / count) : null;
-              const isLowest = bundles.every((other) => {
-                const oc = extractRefillCount(other);
-                const op = (other.sale_price != null && Number(other.sale_price) > 0 && Number(other.sale_price) < Number(other.price))
-                  ? Number(other.sale_price) : Number(other.price);
-                const ocpp = oc && oc > 0 ? (op / oc) : Infinity;
-                return cpp != null && ocpp >= cpp;
-              });
-              return (
-                <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
-                  {cpp != null ? (
-                    <span className={'text-sm font-black ' + (isLowest ? 'text-emerald-600' : 'text-slate-900')}>
-                      ${cpp.toFixed(2)}
-                      {isLowest && <span className="ml-1 text-[9px] text-emerald-500 italic font-bold">LOWEST</span>}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-slate-400">\u2014</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
-            <ComparisonLabel>Best For</ComparisonLabel>
-            {bundles.map((b) => (
-              <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
-                <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 italic">
-                  {getBestFor(b)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <p className="text-center text-[9px] text-slate-400 italic mt-6">
+      <p className="text-center text-[10px] text-stone-400 italic mt-6">
         All prices in USD. Free shipping on all bundles within the continental US.
       </p>
     </div>
-  );
-}
-
-function ComparisonLabel({ children }) {
-  return (
-    <div className="sticky left-0 bg-[#f2efe8] z-10 px-4 py-4 text-[8px] font-black uppercase tracking-widest text-slate-400 italic border-b border-[#e5e0da] flex items-center">
-      {children}
-    </div>
-  );
-}
-
-function ComparisonRow({ label, bundles, getter, icon }) {
-  return (
-    <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
-      <ComparisonLabel>{label}</ComparisonLabel>
-      {bundles.map((b) => (
-        <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
-          {getter(b) ? (
-            <Check size={18} className="mx-auto text-emerald-500" strokeWidth={3} />
-          ) : (
-            <Minus size={18} className="mx-auto text-slate-300" />
-          )}
-        </div>
-      ))}
-    </div>
-  );
+  )
 }
