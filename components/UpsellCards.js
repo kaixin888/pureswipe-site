@@ -39,7 +39,7 @@ export default function UpsellCards() {
             name: p.name,
             price: Number(p.price),
             sale_price: p.sale_price != null ? Number(p.sale_price) : null,
-            image: p.image_url || '/images/hero-banner.jpg',
+            image: p.image_url || '/images/hero.jpg',
             stock: p.stock != null ? p.stock : 999,
             discountedPrice: Number((Number(p.price) * (1 - UPSELL_DISCOUNT_PERCENT / 100)).toFixed(2)),
           }));
