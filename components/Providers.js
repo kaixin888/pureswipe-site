@@ -13,7 +13,7 @@
      if (totalItems > 10) {
        emptyCart();
      }
-   }, []); // once on mount
+    }, [totalItems]); // re-run when totalItems updates (async localStorage load)
    return children;
  }
  
