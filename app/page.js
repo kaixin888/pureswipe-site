@@ -328,7 +328,15 @@ export default function Home() {
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(9)
-      if (!error && data && data.length > 0) setReviews(data)
+      if (!error && data && data.length > 0) {
+        // Filter out test/sample reviews
+        const filtered = data.filter(r => {
+          const name = (r.name || r.author_name || '').toLowerCase();
+          const content = (r.content || '').toLowerCase();
+          return !name.includes('test') && !content.includes('test');
+        });
+        setReviews(filtered);
+      }
     }
     fetchReviews()
   }, [])
