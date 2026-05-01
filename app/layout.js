@@ -48,6 +48,10 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="google" content="notranslate" />
+        {/* Pre-hydration cart cleanup: remove stale test data (>10 items) */}
+        <script dangerouslySetInnerHTML={{
+          __html: `try{var c=JSON.parse(localStorage.getItem('react-use-cart'));if(c&&c.items&&c.items.length>10){localStorage.removeItem('react-use-cart')}}catch(e){}`
+        }} />
       </head>
       <body className="font-sans">
         <Providers>
