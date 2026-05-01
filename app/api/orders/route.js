@@ -44,7 +44,9 @@ async function trackPurchaseGA4(data) {
   }
 }
 
-export async function POST(request) {
+import { wrapContractRoute } from '../../../lib/contract-validator';
+
+export const POST = wrapContractRoute(async (request) => {
   try {
     const data = await request.json();
     const orderStatus = data.status || 'Paid';
@@ -132,4 +134,4 @@ export async function POST(request) {
     });
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
-}
+}, 'orders:POST');

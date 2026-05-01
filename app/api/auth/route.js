@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { wrapContractRoute } from '../../../lib/contract-validator';
 
-export async function POST(request) {
+export const POST = wrapContractRoute(async (request) => {
   const { password } = await request.json();
   
   if (password === process.env.ADMIN_PASSWORD) {
@@ -8,4 +9,4 @@ export async function POST(request) {
   }
   
   return NextResponse.json({ success: false }, { status: 401 });
-}
+}, 'auth:POST');

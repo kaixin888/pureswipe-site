@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { verifyWrite } from '../../../../lib/write-verification';
+import { wrapContractRoute } from '../../../../lib/contract-validator';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,7 @@ const supabase = createClient(
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sZ2ZxY3lncXp1ZXZhZnRtZGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTQ3MTcsImV4cCI6MjA5MTQ3MDcxN30._ZqLwFzh2TvBeicpwVzwLQLVTPiTm4uFd-gwwmLvYRY'
 );
 
-export async function POST(request) {
+export const POST = wrapContractRoute(async (request) => {
   try {
     const body = await request.json();
     const { items, cart_total, email, coupon_code } = body;
@@ -69,4 +70,4 @@ export async function POST(request) {
     console.error('[abandon] parse error:', err.message);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
-}
+}, 'cart/abandon:POST');
