@@ -1,16 +1,16 @@
 {
-  "crons": [
+  "version": 2,
+  "public": true,
+  "headers": [
     {
-      "path": "/api/cron/abandoned-cart",
-      "schedule": "*/30 * * * *"
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "clowand.com" }],
-      "destination": "https://www.clowand.com/$1",
-      "permanent": true
-    }
-  ]
+  "cleanUrls": true
 }
