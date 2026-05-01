@@ -469,9 +469,8 @@ export default function Home() {
 {/* Hero — Mobile: Swiper carousel; Desktop: original layout */}
       <HeroBanner
         slides={[
-          { type: 'video', src: 'https://media.clowand.com/videos/product-wand.mp4', poster: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Wand Demo' },
-          { type: 'video', src: 'https://media.clowand.com/videos/product-lid.mp4', poster: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Caddy Demo' },
-          { type: 'image', src: heroImage?.image_url || '/images/hero.jpg', alt: 'Clowand Hero' },
+          { type: 'video', src: 'https://media.clowand.com/videos/product-wand.mp4', poster: heroImage?.image_url || '', alt: 'Clowand Wand Demo' },
+          { type: 'video', src: 'https://media.clowand.com/videos/product-lid.mp4', poster: heroImage?.image_url || '', alt: 'Clowand Caddy Demo' },
         ]}
         heroTitle={siteSettings.hero_title || t.heroTitle}
         heroSub={siteSettings.hero_subtitle || t.heroSub}
@@ -534,7 +533,7 @@ export default function Home() {
                 loop
                 playsInline
                 preload="metadata"
-                poster={heroImage?.image_url || '/images/hero.jpg'}
+                poster={heroImage?.image_url || undefined}
                 className="w-full h-full object-cover"
                 data-lazy-src="https://media.clowand.com/videos/product-wand.mp4"
                 suppressHydrationWarning

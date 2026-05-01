@@ -36,7 +36,7 @@ function HeroSlide({ slide, normalizeUrl, heroTitle, heroBadge, heroSub, shopLab
           loop
           playsInline
           preload="auto"
-          poster={slide.poster || '/images/hero.jpg'}
+          poster={slide.type === 'video' ? (slide.poster || undefined) : undefined}
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src={normalizeUrl(slide.src)} type="video/mp4" />
