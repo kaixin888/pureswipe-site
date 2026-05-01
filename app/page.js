@@ -59,7 +59,7 @@ const BUNDLES = [
     name: 'Starter Kit',
     price: 19.99,
     description: 'Perfect for beginners',
-    image: '/images/hero.jpg',
+    image: '/images/hero-banner.jpg',
     items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '12x Single-Use Fresh Ocean Refill Pads'],
     tag: 'Start Here'
   },
@@ -289,7 +289,7 @@ export default function Home() {
             price: Number(p.price),
             sale_price: p.sale_price != null ? Number(p.sale_price) : null,
             description: p.description || '',
-            image: p.image_url || '/images/hero.jpg',
+            image: p.image_url || '/images/hero-banner.jpg',
             items: bullets,
             tag: p.tag || '',
             popular: !!p.popular,

@@ -25,7 +25,7 @@ export const metadata = {
     siteName: 'clowand',
     images: [
       {
-        url: '/images/hero.jpg',
+        url: '/images/hero-banner.jpg',
         width: 1200,
         height: 630,
         alt: 'clowand Toilet Brush',
@@ -38,7 +38,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'clowand | Professional 18" Disposable Toilet Brush',
     description: 'The zero-touch hygienic revolution for your home.',
-    images: ['/images/hero.jpg'],
+    images: ['/images/hero-banner.jpg'],
   },
 }
 
