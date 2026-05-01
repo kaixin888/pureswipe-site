@@ -116,16 +116,21 @@ export default function BundleComparisonTable({ bundles }) {
                   )}
                   <div className={'bg-white rounded-2xl border-2 p-5 ' + (bundle.popular ? 'border-emerald-400 shadow-lg shadow-emerald-100' : 'border-[#e5e0da]')}>
                     {bundle.image ? (
-                      <div className="w-16 h-16 mx-auto rounded-xl overflow-hidden mb-4">
+                      <div className="w-20 h-20 mx-auto rounded-xl overflow-hidden mb-4 bg-[#f8f9fa] shadow-sm">
                         <img
                           src={bundle.image}
                           alt={bundle.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1.5"
                           loading="lazy"
+                          onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.parentElement.querySelector('.fallback-icon')?.classList.remove('hidden'); }}
                         />
+                        {/* hidden fallback — shown only if img errors */}
+                        <div className="fallback-icon hidden w-full h-full bg-[#eef2f5] rounded-xl flex items-center justify-center">
+                          <Check size={28} className="text-[#1a3a5c]/40" />
+                        </div>
                       </div>
                     ) : (
-                      <div className="w-16 h-16 mx-auto bg-[#eef2f5] rounded-xl flex items-center justify-center mb-4">
+                      <div className="w-20 h-20 mx-auto bg-[#eef2f5] rounded-xl flex items-center justify-center mb-4">
                         <Check size={28} className="text-[#1a3a5c]/40" />
                       </div>
                     )}
