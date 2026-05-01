@@ -13,5 +13,11 @@
     }
   ],
   "cleanUrls": true,
-  "github": { "silent": true }
+  "github": { "silent": true },
+  "crons": [
+    {
+      "path": "/api/patrol/full",
+      "schedule": "0,30 * * * *"
+    }
+  ]
 }

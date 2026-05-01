@@ -68,6 +68,6 @@ export const POST = wrapContractRoute(async (request) => {
     return NextResponse.json({ success: true, session_id, id: inserted.id });
   } catch (err) {
     console.error('[abandon] parse error:', err.message);
-    return NextResponse.json({ error: err.message }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
   }
 }, 'cart/abandon:POST');

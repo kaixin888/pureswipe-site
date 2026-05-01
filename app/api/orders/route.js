@@ -45,6 +45,7 @@ async function trackPurchaseGA4(data) {
 }
 
 import { wrapContractRoute } from '../../../lib/contract-validator';
+import { verifyWrite } from '../../../lib/write-verification';
 
 export const POST = wrapContractRoute(async (request) => {
   try {
@@ -88,7 +89,22 @@ export const POST = wrapContractRoute(async (request) => {
         evidence: JSON.stringify({ error, order_id: data.order_id }, null, 2)
       });
 
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    }
+
+    // P0 写入验证
+    const verifyResult = await verifyWrite(supabase, 'orders', order[0].id, {
+      order_id: data.order_id,
+      customer_name: data.customer_name,
+      email: data.email,
+      amount: data.amount,
+      status: orderStatus,
+      payment_method: data.payment_method || 'paypal',
+    });
+    if (!verifyResult.passed) {
+      await supabase.from('orders').delete().eq('id', order[0].id);
+      console.error('[orders] WRITE VERIFICATION FAILED:', verifyResult.message);
+      return NextResponse.json({ success: false, error: 'Order write verification failed' }, { status: 500 });
     }
 
     // Logic for successful payment
@@ -132,6 +148,6 @@ export const POST = wrapContractRoute(async (request) => {
       message: err.message,
       evidence: err.stack
     });
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }, 'orders:POST');

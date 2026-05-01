@@ -1,11 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { composeDecorators, rateLimit } from '../../../../lib/decorators/index';
+import { wrapContractRoute } from '../../../../lib/contract-validator';
+import { verifyWrite } from '../../../../lib/write-verification';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = SUPABASE_URL && SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-export async function POST(request) {
+const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
   try {
     const { order_id, email, item, pay_method } = await request.json();
 
@@ -39,19 +42,33 @@ export async function POST(request) {
       ? `${existingNames}, ${item.name}`
       : item.name;
 
+    const updatedData = {
+      items: updatedItems,
+      amount: newAmount,
+      product_name: newProductName,
+      updated_at: new Date().toISOString(),
+    };
+
     // 5. Update in Supabase
     const { error: updateError } = await supabase
       .from('orders')
-      .update({
-        items: updatedItems,
-        amount: newAmount,
-        product_name: newProductName,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatedData)
       .eq('order_id', order_id);
 
     if (updateError) {
-      return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    }
+
+    // After update, verify:
+    const verifyResult = await verifyWrite(supabase, 'orders', order.id, updatedData);
+    if (!verifyResult.passed) {
+      // rollback
+      await supabase.from('orders').update({ 
+        items: existingItems, 
+        amount: order.amount, 
+        product_name: order.product_name 
+      }).eq('order_id', order_id);
+      return NextResponse.json({ success: false, error: 'Order update verification failed' }, { status: 500 });
     }
 
     // 6. Decrement inventory for upsell item
@@ -68,6 +85,8 @@ export async function POST(request) {
       addedItem: item,
     });
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
-}
+});
+
+export const POST = wrapContractRoute(handler, 'orders/append:POST');

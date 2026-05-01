@@ -29,8 +29,14 @@ async function compressImage(buffer, mimeType) {
 
   return { buffer: compressed, ext: 'webp', contentType: 'image/webp' };
 }
+import { composeDecorators, rateLimit, validateFileSize } from '../../../lib/decorators/index';
+import { wrapContractRoute } from '../../../lib/contract-validator';
 
-export async function POST(request) {
+export const POST = wrapContractRoute(
+  composeDecorators(
+    rateLimit(20, 60000),
+    validateFileSize(10 * 1024 * 1024)
+  )(async (request) => {
   try {
     const formData = await request.formData();
     const file = formData.get('file');
@@ -73,6 +79,8 @@ export async function POST(request) {
     });
   } catch (err) {
     console.error('R2 upload error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+  }),
+  'upload-image:POST'
+);

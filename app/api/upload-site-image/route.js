@@ -6,6 +6,8 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 import sharp from 'sharp';
+import { composeDecorators, rateLimit, validateFileSize } from '../../../lib/decorators/index';
+import { wrapContractRoute } from '../../../lib/contract-validator';
 
 // Reuse Edge Store R2 credentials (ES_AWS_* vars set in Vercel env)
 const r2 = new S3Client({
@@ -22,7 +24,11 @@ const PUBLIC_URL = process.env.EDGE_STORE_BASE_URL || 'https://pub-f3f9229828ae4
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-export async function POST(request) {
+export const POST = wrapContractRoute(
+  composeDecorators(
+    rateLimit(20, 60000),
+    validateFileSize(10 * 1024 * 1024)
+  )(async (request) => {
   try {
     const formData = await request.formData();
     const slotKey = formData.get('slot_key');
@@ -101,6 +107,8 @@ export async function POST(request) {
     });
   } catch (err) {
     console.error('Upload error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}),
+  'upload-site-image:POST'
+);

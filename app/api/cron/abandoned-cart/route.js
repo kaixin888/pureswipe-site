@@ -5,6 +5,7 @@
 // 对符合条件的发送恢复邮件，含 COMEBACK10 折扣码
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { wrapContractRoute } from '../../../../lib/contract-validator';
 export const dynamic = 'force-dynamic';
 import { abandonedCartTemplate } from '../../../../lib/email-templates';
 
@@ -69,8 +70,7 @@ async function sendRecoveryEmail({ to, subject, html, table, recordId, orderId }
   const errText = await response.text();
   return { order_id: orderId, status: 'failed', error: errText };
 }
-
-export async function GET(request) {
+export const GET = wrapContractRoute(async (request) => {
   // Vercel Cron auth
   const isVercelCron = request.headers.get('x-vercel-cron') === '1';
   if (!isVercelCron) {
@@ -179,6 +179,6 @@ export async function GET(request) {
     });
   } catch (error) {
     await notifyFeishu(`⚠️ [弃单挽回] Cron 失败: ${error.message}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, 'cron:GET');
