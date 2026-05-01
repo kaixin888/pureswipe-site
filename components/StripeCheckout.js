@@ -36,6 +36,7 @@ function CheckoutForm({ amount, onSuccess, onError, customerInfo }) {
   const [clientSecret, setClientSecret] = useState(null)
 
   // Fetch payment intent when amount changes
+  // amount is in DOLLARS; API route converts to cents internally
   useEffect(() => {
     if (!amount || amount <= 0) return
     fetch('/api/create-payment-intent', {
@@ -121,7 +122,7 @@ function CheckoutForm({ amount, onSuccess, onError, customerInfo }) {
           transition: 'background 0.2s',
         }}
       >
-        {loading ? 'Processing...' : `PAY $${amount?.toFixed(2)}`}
+        {loading ? 'Processing...' : `PAY $${(amount || 0).toFixed(2)}`}
       </button>
 
       <p style={{ textAlign: 'center', fontSize: 11, color: '#94a3b8', marginTop: 10 }}>

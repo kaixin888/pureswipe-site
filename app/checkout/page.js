@@ -244,7 +244,7 @@ function CheckoutContent() {
                 {paymentTab === 'card' && (
                   <div>
                     <StripeCheckout
-                      amount={Math.round(finalTotal * 100)}
+                      amount={finalTotal}
                       customerName={customerName}
                       customerEmail={customerEmail}
                       onSuccess={(paymentIntent) => {
