@@ -1,0 +1,20 @@
+// 装饰器集中导出
+// lib/decorators/ — 15 个前置条件校验装饰器，支持组合使用
+
+export { composeDecorators } from './compose'
+export { requireAuth } from './require-auth'
+export { requireRole } from './require-role'
+export { validateBody } from './validate-body'
+export { validateQuery } from './validate-query'
+export { rateLimit } from './rate-limit'
+export { requireMethod } from './require-method'
+export { csrfProtect } from './csrf'
+export { cacheControl } from './cache-control'
+export { requireContentType } from './require-content-type'
+export { sanitizeInput } from './sanitize'
+export { requireApiKey } from './require-api-key'
+export { requireOrigin } from './require-origin'
+export { throttle } from './throttle'
+export { logRequest } from './log-request'
+export { validateFileSize } from './validate-file-size'
+export type { RouteHandler, DecoratorFn } from './types'
