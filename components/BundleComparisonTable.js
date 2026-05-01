@@ -94,7 +94,7 @@ export default function BundleComparisonTable({ bundles }) {
       <div className="overflow-x-auto -mx-4 px-4 pb-4">
         <div className="min-w-[640px]">
           {/* Header row */}
-          <div className="grid" style={{ gridTemplateColumns: '140px repeat(' + bundles.length + ', 1fr)' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
             {/* Empty top-left */}
             <div className="sticky left-0 bg-[#f2efe8] z-10" />
 
@@ -155,7 +155,7 @@ export default function BundleComparisonTable({ bundles }) {
           <ComparisonRow label="Includes Caddy" bundles={bundles} getter={includesCaddy} icon />
           <ComparisonRow label="Auto-Lid Mechanism" bundles={bundles} getter={includesAutoLid} icon />
 
-          <div className="grid" style={{ gridTemplateColumns: '140px repeat(' + bundles.length + ', 1fr)' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
             <ComparisonLabel>Refill Count</ComparisonLabel>
             {bundles.map((b) => {
               const count = extractRefillCount(b);
@@ -167,7 +167,7 @@ export default function BundleComparisonTable({ bundles }) {
             })}
           </div>
 
-          <div className="grid" style={{ gridTemplateColumns: '140px repeat(' + bundles.length + ', 1fr)' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
             <ComparisonLabel>Cost per Pad</ComparisonLabel>
             {bundles.map((b) => {
               const count = extractRefillCount(b);
@@ -196,7 +196,7 @@ export default function BundleComparisonTable({ bundles }) {
             })}
           </div>
 
-          <div className="grid" style={{ gridTemplateColumns: '140px repeat(' + bundles.length + ', 1fr)' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
             <ComparisonLabel>Best For</ComparisonLabel>
             {bundles.map((b) => (
               <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
@@ -226,7 +226,7 @@ function ComparisonLabel({ children }) {
 
 function ComparisonRow({ label, bundles, getter, icon }) {
   return (
-    <div className="grid" style={{ gridTemplateColumns: '140px repeat(' + bundles.length + ', 1fr)' }}>
+    <div className="grid" style={{ gridTemplateColumns: 'max(75px, min(140px, 26vw)) repeat(' + bundles.length + ', 1fr)' }}>
       <ComparisonLabel>{label}</ComparisonLabel>
       {bundles.map((b) => (
         <div key={b.id} className="px-4 py-4 text-center border-b border-[#e5e0da]">
