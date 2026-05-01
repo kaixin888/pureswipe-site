@@ -68,7 +68,7 @@ function getDisplayPrice(bundle) {
 function getImageUrl(bundle, index) {
   const IMAGE_MAP = [
     'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-starter-kit.jpg',
-    'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-family-pack.jpg',
+    'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-auto-lid.png',
     'https://pub-f3f9229828ae4b6691d29db0006ca32e.r2.dev/products/bundle-eco-refill.jpg',
   ]
   return IMAGE_MAP[index] || bundle.image
