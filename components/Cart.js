@@ -1,11 +1,30 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useCart } from "react-use-cart";
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import UpsellCards from './UpsellCards';
 
+// 弃单捕获：在用户离开页面时将购物车数据写入 abandoned_carts 表
+// 触发时机：beforeunload（关闭标签/导航） + mouseleave（桌面端退出意图）
+function captureAbandon(items, cartTotal) {
+  if (!items || items.length === 0) return;
+  const email = localStorage.getItem('clowand_exit_email') || null;
+  // 使用 sendBeacon 确保页面关闭时请求不丢失
+  const payload = JSON.stringify({
+    items: items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+    cart_total: cartTotal,
+    email,
+  });
+  try {
+    navigator.sendBeacon('/api/cart/abandon', payload);
+  } catch {
+    // sendBeacon fallback — 静默失败不影响用户体验
+  }
+}
+
 export default function Cart({ isOpen, onClose, onCheckout }) {
+  const hasTrackedRef = useRef(false);
   const {
     isEmpty,
     items,
@@ -13,6 +32,35 @@ export default function Cart({ isOpen, onClose, onCheckout }) {
     updateItemQuantity,
     removeItem,
   } = useCart();
+
+  // 弃单捕获：购物车有商品时监听 beforeunload + exit-intent
+  useEffect(() => {
+    if (isEmpty) return;
+    hasTrackedRef.current = false;
+
+    // beforeunload: 关闭标签页/导航离开时用 sendBeacon 捕获
+    const handleBeforeUnload = () => {
+      if (isEmpty) return;
+      captureAbandon(items, cartTotal);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // 桌面端 mouseleave exit-intent（仅在购物车抽屉打开时触发一次）
+    const handleMouseLeave = (e) => {
+      if (e.clientY > 0 || hasTrackedRef.current || isEmpty) return;
+      hasTrackedRef.current = true;
+      captureAbandon(items, cartTotal);
+    };
+    // 仅在购物车打开时才挂载 exit-intent
+    if (isOpen) {
+      document.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [isEmpty, items, cartTotal, isOpen]);
 
   if (!isOpen) return null;
 

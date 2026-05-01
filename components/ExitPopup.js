@@ -86,6 +86,8 @@ export default function ExitPopup() {
     setIsSubmitting(false);
     if (!error) {
       setIsSubscribed(true);
+      // 保存邮箱供弃单捕获（Cart.js 的 beforeunload 使用）
+      localStorage.setItem('clowand_exit_email', email);
       fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,6 +96,7 @@ export default function ExitPopup() {
       setTimeout(() => setIsOpen(false), 3000);
     } else if (error.code === '23505') {
       setIsSubscribed(true);
+      localStorage.setItem('clowand_exit_email', email);
       setTimeout(() => setIsOpen(false), 3000);
     }
   };
