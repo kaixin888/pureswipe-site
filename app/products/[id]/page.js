@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useCart } from 'react-use-cart'
 import Link from 'next/link'
@@ -37,7 +37,10 @@ export default function ProductDetail() {
   const { addItem } = useCart()
   const { setIsCheckoutOpen } = useStore()
 
-  const actions = useProductActions(product || {}, { addItem }, () => setIsCheckoutOpen(true))
+  const openCheckout = useCallback(() => setIsCheckoutOpen(true), [])
+  const cartHooks = useMemo(() => ({ addItem }), [addItem])
+
+  const actions = useProductActions(product || {}, cartHooks, openCheckout)
 
   useEffect(() => {
     async function fetchProduct() {
