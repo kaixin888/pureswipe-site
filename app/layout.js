@@ -38,7 +38,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'clowand | Professional 18" Disposable Toilet Brush',
     description: 'The zero-touch hygienic revolution for your home.',
-    images: ['/images/hero.jpg'],
+    images: ['https://media.clowand.com/images/hero-banner.jpg'],
   },
 }
 

@@ -6,11 +6,18 @@ import { NextResponse } from 'next/server'
 export function middleware(request) {
   const { pathname } = request.nextUrl
   
-  // hero-banner.jpg → R2
+  // hero-banner.jpg → media.clowand.com CDN (no Vercel cache)
   if (pathname === '/images/hero-banner.jpg' || pathname === '/images/hero.jpg') {
     return NextResponse.redirect(
-      'https://media.clowand.com/hero-banner.jpg',
-      { status: 302 } // redirect so CDN is authoritative
+      'https://media.clowand.com/images/hero-banner.jpg',
+      { status: 302 }
+    )
+  }
+  // wand-box.jpg → CDN
+  if (pathname === '/images/wand-box.jpg') {
+    return NextResponse.redirect(
+      'https://media.clowand.com/images/wand-box.jpg',
+      { status: 302 }
     )
   }
   

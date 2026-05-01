@@ -53,13 +53,15 @@ const TRANSLATIONS = {
   }
 }
 
+const CDN = 'https://media.clowand.com'
+
 const BUNDLES = [
   {
     id: 'starter',
     name: 'Starter Kit',
     price: 19.99,
     description: 'Perfect for beginners',
-    image: '/images/hero.jpg',
+    image: CDN + '/images/hero-banner.jpg',
     items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '12x Single-Use Fresh Ocean Refill Pads'],
     tag: 'Start Here'
   },
@@ -68,7 +70,7 @@ const BUNDLES = [
     name: 'Family Value Pack',
     price: 34.99,
     description: 'BEST VALUE & RESULTS',
-    image: '/images/wand-box.jpg',
+    image: CDN + '/images/wand-box.jpg',
     items: ['1x 18" Anti-Splash Wand', '1x Ventilated Caddy', '36x Mixed Scent Single-Use Refill Pads'],
     tag: 'Best Seller',
     popular: true
@@ -78,7 +80,7 @@ const BUNDLES = [
     name: 'Eco Refill Box',
     price: 24.99,
     description: 'Stock up & Save',
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400',
+    image: CDN + '/images/hero-banner.jpg',
     items: ['48x Extra-Strength Single-Use Refill Pads', 'Recyclable Eco-Packaging', 'Compatible with all Wands'],
     tag: 'Eco Friendly'
   }
@@ -289,7 +291,7 @@ export default function Home() {
             price: Number(p.price),
             sale_price: p.sale_price != null ? Number(p.sale_price) : null,
             description: p.description || '',
-            image: p.image_url || '/images/hero.jpg',
+            image: p.image_url || 'https://media.clowand.com/images/hero-banner.jpg',
             items: bullets,
             tag: p.tag || '',
             popular: !!p.popular,
