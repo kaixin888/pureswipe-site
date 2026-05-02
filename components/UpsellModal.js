@@ -40,7 +40,7 @@ export default function UpsellModal({ orderId, email, type, paymentMethod, onAcc
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: Math.round(UPSELL_ITEM.price * 100),
+            amount: UPSELL_ITEM.price, // dollars; API route converts to cents internally
             currency: 'usd',
             metadata: { type: 'upsell', order_id: orderId, product: UPSELL_ITEM.name },
             payment_method: paymentMethod,
