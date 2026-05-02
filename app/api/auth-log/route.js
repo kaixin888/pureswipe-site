@@ -1,5 +1,6 @@
 // 登录日志 API — 记录登录成功/失败到 login_logs 表
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -16,7 +17,7 @@ export async function POST(req) {
 
     if (!supabase) {
       console.warn('auth-log: supabase not initialized (missing env vars)');
-      return Response.json({ ok: false, error: 'Server not configured' }, { status: 500 });
+      return Response.json({ ok: false, error: 'Server not configured' }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     const { error } = await supabase.from('login_logs').insert({
@@ -29,12 +30,12 @@ export async function POST(req) {
 
     if (error) {
       console.error('auth-log insert error:', error);
-      return Response.json({ ok: false, error: error.message }, { status: 500 });
+      return Response.json({ ok: false, error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true }, { headers: API_CACHE_HEADERS });
   } catch (err) {
     console.error('auth-log error:', err);
-    return Response.json({ ok: false, error: err.message }, { status: 500 });
+    return Response.json({ ok: false, error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

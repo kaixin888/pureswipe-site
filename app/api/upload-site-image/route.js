@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { composeDecorators, rateLimit, validateFileSize } from '../../../lib/decorators/index';
 import { wrapContractRoute } from '../../../lib/contract-validator';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 // Reuse Edge Store R2 credentials (ES_AWS_* vars set in Vercel env)
 const r2 = new S3Client({
@@ -35,7 +36,7 @@ export const POST = wrapContractRoute(
     const file = formData.get('file');
 
     if (!slotKey || !file) {
-      return NextResponse.json({ error: 'slot_key 和 file 为必填' }, { status: 400 });
+      return NextResponse.json({ error: 'slot_key 和 file 为必填' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     // 从 Supabase 读取插槽尺寸
@@ -48,7 +49,7 @@ export const POST = wrapContractRoute(
       .single();
 
     if (slotError || !slot) {
-      return NextResponse.json({ error: `插槽 "${slotKey}" 不存在` }, { status: 404 });
+      return NextResponse.json({ error: `插槽 "${slotKey}" 不存在` }, {status: 404, headers: API_CACHE_HEADERS });
     }
 
     const { width, height } = slot;
@@ -57,7 +58,7 @@ export const POST = wrapContractRoute(
     const originalExt = file.name.split('.').pop().toLowerCase();
     const allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     if (!allowed.includes(originalExt)) {
-      return NextResponse.json({ error: '不支持的文件类型，仅允许 jpg/png/webp/gif' }, { status: 400 });
+      return NextResponse.json({ error: '不支持的文件类型，仅允许 jpg/png/webp/gif' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     const rawBuffer = Buffer.from(await file.arrayBuffer());
@@ -107,7 +108,7 @@ export const POST = wrapContractRoute(
     });
   } catch (err) {
     console.error('Upload error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }),
   'upload-site-image:POST'

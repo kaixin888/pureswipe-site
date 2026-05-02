@@ -46,6 +46,7 @@ async function trackPurchaseGA4(data) {
 
 import { wrapContractRoute } from '../../../lib/contract-validator';
 import { verifyWrite } from '../../../lib/write-verification';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 export const POST = wrapContractRoute(async (request) => {
   try {
@@ -79,7 +80,7 @@ export const POST = wrapContractRoute(async (request) => {
 
     if (error) {
       if (error.code === '23505') {
-        return NextResponse.json({ success: false, error: 'Duplicate order' }, { status: 409 });
+        return NextResponse.json({ success: false, error: 'Duplicate order' }, {status: 409, headers: API_CACHE_HEADERS });
       }
       
       await sendAlert({
@@ -89,7 +90,7 @@ export const POST = wrapContractRoute(async (request) => {
         evidence: JSON.stringify({ error, order_id: data.order_id }, null, 2)
       });
 
-      return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     // P0 写入验证
@@ -104,7 +105,7 @@ export const POST = wrapContractRoute(async (request) => {
     if (!verifyResult.passed) {
       await supabase.from('orders').delete().eq('id', order[0].id);
       console.error('[orders] WRITE VERIFICATION FAILED:', verifyResult.message);
-      return NextResponse.json({ success: false, error: 'Order write verification failed' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Order write verification failed' }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     // Logic for successful payment
@@ -140,7 +141,7 @@ export const POST = wrapContractRoute(async (request) => {
       }
     }
 
-    return NextResponse.json({ success: true, order: order[0] });
+    return NextResponse.json({ success: true, order: order[0] }, { headers: API_CACHE_HEADERS });
   } catch (err) {
     await sendAlert({
       level: 'P0',
@@ -148,6 +149,6 @@ export const POST = wrapContractRoute(async (request) => {
       message: err.message,
       evidence: err.stack
     });
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }, 'orders:POST');

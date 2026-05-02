@@ -1,10 +1,11 @@
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 // 环境诊断端点（完整版，不截断任何值）
 // GET /api/diagnose-env?secret=clowand888
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
   if (secret !== 'clowand888') {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    return Response.json({ error: 'Unauthorized' }, {status: 401, headers: API_CACHE_HEADERS });
   }
 
   const relevantKeys = ['DATABASE_URL', 'POSTGRES_URL', 'POSTGRES_PRISMA_URL',
@@ -19,5 +20,5 @@ export async function GET(request) {
     envVars[key] = val || '(not set)';
   }
 
-  return Response.json(envVars);
+  return Response.json(envVars, { headers: API_CACHE_HEADERS });
 }

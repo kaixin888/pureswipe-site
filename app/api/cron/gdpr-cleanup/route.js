@@ -3,6 +3,7 @@
 // Vercel Cron 调用（需 CRON_SECRET 认证）
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 export const dynamic = 'force-dynamic';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -66,7 +67,7 @@ Duration: ${elapsed}ms${errorMsg ? `\nError: ${errorMsg}` : ''}`;
   await notifyFeishu(msg);
 
   if (errorMsg) {
-    return NextResponse.json({ ...results, error: errorMsg }, { status: 500 });
+    return NextResponse.json({ ...results, error: errorMsg }, {status: 500, headers: API_CACHE_HEADERS });
   }
-  return NextResponse.json(results);
+  return NextResponse.json(results, { headers: API_CACHE_HEADERS });
 }

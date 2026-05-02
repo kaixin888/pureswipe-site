@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { wrapContractRoute } from '../../../lib/contract-validator';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 // 健康检查必须每次请求实时执行，禁止静态缓存
 export const dynamic = 'force-dynamic';

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { exportSupabase } from '../../../../lib/pg-export';
 import { encrypt, packEncrypted } from '../../../../lib/crypto-aes-gcm';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 // ── Config ─────────────────────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_DIRECT_URL
@@ -118,7 +119,7 @@ export async function GET(request) {
   await notifyFeishu(msg);
 
   if (status === 'error') {
-    return NextResponse.json({ status, error: errorMsg }, { status: 500 });
+    return NextResponse.json({ status, error: errorMsg }, {status: 500, headers: API_CACHE_HEADERS });
   }
 
   return NextResponse.json({
@@ -126,5 +127,5 @@ export async function GET(request) {
     key,
     originalSizeKb: sizeKb,
     durationMs: elapsedMs,
-  });
+  }, { headers: API_CACHE_HEADERS });
 }

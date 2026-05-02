@@ -3,6 +3,7 @@
 // 在 Supabase 上创建 inventory + subscriptions 表并插入初始数据
 import pg from 'pg';
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -15,7 +16,7 @@ export async function POST(request) {
 // 管理员密码全局引用 — 指向 ADMIN_PASSWORD 环境变量
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   if (secret !== ADMIN_PASSWORD) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    return Response.json({ error: 'Unauthorized' }, {status: 401, headers: API_CACHE_HEADERS });
   }
 
   const results = [];
@@ -126,8 +127,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
       }
     }
 
-    return Response.json({ success: tableCreated, results });
+    return Response.json({ success: tableCreated, results }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ success: false, error: err.message, results }, { status: 500 });
+    return Response.json({ success: false, error: err.message, results }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

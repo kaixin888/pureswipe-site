@@ -31,6 +31,7 @@ async function compressImage(buffer, mimeType) {
 }
 import { composeDecorators, rateLimit, validateFileSize } from '../../../lib/decorators/index';
 import { wrapContractRoute } from '../../../lib/contract-validator';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 export const POST = wrapContractRoute(
   composeDecorators(
@@ -42,13 +43,13 @@ export const POST = wrapContractRoute(
     const file = formData.get('file');
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      return NextResponse.json({ error: 'No file provided' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     const originalExt = file.name.split('.').pop().toLowerCase();
     const allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     if (!allowed.includes(originalExt)) {
-      return NextResponse.json({ error: 'File type not allowed' }, { status: 400 });
+      return NextResponse.json({ error: 'File type not allowed' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     const rawBuffer = Buffer.from(await file.arrayBuffer());
@@ -79,7 +80,7 @@ export const POST = wrapContractRoute(
     });
   } catch (err) {
     console.error('R2 upload error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
   }
   }),
   'upload-image:POST'

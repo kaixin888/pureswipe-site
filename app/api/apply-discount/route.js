@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { composeDecorators, rateLimit } from '../../../lib/decorators/index';
 import { wrapContractRoute } from '../../../lib/contract-validator';
 import { NextResponse } from 'next/server';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -13,7 +14,7 @@ export const POST = wrapContractRoute(
       const { code, cartTotal } = await request.json();
 
       if (!code || !cartTotal) {
-        return NextResponse.json({ error: 'Missing code or cartTotal' }, { status: 400 });
+        return NextResponse.json({ error: 'Missing code or cartTotal' }, {status: 400, headers: API_CACHE_HEADERS });
       }
 
       const { data, error } = await supabase
@@ -24,12 +25,12 @@ export const POST = wrapContractRoute(
         .single();
 
       if (error || !data) {
-        return NextResponse.json({ error: 'Invalid or expired discount code' }, { status: 404 });
+        return NextResponse.json({ error: 'Invalid or expired discount code' }, {status: 404, headers: API_CACHE_HEADERS });
       }
 
       // Check usage limit
       if (data.max_usage !== null && data.usage_count >= data.max_usage) {
-        return NextResponse.json({ error: 'This code has reached its usage limit' }, { status: 400 });
+        return NextResponse.json({ error: 'This code has reached its usage limit' }, {status: 400, headers: API_CACHE_HEADERS });
       }
 
       const discount = (cartTotal * data.discount_percent) / 100;
@@ -44,7 +45,7 @@ export const POST = wrapContractRoute(
       });
     } catch (err) {
       console.error('apply-discount error:', err);
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      return NextResponse.json({ error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
     }
   }),
   'apply-discount:POST'

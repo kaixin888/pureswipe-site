@@ -1,6 +1,7 @@
 // TOTP 设置 API — 生成密钥 + 验证并启用
 import { createClient } from '@supabase/supabase-js';
 import { generateSecret as genSecret, generateURI, verify as verifyToken } from 'otplib';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -11,7 +12,7 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('user_id');
-    if (!userId) return Response.json({ error: 'missing user_id' }, { status: 400 });
+    if (!userId) return Response.json({ error: 'missing user_id' }, {status: 400, headers: API_CACHE_HEADERS });
 
     const secret = genSecret();
     const otpauth = generateURI({ issuer: 'clowand', label: userId, secret });
@@ -32,9 +33,9 @@ export async function GET(req) {
 
     if (error) throw error;
 
-    return Response.json({ secret, otpauth, backup_codes: backupCodes });
+    return Response.json({ secret, otpauth, backup_codes: backupCodes }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }
 
@@ -42,7 +43,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { user_id, token } = await req.json();
-    if (!user_id || !token) return Response.json({ ok: false, error: 'Missing params' }, { status: 400 });
+    if (!user_id || !token) return Response.json({ ok: false, error: 'Missing params' }, {status: 400, headers: API_CACHE_HEADERS });
 
     const { data, error } = await supabase
       .from('authenticator_secrets')
@@ -50,18 +51,18 @@ export async function POST(req) {
       .eq('user_id', user_id)
       .single();
 
-    if (error || !data) return Response.json({ ok: false, error: 'No TOTP secret found' }, { status: 400 });
+    if (error || !data) return Response.json({ ok: false, error: 'No TOTP secret found' }, {status: 400, headers: API_CACHE_HEADERS });
 
     const isValid = verifyToken({ token, secret: data.secret });
 
-    if (!isValid) return Response.json({ ok: false, error: 'Invalid code' });
+    if (!isValid) return Response.json({ ok: false, error: 'Invalid code' }, { headers: API_CACHE_HEADERS });
 
     // 启用 2FA
     await supabase.from('authenticator_secrets').update({ enabled: true }).eq('user_id', user_id);
     await supabase.from('user_profiles').update({ totp_enabled: true }).eq('user_id', user_id);
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

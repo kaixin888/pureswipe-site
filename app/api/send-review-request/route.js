@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { reviewRequestTemplate } from '../../../lib/email-templates';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = 'Clowand <support@clowand.com>';
@@ -11,13 +12,13 @@ const supabase = SUPABASE_URL && SUPABASE_KEY ? createClient(SUPABASE_URL, SUPAB
 
 export async function POST(request) {
   if (!RESEND_API_KEY) {
-    return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 
   const { orderId, email, orderData } = await request.json();
 
   if (!email) {
-    return NextResponse.json({ error: 'No email provided' }, { status: 400 });
+    return NextResponse.json({ error: 'No email provided' }, {status: 400, headers: API_CACHE_HEADERS });
   }
 
   try {
@@ -46,8 +47,8 @@ export async function POST(request) {
         .eq('id', orderId);
     }
 
-    return NextResponse.json({ success: true, id: result.id });
+    return NextResponse.json({ success: true, id: result.id }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 // Cloudflare Analytics GraphQL API - credentials via Vercel ENV
 const CF_ZONE_ID = process.env.CF_ZONE_ID;
@@ -41,7 +42,7 @@ export async function GET() {
 
     if (json.errors) {
       // Return 200 with permission_error flag so stats page can show a friendly message
-      return NextResponse.json({ permission_error: true, error: json.errors[0]?.message }, { status: 200 });
+      return NextResponse.json({ permission_error: true, error: json.errors[0]?.message }, {status: 200, headers: API_CACHE_HEADERS });
     }
 
     const rows = json?.data?.viewer?.zones?.[0]?.httpRequests1dGroups || [];
@@ -72,8 +73,8 @@ export async function GET() {
     const totalPageViews = result.reduce((s, r) => s + r.pageViews, 0);
     const totalUniques = result.reduce((s, r) => s + r.uniques, 0);
 
-    return NextResponse.json({ days: result, totalPageViews, totalUniques });
+    return NextResponse.json({ days: result, totalPageViews, totalUniques }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

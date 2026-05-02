@@ -3,6 +3,7 @@
 // POST /api/referrals                         - 生成推荐链接 + 折扣码
 
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://olgfqcygqzuevaftmdja.supabase.co',
@@ -22,7 +23,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   if (!userId) {
-    return Response.json({ error: 'userId is required' }, { status: 400 });
+    return Response.json({ error: 'userId is required' }, {status: 400, headers: API_CACHE_HEADERS });
   }
 
   const { data: referrals, error } = await supabase
@@ -32,7 +33,7 @@ export async function GET(request) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 
   const stats = {
@@ -42,7 +43,7 @@ export async function GET(request) {
     earnings: (referrals?.filter(r => r.status === 'converted').length || 0) * 5
   };
 
-  return Response.json({ referrals, stats, referralLink: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.clowand.com'}?ref=${userId}` });
+  return Response.json({ referrals, stats, referralLink: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.clowand.com'}?ref=${userId}` }, { headers: API_CACHE_HEADERS });
 }
 
 // POST - 创建推荐（生成折扣码）
@@ -50,7 +51,7 @@ export async function POST(request) {
   try {
     const { referrer_id, referred_email } = await request.json();
     if (!referrer_id) {
-      return Response.json({ error: 'referrer_id is required' }, { status: 400 });
+      return Response.json({ error: 'referrer_id is required' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     // 生成两个折扣码
@@ -95,16 +96,16 @@ export async function POST(request) {
       .single();
 
     if (err3) {
-      return Response.json({ error: err3.message }, { status: 500 });
+      return Response.json({ error: err3.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     return Response.json({
       referral,
       referralLink: `https://www.clowand.com?ref=${referrer_id}`,
       codes: { referrer: codeReferrer, referred: codeReferred }
-    }, { status: 201 });
+    }, {status: 201, headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }
 
@@ -116,7 +117,7 @@ export async function PATCH(request) {
     const { order_id } = await request.json();
 
     if (!id) {
-      return Response.json({ error: 'Referral id is required' }, { status: 400 });
+      return Response.json({ error: 'Referral id is required' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     // 获取推荐记录
@@ -127,7 +128,7 @@ export async function PATCH(request) {
       .single();
 
     if (fetchErr || !referral) {
-      return Response.json({ error: 'Referral not found' }, { status: 404 });
+      return Response.json({ error: 'Referral not found' }, {status: 404, headers: API_CACHE_HEADERS });
     }
 
     // 更新推荐状态
@@ -137,11 +138,11 @@ export async function PATCH(request) {
       .eq('id', id);
 
     if (updateErr) {
-      return Response.json({ error: updateErr.message }, { status: 500 });
+      return Response.json({ error: updateErr.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
-    return Response.json({ message: 'Referral converted' });
+    return Response.json({ message: 'Referral converted' }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

@@ -1,5 +1,6 @@
 // 用户管理 API — 列表/创建/更新 user_profiles
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -16,7 +17,7 @@ export async function GET(req) {
     if (userId) {
       const { data, error } = await adminSupabase.from('user_profiles').select('*').eq('user_id', userId).single();
       if (error) throw error;
-      return Response.json(data);
+      return Response.json(data, { headers: API_CACHE_HEADERS });
     }
 
     const { data, error } = await adminSupabase
@@ -25,9 +26,9 @@ export async function GET(req) {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return Response.json(data);
+    return Response.json(data, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }
 
@@ -58,9 +59,9 @@ export async function POST(req) {
 
     if (insertError) throw new Error(`Profile insert failed: ${insertError.message}`);
 
-    return Response.json({ ok: true, user_id: authData.user.id, email, display_name: display_name || email });
+    return Response.json({ ok: true, user_id: authData.user.id, email, display_name: display_name || email }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }
 
@@ -79,8 +80,8 @@ export async function PATCH(req) {
     const { error } = await adminSupabase.from('user_profiles').update(allowed).eq('user_id', user_id);
     if (error) throw error;
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

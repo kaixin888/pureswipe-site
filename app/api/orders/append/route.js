@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { composeDecorators, rateLimit } from '../../../../lib/decorators/index';
 import { wrapContractRoute } from '../../../../lib/contract-validator';
 import { verifyWrite } from '../../../../lib/write-verification';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -13,7 +14,7 @@ const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
     const { order_id, email, item, pay_method } = await request.json();
 
     if (!order_id || !item) {
-      return NextResponse.json({ success: false, error: 'Missing order_id or item' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Missing order_id or item' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     // 1. Get existing order
@@ -24,7 +25,7 @@ const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
       .single();
 
     if (fetchError || !order) {
-      return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Order not found' }, {status: 404, headers: API_CACHE_HEADERS });
     }
 
     // 2. Build updated items array
@@ -56,7 +57,7 @@ const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
       .eq('order_id', order_id);
 
     if (updateError) {
-      return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     // After update, verify:
@@ -68,7 +69,7 @@ const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
         amount: order.amount, 
         product_name: order.product_name 
       }).eq('order_id', order_id);
-      return NextResponse.json({ success: false, error: 'Order update verification failed' }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Order update verification failed' }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     // 6. Decrement inventory for upsell item
@@ -83,9 +84,9 @@ const handler = composeDecorators(rateLimit(20, 60000))(async (request) => {
       success: true,
       newAmount,
       addedItem: item,
-    });
+    }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 });
 

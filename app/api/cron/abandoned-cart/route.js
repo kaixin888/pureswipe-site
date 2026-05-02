@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { wrapContractRoute } from '../../../../lib/contract-validator';
 export const dynamic = 'force-dynamic';
 import { abandonedCartTemplate } from '../../../../lib/email-templates';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -176,9 +177,9 @@ export const GET = wrapContractRoute(async (request) => {
       sent,
       failed,
       details: results,
-    });
+    }, { headers: API_CACHE_HEADERS });
   } catch (error) {
     await notifyFeishu(`⚠️ [弃单挽回] Cron 失败: ${error.message}`);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }, 'cron:GET');

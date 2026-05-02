@@ -1,6 +1,7 @@
 // 审计日志 API (admin) — 用 service_role key 读取 audit_logs，绕过 RLS
 // GET /api/admin/audit-logs?page=1&pageSize=20
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -19,7 +20,7 @@ export async function GET(req) {
       .select('*', { count: 'exact', head: true });
 
     if (countErr) {
-      return Response.json({ data: [], total: 0, error: countErr.message }, { status: 500 });
+      return Response.json({ data: [], total: 0, error: countErr.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     const { data, error } = await supabase
@@ -29,11 +30,11 @@ export async function GET(req) {
       .range(from, to);
 
     if (error) {
-      return Response.json({ data: [], total: 0, error: error.message }, { status: 500 });
+      return Response.json({ data: [], total: 0, error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
-    return Response.json({ data: data || [], total: count || 0 });
+    return Response.json({ data: data || [], total: count || 0 }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ data: [], total: 0, error: err.message }, { status: 500 });
+    return Response.json({ data: [], total: 0, error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

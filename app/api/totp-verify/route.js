@@ -1,6 +1,7 @@
 // TOTP 登录验证 API — 登录第二步校验
 import { createClient } from '@supabase/supabase-js';
 import { verify as verifyToken } from 'otplib';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -9,7 +10,7 @@ const supabase = SUPABASE_URL && SUPABASE_KEY ? createClient(SUPABASE_URL, SUPAB
 export async function POST(req) {
   try {
     const { user_id, token } = await req.json();
-    if (!user_id || !token) return Response.json({ ok: false, error: 'Missing params' }, { status: 400 });
+    if (!user_id || !token) return Response.json({ ok: false, error: 'Missing params' }, {status: 400, headers: API_CACHE_HEADERS });
 
     // 查询用户的 TOTP secret
     const { data, error } = await supabase
@@ -18,23 +19,23 @@ export async function POST(req) {
       .eq('user_id', user_id)
       .single();
 
-    if (error || !data) return Response.json({ ok: false, error: '2FA not configured' }, { status: 400 });
-    if (!data.enabled) return Response.json({ ok: false, error: '2FA not enabled' }, { status: 400 });
+    if (error || !data) return Response.json({ ok: false, error: '2FA not configured' }, {status: 400, headers: API_CACHE_HEADERS });
+    if (!data.enabled) return Response.json({ ok: false, error: '2FA not enabled' }, {status: 400, headers: API_CACHE_HEADERS });
 
     // 检查 backup code
     if (data.backup_codes && data.backup_codes.includes(token)) {
       // 消费 backup code（移除）
       const newCodes = data.backup_codes.filter(c => c !== token);
       await supabase.from('authenticator_secrets').update({ backup_codes: newCodes }).eq('user_id', user_id);
-      return Response.json({ ok: true, backup_code_used: true });
+      return Response.json({ ok: true, backup_code_used: true }, { headers: API_CACHE_HEADERS });
     }
 
     // 验证 TOTP
     const isValid = verifyToken({ token, secret: data.secret });
-    if (!isValid) return Response.json({ ok: false, error: 'Invalid verification code' });
+    if (!isValid) return Response.json({ ok: false, error: 'Invalid verification code' }, { headers: API_CACHE_HEADERS });
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

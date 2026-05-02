@@ -3,6 +3,7 @@
 // 返回 { passed, failed, summary, timestamp }
 import { NextResponse } from 'next/server';
 import { wrapContractRoute } from '../../../../lib/contract-validator';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 // 巡检每次请求实时执行，禁止静态缓存
 export const dynamic = 'force-dynamic';
@@ -78,7 +79,7 @@ async function handler(request) {
   // Vercel Cron auth
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, {status: 401, headers: API_CACHE_HEADERS });
   }
 
   const results = [];

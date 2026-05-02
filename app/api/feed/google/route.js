@@ -107,6 +107,7 @@ ${salePrice ? `      <g:sale_price>${salePrice} USD</g:sale_price>` : ''}
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
+      'Surrogate-Control': 'no-store',
     },
   })
 }

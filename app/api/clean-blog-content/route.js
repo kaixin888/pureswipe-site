@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 // Prevent static prerendering — env vars only available at runtime
 export const dynamic = 'force-dynamic'
@@ -26,9 +27,7 @@ export async function GET() {
   // Guard: fail early if service key not available (Vercel env only)
   if (!serviceKey) {
     return Response.json(
-      { error: 'SUPABASE_SERVICE_ROLE_KEY not configured' },
-      { status: 500 }
-    )
+      { error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }, {status: 500, headers: API_CACHE_HEADERS })
   }
 
   const supabase = createClient(
@@ -45,9 +44,7 @@ export async function GET() {
 
   if (fetchError) {
     return Response.json(
-      { error: 'Failed to fetch posts', detail: fetchError.message },
-      { status: 500 }
-    )
+      { error: 'Failed to fetch posts', detail: fetchError.message }, {status: 500, headers: API_CACHE_HEADERS })
   }
 
   const results = {
@@ -105,5 +102,5 @@ export async function GET() {
   return Response.json({
     message: `Checked ${results.totalChecked} posts. Found ${results.affected.length} with AI pipeline text. Cleaned ${results.cleaned.length}. Errors: ${results.errors.length}.`,
     results,
-  })
+  }, { headers: API_CACHE_HEADERS })
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { welcomeTemplate, orderConfirmTemplate, shippingTemplate } from '../../../lib/email-templates';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 // Email sending via Resend API
 // Requires: RESEND_API_KEY in Vercel environment variables
@@ -20,7 +21,7 @@ async function sendEmail({ to, subject, html }) {
 
 export async function POST(request) {
   if (!RESEND_API_KEY) {
-    return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, {status: 500, headers: API_CACHE_HEADERS });
   }
 
   const { type, email, orderData } = await request.json();
@@ -46,14 +47,14 @@ export async function POST(request) {
         html: shippingTemplate({ orderData }),
       });
     } else {
-      return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });
+      return NextResponse.json({ error: 'Unknown email type' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      return NextResponse.json({ error: result.error }, {status: 500, headers: API_CACHE_HEADERS });
     }
-    return NextResponse.json({ success: true, id: result.id });
+    return NextResponse.json({ success: true, id: result.id }, { headers: API_CACHE_HEADERS });
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendAlert } from '../../../../lib/monitor';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function POST(req) {
                       `Branch: ${payload.deployment?.meta?.githubCommitRef || 'unknown'}`;
       
       await sendAlert({ level, title, message });
-      return NextResponse.json({ ok: true, source: 'vercel' });
+      return NextResponse.json({ ok: true, source: 'vercel' }, { headers: API_CACHE_HEADERS });
     }
 
     // 2. Handle Uptime Robot Alerts
@@ -32,7 +33,7 @@ export async function POST(req) {
                       `Details: ${body.alertDetails || 'No additional details'}`;
       
       await sendAlert({ level, title, message });
-      return NextResponse.json({ ok: true, source: 'uptimerobot' });
+      return NextResponse.json({ ok: true, source: 'uptimerobot' }, { headers: API_CACHE_HEADERS });
     }
 
     // 3. Handle Internal Manual Alerts
@@ -44,7 +45,7 @@ export async function POST(req) {
         message: body.message,
         evidence: body.evidence
       });
-      return NextResponse.json({ ok: true, source: 'internal' });
+      return NextResponse.json({ ok: true, source: 'internal' }, { headers: API_CACHE_HEADERS });
     }
 
     // 4. Catch-all for unknown formats
@@ -55,7 +56,7 @@ export async function POST(req) {
       evidence: JSON.stringify(body, null, 2).substring(0, 1000)
     });
 
-    return NextResponse.json({ ok: true, source: 'generic' });
+    return NextResponse.json({ ok: true, source: 'generic' }, { headers: API_CACHE_HEADERS });
   } catch (error) {
     console.error('Webhook Proxy Error:', error);
     
@@ -67,6 +68,6 @@ export async function POST(req) {
       evidence: error.stack
     });
 
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

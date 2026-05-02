@@ -1,5 +1,6 @@
 // 审计日志 API — 记录管理后台写操作
 import { createClient } from '@supabase/supabase-js';
+import { API_CACHE_HEADERS } from '../../../lib/api-helpers';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -25,12 +26,12 @@ export async function POST(req) {
 
     if (error) {
       console.error('audit-log insert error:', error);
-      return Response.json({ ok: false, error: error.message }, { status: 500 });
+      return Response.json({ ok: false, error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true }, { headers: API_CACHE_HEADERS });
   } catch (err) {
     console.error('audit-log error:', err);
-    return Response.json({ ok: false, error: err.message }, { status: 500 });
+    return Response.json({ ok: false, error: err.message }, {status: 500, headers: API_CACHE_HEADERS });
   }
 }

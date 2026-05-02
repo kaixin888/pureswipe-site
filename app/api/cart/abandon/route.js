@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { verifyWrite } from '../../../../lib/write-verification';
 import { wrapContractRoute } from '../../../../lib/contract-validator';
+import { API_CACHE_HEADERS } from '../../../../lib/api-helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ export const POST = wrapContractRoute(async (request) => {
 
     // 校验：必须有购物车数据
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: 'Invalid cart data' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid cart data' }, {status: 400, headers: API_CACHE_HEADERS });
     }
 
     // 生成 session_id（用于去重）
@@ -44,7 +45,7 @@ export const POST = wrapContractRoute(async (request) => {
 
     if (error) {
       console.error('[abandon] insert error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
     // P0 写入验证：INSERT 后重读逐字段比对
@@ -60,14 +61,12 @@ export const POST = wrapContractRoute(async (request) => {
       // 回滚：删除刚写入但验证失败的记录
       await supabase.from('abandoned_carts').delete().eq('id', inserted.id);
       return NextResponse.json(
-        { error: 'Write verification failed', debug: verifyResult.message },
-        { status: 500 }
-      );
+        { error: 'Write verification failed', debug: verifyResult.message }, {status: 500, headers: API_CACHE_HEADERS });
     }
 
-    return NextResponse.json({ success: true, session_id, id: inserted.id });
+    return NextResponse.json({ success: true, session_id, id: inserted.id }, { headers: API_CACHE_HEADERS });
   } catch (err) {
     console.error('[abandon] parse error:', err.message);
-    return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid request data' }, {status: 400, headers: API_CACHE_HEADERS });
   }
 }, 'cart/abandon:POST');
