@@ -30,11 +30,23 @@ export default function CookieConsentBanner() {
             },
             analytics: {
               autoClear: {
-                cookies: [{ name: /^_ga/ }, { name: '_gid' }],
+                cookies: [
+                  { name: /^_ga/ },
+                  { name: '_gid' },
+                  { name: '_clck' },
+                  { name: '_clsk' },
+                  { name: 'CLID' },
+                  { name: 'MUID' },
+                ],
               },
               services: {
                 ga: {
                   label: 'Google Analytics',
+                  onAccept: () => setCookieConsent?.(true),
+                  onReject: () => setCookieConsent?.(false),
+                },
+                clarity: {
+                  label: 'Microsoft Clarity',
                   onAccept: () => setCookieConsent?.(true),
                   onReject: () => setCookieConsent?.(false),
                 },

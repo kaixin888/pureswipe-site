@@ -12,6 +12,7 @@ import SiteChrome from '../components/SiteChrome'
 import CookieConsentBanner from '../components/CookieConsent'
 import ExitPopup from '../components/ExitPopup'
 import GoogleAnalytics from '../components/GoogleAnalytics'
+import MicrosoftClarity from '../components/MicrosoftClarity'
 import './globals.css'
 
 export const metadata = {
@@ -55,8 +56,9 @@ export default function RootLayout({ children }) {
       </head>
       <body className="font-sans">
         <Providers>
-          {/* Consent-based GA4 — loads only when user accepts analytics cookies */}
+          {/* Consent-based analytics — loads only when user accepts analytics cookies */}
           <GoogleAnalytics />
+          <MicrosoftClarity />
           <SiteChrome>{children}</SiteChrome>
           <ExitPopup />
           <CookieConsentBanner />
