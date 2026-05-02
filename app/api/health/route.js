@@ -71,7 +71,7 @@ async function handler() {
   };
 
   const status = degraded ? 'degraded' : 'ok';
-  return NextResponse.json({ status, checks, timestamp: new Date().toISOString() });
+  return NextResponse.json({ status, checks, timestamp: new Date().toISOString() }, { headers: API_CACHE_HEADERS });
 }
 
 export const GET = wrapContractRoute(handler, null);
