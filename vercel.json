@@ -17,7 +17,7 @@
   "crons": [
     {
       "path": "/api/patrol/full",
-      "schedule": "0,30 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
