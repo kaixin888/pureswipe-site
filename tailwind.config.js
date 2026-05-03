@@ -10,11 +10,11 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          light: '#F8F9FA',
-          dark: '#121212',
-          mint: '#E8F5F1',
-          primary: '#2D5A4F',
-          orange: '#FF6B35'
+          light: '#FAFAF9',      // stone-50 → warm neutral background
+          dark: '#1C1917',       // stone-900 → text primary
+          mint: '#CCFBF1',       // teal-100 → light accent
+          primary: '#0D9488',    // teal-600 → clean/hygienic (was #2D5A4F)
+          orange: '#F97316',     // orange-500 → CTA/action (was #FF6B35)
         },
         walmart: {
           navy: '#1C2570',
