@@ -17,7 +17,7 @@ import routerProvider, {
 import { createClient } from '@supabase/supabase-js';
 import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon, LogIn, ClipboardList, UserCog, Globe, Smartphone } from 'lucide-react';
+import { Shield, Package, ShoppingCart, Activity, Users, Tag, Mail, BookOpen, Star, HelpCircle, Settings2, Archive, Image as ImageIcon, LogIn, ClipboardList, UserCog, Globe, Smartphone, Zap } from 'lucide-react';
 
 import '@refinedev/antd/dist/reset.css';
 
@@ -126,12 +126,12 @@ const ROLE_RESOURCES = {
   super_admin: [
     'products', 'orders', 'site_stats', 'discount_codes', 'subscribers',
     'posts', 'reviews', 'faqs', 'inventory', 'site_images', 'settings',
-    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs',
+    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs', 'api_usage',
   ],
   admin: [
     'products', 'orders', 'site_stats', 'discount_codes', 'subscribers',
     'posts', 'reviews', 'faqs', 'inventory', 'site_images', 'settings',
-    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs',
+    'user_profiles', 'user_sessions', 'login_logs', 'audit_logs', 'api_usage',
   ],
   operator: [
     'products', 'orders', 'site_stats',
@@ -364,6 +364,11 @@ const ALL_RESOURCES = [
     name: 'settings',
     list: '/admin/settings',
     meta: { label: '系统设置', icon: <Settings2 size={16} /> }
+  },
+  {
+    name: 'api_usage',
+    list: '/admin/api-usage',
+    meta: { label: 'API用量', icon: <Zap size={16} /> }
   },
 ];
 
